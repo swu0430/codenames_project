@@ -242,7 +242,7 @@ class _State extends State<MyApp> {
                               setState(() {
                                 version = versionTemp;
                                 restart = true;
-                                if ((version == 'Pictures') || (version == "Words & Pictures")) {
+                                if ((version == 'Pictures') || (version == "Words + Pictures")) {
                                   runFutures = true;
                                 } else {
                                   runFutures = false;
