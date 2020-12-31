@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'apikey.dart';
@@ -26,23 +27,27 @@ class _State extends State<MyApp> {
   Random random = new Random();
   int firstColor;
   bool spymaster = false;
+  bool runFutures = true;
+  int blueScoreCounter = 0;
+  int redScoreCounter = 0;
+  bool blueFirst; 
+  String winner = "";
+  bool displayWinner = false;
+  String currentTeam = "";
+  bool gameOver = false;
+  String version = "Pictures";
 
   @override
   void initState() {
     super.initState();
-    
-    fetchimages();
-    
-    _colorList();
-
+  
     for (int i = 0; i < 25; i++) {
       blendModeList.add(BlendMode.hardLight); 
       borderColorListWhiteforPlayers.add(Colors.white);
     }
-
   }
 
-  Future<String> fetchimages() async {
+  Future<String> fetchImages() async {
     var fetchdata = await http.get('https://api.unsplash.com/photos/random?client_id=${DEVELOPER_KEY}&count=25');
 
     setState(() {
@@ -53,6 +58,21 @@ class _State extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    if (runFutures == true) {
+      fetchImages();
+      _colorList();
+
+      colorListInteractive = new List<Color>(25);
+      blendModeListInteractive = new List<BlendMode>(25);
+      blueScoreCounter = 0;
+      redScoreCounter = 0;
+      blueFirst = true;
+      spymaster = false;
+      gameOver = false;
+      
+      runFutures = false;
+
+    }
     return MaterialApp(
       title:"Codenames - Play Online",
       theme: ThemeData(
@@ -61,7 +81,7 @@ class _State extends State<MyApp> {
       home: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text("CODENAMES: [INSERT VERSION]", 
+          title: Text("CODENAMES: ${version.toUpperCase()}", 
             style: GoogleFonts.shojumaru(
               fontSize: 24.0,
             ), //GoogleFonts
@@ -70,11 +90,43 @@ class _State extends State<MyApp> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: 16.0),
+              SizedBox(height: 20.0),
               Center(
                 child: Container(
-                  width: 800, 
-                  height: 800,
+                  height: 30,
+                  width: 740,
+                  child: Stack(
+                    children: <Widget>[
+                      Positioned(
+                        left: 5,
+                        bottom: 5,
+                        child: new RichText(
+                          text: TextSpan(
+                            children: <TextSpan>[
+                              TextSpan(text: "$blueScoreCounter  ", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 20)),
+                              TextSpan(text: "${String.fromCharCode(0x2014)}  ", style: TextStyle(color: Colors.black)),
+                              TextSpan(text: "$redScoreCounter", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 20)),
+                            ]
+                          )
+                        )
+                      ),
+                      Positioned(
+                        left: 325,
+                        bottom: 5, 
+                        child: new Text("$currentTeam's turn", style: TextStyle(color: _teamColor(), fontSize: 20))),
+                      Positioned(
+                        right: 5,
+                        bottom: 0,
+                        child: _turnWidget(),
+                      )
+                    ]
+                  )
+                )
+              ),
+              Center(
+                child: Container(
+                  width: 750, 
+                  height: 750,
                   padding: const EdgeInsets.all(10.0),
                   child: new GridView.count(
                     crossAxisCount: 5, 
@@ -84,15 +136,17 @@ class _State extends State<MyApp> {
                   ),
                 ),
               ),
-              SizedBox(height: 16.0),
+              SizedBox(height: 5.0),
               Center(
                 child: Container(
-                  width: 780, 
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Wrap(
-                      children: [
-                        ButtonTheme(
+                  height: 40,
+                  width: 740, 
+                  child: Stack(
+                    children: <Widget>[
+                      Positioned(
+                        left: 5,
+                        bottom: 1,
+                        child: ButtonTheme(
                           minWidth: 125.0,
                           height: 35.0,
                           child: new RaisedButton(
@@ -107,8 +161,12 @@ class _State extends State<MyApp> {
                               style: TextStyle(fontSize: 20)
                             ),
                           )
-                        ),
-                        ButtonTheme(
+                        )
+                      ),
+                      Positioned(
+                        left: 125,
+                        bottom: 1,
+                        child: ButtonTheme(
                           minWidth: 125.0,
                           height: 35.0,
                           child: new RaisedButton(
@@ -123,17 +181,43 @@ class _State extends State<MyApp> {
                               style: TextStyle(fontSize: 20)
                             ),
                           )
-                        ),
-                        SizedBox(width: 16.0),
-                        ButtonTheme(
+                        )
+                      ),   
+                      Positioned(
+                        right: 130,
+                        bottom: 0,
+                        child: DropdownButton(
+                          value: version,
+                          icon: Icon(Icons.arrow_downward),
+                          iconSize: 15,
+                          items: <String>['Words', 'Pictures', 'Words + Pictures']
+                            .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value, style: TextStyle(fontSize: 18)),
+                              );
+                            }).toList(),
+                          onChanged: (String newValue) {
+                            setState(() {
+                              version = newValue;
+                            });
+                          }
+                        )
+                      ),
+                      Positioned(
+                        right: 5,
+                        bottom: 1,
+                        child: ButtonTheme(
                           minWidth: 125.0,
                           height: 35.0,
                           child: new RaisedButton(
                             onPressed: () {
                               setState(() {
-                                
-                                //TODO
-
+                                if ((version == 'Pictures') || (version == "Words & Pictures")) {
+                                  runFutures = true;
+                                } else {
+                                  runFutures = false;
+                                }
                               });
                             },
                             color: Colors.indigo[800],
@@ -143,12 +227,13 @@ class _State extends State<MyApp> {
                             ),
                           )
                         ),
-                      ] // children
-                    )
-                  ) 
+                      ) 
+                    ]
+                  )
                 )
-              )
-            ] // children
+              ),
+              SizedBox(height: 10.0)
+            ] 
           )
         )
       )
@@ -160,16 +245,63 @@ class _State extends State<MyApp> {
         return new Container(
           decoration: BoxDecoration(
             border: Border.all(
-              color: spymaster == true ? colorList[index] : borderColorListWhiteforPlayers[index],
-              width: spymaster == true ? 10.0 : 0.0,
+              color: (spymaster == true || gameOver == true) ? colorList[index] : borderColorListWhiteforPlayers[index],
+              width: (spymaster == true || gameOver == true) ? 10.0 : 0.0,
             ),
           ),
           child: new InkWell(
             onTap: () {
-              setState(() {
-                colorListInteractive[index] = colorList[index];
-                blendModeListInteractive[index] = blendModeList[index];
-              });
+              if ((spymaster == false) && (gameOver == false)) {
+                setState(() {
+                  
+                  if (colorList[index] == Colors.blue) {
+                    if (colorListInteractive[index] != colorList[index]) {
+                      blueScoreCounter++;
+                    }
+                    if (currentTeam == "red") {
+                      currentTeam = "blue";
+                    }
+                  } else if (colorList[index] == Colors.red) {
+                    if (colorListInteractive[index] != colorList[index]) {
+                      redScoreCounter++;
+                    }
+                    if (currentTeam == "blue") {
+                      currentTeam = "red";
+                    }
+                  } else if (colorList[index] == Colors.brown[200]) {
+                      if (colorListInteractive[index] != colorList[index]) {
+                        if (currentTeam == "blue") {
+                          currentTeam = "red";
+                        } else if (currentTeam == "red") {
+                          currentTeam = "blue";
+                        }   
+                      }
+                  } else if (colorList[index] == Colors.grey[900]) {
+                    gameOver = true;
+                    if (currentTeam == "blue") {
+                      currentTeam = "red";
+                      winner = "Red";
+                    } else if (currentTeam == "red") {
+                      currentTeam = "blue";
+                      winner = "Blue";
+                    }
+                  }
+
+                  colorListInteractive[index] = colorList[index];
+                  blendModeListInteractive[index] = blendModeList[index];
+
+                  if (isGameOver() == true) {
+                    if (colorList[index] == Colors.blue) {
+                      winner = "blue";
+                    } else if (colorList[index] == Colors.red) {
+                      winner = "red";
+                    }
+
+                    gameOver = true;
+                    displayWinner = true;
+                  }
+                });
+              }
             },
             child: Image.network(data[index]['urls']['small'],
               fit: BoxFit.fill,
@@ -192,16 +324,18 @@ class _State extends State<MyApp> {
     firstColor = random.nextInt(2);
 
     if (firstColor == 0) {
+      blueFirst = true;
+      currentTeam = "blue";
       numBlue = 9; numRed = 8; numNeutral = 7; numDeath = 1;
     } else if (firstColor == 1) {
+      blueFirst = false;
+      currentTeam = "red";
       numBlue = 8; numRed = 9; numNeutral = 7; numDeath = 1;
     }
 
     while ((counterBlue < numBlue) || (counterRed < numRed) || (counterNeutral < counterNeutral) || (counterDeath < numDeath)) {
 
       randomPick = random.nextInt(4);
-
-      print(randomPick);
 
       if (randomPick == 0) {
         if (counterBlue < numBlue) {
@@ -229,4 +363,54 @@ class _State extends State<MyApp> {
     colorList.shuffle();
 
   }
+
+  bool isGameOver() {
+    if (blueFirst == true) {
+      if ((blueScoreCounter == 9) || (redScoreCounter == 8)) {
+        return true;
+      } 
+    } else {
+      if ((redScoreCounter == 9) || (blueScoreCounter == 8)) {
+        return true;
+      }
+    }
+
+    return false;
+
+  }
+
+  Widget _turnWidget() {
+    if (gameOver == true) {
+      return new Text("$winner wins!", style: TextStyle(color: _teamColor(), fontSize: 20));
+    } else {
+      return new ButtonTheme(
+        minWidth: 125.0,
+        height: 35.0,
+        child: new RaisedButton(
+          onPressed: () {
+            setState(() {
+              if (currentTeam == "blue") {
+                currentTeam = "red";
+              } else if (currentTeam == "red") {
+                currentTeam = "blue";
+              }         
+            });
+          },
+          color: Colors.grey[350],
+          child: new Text("End $currentTeam's turn",
+            style: TextStyle(fontSize: 20)
+          ),
+        )
+      );
+    }
+  }
+
+  Color _teamColor() {
+    if (currentTeam == "blue") {
+      return Colors.blue;
+    } else if (currentTeam == "red") {
+      return Colors.red;
+    }
+  }
+
 }
