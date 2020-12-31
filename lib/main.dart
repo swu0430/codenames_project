@@ -22,7 +22,7 @@ class _State extends State<MyApp> {
   static final String DEVELOPER_KEY = ApiDevKey.DEV_KEY;
   List<String> wordsListFull = new List<String>();
   List<String> wordsList = new List<String>();
-  List data;
+  List imageData;
   List colorListInteractive = new List<Color>(25);
   List colorList = new List<Color>();
   List blendModeListInteractive = new List<BlendMode>(25);
@@ -60,23 +60,32 @@ class _State extends State<MyApp> {
 
   Future<String> fetchImages() async {
     var fetchdata = await http.get('https://api.unsplash.com/photos/random?client_id=${DEVELOPER_KEY}&count=25');
-    setState(() {
-      data = json.decode(fetchdata.body);
-    });
+    imageData = json.decode(fetchdata.body);
     return 'Success';
   }
 
   @override
   Widget build(BuildContext context) {
+    if (runFutures == true) {
+      return FutureBuilder(
+        future: fetchImages(),
+        builder: (context, data) {
+          if (data.hasData == false) {
+            return Center(child: CircularProgressIndicator());
+          } else {
+            return gameBuild();
+          }
+        }
+      );
+    } else {
+      return gameBuild();
+    }
+  }
+
+  Widget gameBuild() {
     
     if (restart == true) {
-      
       _setFirstTeam();
-
-      if (runFutures == true) {
-        fetchImages();
-      }
-      
       wordsList = new List<String>();
       _wordList();
       colorList = new List<Color>();
@@ -373,7 +382,7 @@ class _State extends State<MyApp> {
   }
 
   Widget _buildTilePicture(index) {
-    return Image.network(data[index]['urls']['small'],
+    return Image.network(imageData[index]['urls']['small'],
       fit: BoxFit.fill,
       color: colorListInteractive[index],
       colorBlendMode: blendModeListInteractive[index]);
@@ -382,13 +391,13 @@ class _State extends State<MyApp> {
   void _wordList() {
     int wordIndex;
     int wordCounter = 0;
-
-    while (wordCounter < 25) {
-      wordIndex = random.nextInt(wordsListFull.length);
-      
-      if (wordsList.contains(wordsListFull[wordIndex]) == false) {
-        wordsList.add(wordsListFull[wordIndex]);
-        wordCounter++;
+    if (wordsListFull.length > 0) {
+      while (wordCounter < 25) {
+          wordIndex = random.nextInt(wordsListFull.length);
+        if (wordsList.contains(wordsListFull[wordIndex]) == false) {
+          wordsList.add(wordsListFull[wordIndex]);
+          wordCounter++;
+        }
       }
     }
   }
@@ -449,14 +458,10 @@ class _State extends State<MyApp> {
   bool isGameOver() {
     if (blueFirst == true) {
       if ((blueScoreCounter == 9) || (redScoreCounter == 8)) {
-        print(blueScoreCounter);
-        print(redScoreCounter);
         return true;
       } 
     } else if (blueFirst == false) {
       if ((redScoreCounter == 9) || (blueScoreCounter == 8)) {
-        print(blueScoreCounter);
-        print(redScoreCounter);
         return true;
       }
     } 
