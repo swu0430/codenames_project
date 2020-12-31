@@ -5,5 +5,6 @@ A fun personal project (still under development) to learn how to create a Flutte
 ## Resources:
 
 * Official Codenames Website - https://codenamesgame.com/
+* Word list - https://github.com/seanlyons/codenames/blob/master/wordlist.txt
 * Flutter SDK - https://flutter.dev/
 * Unsplash API (to generate photos for the picture versions) - https://unsplash.com/
