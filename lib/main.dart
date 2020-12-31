@@ -5,6 +5,8 @@ import 'dart:convert';
 import 'apikey.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math';
+import 'dart:async' show Future;
+import 'package:flutter/services.dart' show rootBundle;
 
 void main() {
   runApp(MyApp());
@@ -18,6 +20,8 @@ class MyApp extends StatefulWidget {
 class _State extends State<MyApp> {
 
   static final String DEVELOPER_KEY = ApiDevKey.DEV_KEY;
+  List<String> wordsListFull = new List<String>();
+  List<String> wordsList = new List<String>();
   List data;
   List colorListInteractive = new List<Color>(25);
   List colorList = new List<Color>();
@@ -25,8 +29,8 @@ class _State extends State<MyApp> {
   List blendModeList = new List<BlendMode>();
   List borderColorListWhiteforPlayers = new List<Color>();
   Random random = new Random();
-  int firstColor;
   bool spymaster = false;
+  bool restart = true;
   bool runFutures = true;
   int blueScoreCounter = 0;
   int redScoreCounter = 0;
@@ -36,20 +40,26 @@ class _State extends State<MyApp> {
   String currentTeam = "";
   bool gameOver = false;
   String version = "Pictures";
+  String versionTemp = "Pictures";
+  List<String> wordsPicturesRandomOrder = new List<String>();
 
   @override
   void initState() {
     super.initState();
-  
+    loadWords();
     for (int i = 0; i < 25; i++) {
       blendModeList.add(BlendMode.hardLight); 
       borderColorListWhiteforPlayers.add(Colors.white);
     }
   }
 
+  void loadWords() async {
+    String wordString = await rootBundle.loadString('assets/wordlist.txt');
+    LineSplitter.split(wordString).forEach((line) => wordsListFull.add(line));
+  }
+
   Future<String> fetchImages() async {
     var fetchdata = await http.get('https://api.unsplash.com/photos/random?client_id=${DEVELOPER_KEY}&count=25');
-
     setState(() {
       data = json.decode(fetchdata.body);
     });
@@ -58,21 +68,33 @@ class _State extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (runFutures == true) {
-      fetchImages();
+    
+    if (restart == true) {
+      
+      _setFirstTeam();
+
+      if (runFutures == true) {
+        fetchImages();
+      }
+      
+      wordsList = new List<String>();
+      _wordList();
+      colorList = new List<Color>();
       _colorList();
+      wordsPicturesRandomOrder = new List<String>();
+      _randomizeWordsPictures();
 
       colorListInteractive = new List<Color>(25);
       blendModeListInteractive = new List<BlendMode>(25);
       blueScoreCounter = 0;
       redScoreCounter = 0;
-      blueFirst = true;
       spymaster = false;
       gameOver = false;
       
+      restart = false;
       runFutures = false;
-
     }
+
     return MaterialApp(
       title:"Codenames - Play Online",
       theme: ThemeData(
@@ -105,7 +127,12 @@ class _State extends State<MyApp> {
                             children: <TextSpan>[
                               TextSpan(text: "$blueScoreCounter  ", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 20)),
                               TextSpan(text: "${String.fromCharCode(0x2014)}  ", style: TextStyle(color: Colors.black)),
-                              TextSpan(text: "$redScoreCounter", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 20)),
+                              TextSpan(text: "$redScoreCounter  ", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 20)),
+                              TextSpan(text: "(Goal: ", style: TextStyle(color: Colors.black, fontSize: 20)),
+                              TextSpan(text: (blueFirst == true) ? "9" : "8", style: TextStyle(color: Colors.blue, fontSize: 20)),
+                              TextSpan(text: " - ", style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 20)),
+                              TextSpan(text: (blueFirst == true) ? "8" : "9", style: TextStyle(color: Colors.red, fontSize: 20)),
+                              TextSpan(text: ")", style: TextStyle(color: Colors.black, fontSize: 20)),
                             ]
                           )
                         )
@@ -187,7 +214,7 @@ class _State extends State<MyApp> {
                         right: 130,
                         bottom: 0,
                         child: DropdownButton(
-                          value: version,
+                          value: versionTemp,
                           icon: Icon(Icons.arrow_downward),
                           iconSize: 15,
                           items: <String>['Words', 'Pictures', 'Words + Pictures']
@@ -199,7 +226,7 @@ class _State extends State<MyApp> {
                             }).toList(),
                           onChanged: (String newValue) {
                             setState(() {
-                              version = newValue;
+                              versionTemp = newValue;
                             });
                           }
                         )
@@ -213,6 +240,8 @@ class _State extends State<MyApp> {
                           child: new RaisedButton(
                             onPressed: () {
                               setState(() {
+                                version = versionTemp;
+                                restart = true;
                                 if ((version == 'Pictures') || (version == "Words & Pictures")) {
                                   runFutures = true;
                                 } else {
@@ -280,10 +309,10 @@ class _State extends State<MyApp> {
                     gameOver = true;
                     if (currentTeam == "blue") {
                       currentTeam = "red";
-                      winner = "Red";
+                      winner = "red";
                     } else if (currentTeam == "red") {
                       currentTeam = "blue";
-                      winner = "Blue";
+                      winner = "blue";
                     }
                   }
 
@@ -303,80 +332,135 @@ class _State extends State<MyApp> {
                 });
               }
             },
-            child: Image.network(data[index]['urls']['small'],
-              fit: BoxFit.fill,
-              color: colorListInteractive[index],
-              colorBlendMode: blendModeListInteractive[index],
+            child: _buildTile(index),
           )
-        )
-      );
+        );
     });
     return containers;
   }
 
-  void _colorList() {
+  Widget _buildTile(index) {
+    if (version == "Words") {
+        return _buildTileWord(index);
+    } else if (version == "Pictures") {
+        return _buildTilePicture(index);
+    } else if (version == "Words + Pictures") {
+        if (wordsPicturesRandomOrder[index] == "word") {
+          return _buildTileWord(index);
+        } else if (wordsPicturesRandomOrder[index] == "picture") {
+          return _buildTilePicture(index);
+        } 
+    }
+  }
 
-    int numBlue, numRed, numNeutral, numDeath;
-    int counterBlue = 0, counterRed = 0, counterNeutral = 0, counterDeath = 0;
+  Widget _buildTileWord(index) {
+    return Container(
+      decoration: BoxDecoration(
+        color: colorListInteractive[index],
+        border: Border.all(
+          color: Colors.black,
+          width: 1.0,
+        )
+      ),
+      child: Center(
+        child: Text(wordsList[index].toUpperCase(), style: TextStyle(
+        color: (colorListInteractive[index] != null) ? Colors.white : Colors.black, 
+        fontWeight: FontWeight.bold,
+        fontSize: 19)
+        )
+      )
+    );
+  }
 
+  Widget _buildTilePicture(index) {
+    return Image.network(data[index]['urls']['small'],
+      fit: BoxFit.fill,
+      color: colorListInteractive[index],
+      colorBlendMode: blendModeListInteractive[index]);
+  }
+
+  void _wordList() {
+    int wordIndex;
+    int wordCounter = 0;
+
+    while (wordCounter < 25) {
+      wordIndex = random.nextInt(wordsListFull.length);
+      
+      if (wordsList.contains(wordsListFull[wordIndex]) == false) {
+        wordsList.add(wordsListFull[wordIndex]);
+        wordCounter++;
+      }
+    }
+  }
+
+  void _setFirstTeam() {
     int randomPick;
-
-    firstColor = random.nextInt(2);
-
-    if (firstColor == 0) {
+    randomPick = random.nextInt(2);
+    if (randomPick == 0) {
       blueFirst = true;
       currentTeam = "blue";
-      numBlue = 9; numRed = 8; numNeutral = 7; numDeath = 1;
-    } else if (firstColor == 1) {
+    } else if (randomPick == 1) {
       blueFirst = false;
       currentTeam = "red";
-      numBlue = 8; numRed = 9; numNeutral = 7; numDeath = 1;
+    }
+  }
+
+  void _colorList() {
+
+    int numBlue, numRed, numNeutral, numAssassin;
+
+    if (blueFirst == true) {
+      numBlue = 9; numRed = 8; numNeutral = 7; numAssassin = 1;
+    } else {
+      numBlue = 8; numRed = 9; numNeutral = 7; numAssassin = 1;
     }
 
-    while ((counterBlue < numBlue) || (counterRed < numRed) || (counterNeutral < counterNeutral) || (counterDeath < numDeath)) {
-
-      randomPick = random.nextInt(4);
-
-      if (randomPick == 0) {
-        if (counterBlue < numBlue) {
-          colorList.add(Colors.blue);
-          counterBlue++;
-        }
-      } else if (randomPick == 1) {
-        if (counterRed < numRed) {
-          colorList.add(Colors.red);
-          counterRed++;
-        }
-      } else if (randomPick == 2) {
-        if (counterNeutral < numNeutral) {
-          colorList.add(Colors.brown[200]);
-          counterNeutral++;
-        }
-      } else if (randomPick == 3) {
-        if (counterDeath < numDeath) {
-          colorList.add(Colors.grey[900]);
-          counterDeath++;
-        }
-      }
+    for (int b = 0; b < numBlue; b++) {
+      colorList.add(Colors.blue);
+    }
+    for (int r = 0; r < numRed; r++) {
+      colorList.add(Colors.red);
+    }
+    for (int n = 0; n < numNeutral; n++) {
+      colorList.add(Colors.brown[200]);
+    }
+    for (int a = 0; a < numAssassin; a++) {
+      colorList.add(Colors.grey[900]);
     }
 
     colorList.shuffle();
 
   }
 
+  void _randomizeWordsPictures() {
+    int randomPick;
+    int counter = 0;
+    while (counter < 25) {
+      randomPick = random.nextInt(2);
+      if (randomPick == 0) {
+        wordsPicturesRandomOrder.add("word");
+      } else if (randomPick == 1) {
+        wordsPicturesRandomOrder.add("picture");
+      } 
+      counter++;
+    }
+  }
+
   bool isGameOver() {
     if (blueFirst == true) {
       if ((blueScoreCounter == 9) || (redScoreCounter == 8)) {
+        print(blueScoreCounter);
+        print(redScoreCounter);
         return true;
       } 
-    } else {
+    } else if (blueFirst == false) {
       if ((redScoreCounter == 9) || (blueScoreCounter == 8)) {
+        print(blueScoreCounter);
+        print(redScoreCounter);
         return true;
       }
-    }
-
+    } 
     return false;
-
   }
 
   Widget _turnWidget() {
