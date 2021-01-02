@@ -7,17 +7,68 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:math';
 import 'dart:async' show Future;
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:link/link.dart';
+import 'dart:async';
 
 void main() {
-  runApp(MyApp());
+  runApp(new MaterialApp(
+    home: new HomeScreen(),
+    routes: <String, WidgetBuilder>{
+      "playgame" : (BuildContext context) => new GameScreen(),
+    }
+  ));
 }
 
-class MyApp extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
   @override
-  _State createState() => _State();
+  _HomeState createState() => _HomeState();
+} 
+
+class _HomeState extends State<HomeScreen> {
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title:"Codenames - Play Online",
+      theme: ThemeData(
+        primaryColor: Colors.white,
+      ),
+      home: new Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text("CODENAMES", 
+            style: GoogleFonts.shojumaru(
+              fontSize: 24.0,
+            ), 
+          ),
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Center(
+                child: new RawMaterialButton(
+                  fillColor: Colors.blue[300],
+                  splashColor: Colors.redAccent,
+                  child: Text('PLAY', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+                  onPressed: () {
+                    Navigator.of(context).pushNamed("playgame");
+                  }
+                )
+              )
+            ]
+          )
+        )
+      )
+    );
+  }
 }
 
-class _State extends State<MyApp> {
+class GameScreen extends StatefulWidget {
+  @override
+  _GameState createState() => _GameState();
+ }
+
+class _GameState extends State<GameScreen> {
 
   static final String DEVELOPER_KEY = ApiDevKey.DEV_KEY;
   List<String> wordsListFull = new List<String>();
@@ -27,9 +78,11 @@ class _State extends State<MyApp> {
   List colorList = new List<Color>();
   List blendModeListInteractive = new List<BlendMode>(25);
   List blendModeList = new List<BlendMode>();
-  List borderColorListWhiteforPlayers = new List<Color>();
+  List borderColorListWhiteforOperatives = new List<Color>();
   Random random = new Random();
   bool spymaster = false;
+  bool spymasterEnableSwitch = false;
+  bool spymasterEnableSwitchTemp = false;
   bool restart = true;
   bool runFutures = true;
   int blueScoreCounter = 0;
@@ -39,9 +92,21 @@ class _State extends State<MyApp> {
   bool displayWinner = false;
   String currentTeam = "";
   bool gameOver = false;
-  String version = "Pictures";
-  String versionTemp = "Pictures";
+  String version = "Words";
+  String versionTemp = "Words";
   List<String> wordsPicturesRandomOrder = new List<String>();
+  Timer _timer;
+  int _timeLimitBlue;
+  int _timeLimitRed;
+  int _currentTime;
+  bool timerSwitchBlue = false;
+  bool timerSwitchTempBlue = false;
+  bool timerSwitchRed = false;
+  bool timerSwitchTempRed = false;
+  var timeSettingInputBlue = TextEditingController();
+  var timeSettingInputRed = TextEditingController();
+  bool errorTimeSettingInputBlue = false;
+  bool errorTimeSettingInputRed = false;
 
   @override
   void initState() {
@@ -49,7 +114,7 @@ class _State extends State<MyApp> {
     loadWords();
     for (int i = 0; i < 25; i++) {
       blendModeList.add(BlendMode.hardLight); 
-      borderColorListWhiteforPlayers.add(Colors.white);
+      borderColorListWhiteforOperatives.add(Colors.white);
     }
   }
 
@@ -102,6 +167,16 @@ class _State extends State<MyApp> {
       
       restart = false;
       runFutures = false;
+
+      if (currentTeam == "blue") {
+        if (timerSwitchBlue == true) {
+          startTimer(_timeLimitBlue);
+        }
+      } else if (currentTeam == "red") {
+        if (timerSwitchRed == true) {
+          startTimer(_timeLimitRed);
+        }
+      }
     }
 
     return MaterialApp(
@@ -111,12 +186,31 @@ class _State extends State<MyApp> {
       ),
       home: Scaffold(
         appBar: AppBar(
+          leading: GestureDetector(
+            child: new Icon(Icons.settings, color: Colors.grey[700]),
+            onTap: () => 
+              showDialog(context: context,
+                builder: (context) => _dialogBuilderSettings(context)
+              )
+          ),
           centerTitle: true,
           title: Text("CODENAMES: ${version.toUpperCase()}", 
             style: GoogleFonts.shojumaru(
               fontSize: 24.0,
-            ), //GoogleFonts
+            ),
           ),
+          actions: <Widget> [
+            Padding(
+              padding: EdgeInsets.only(right: 20),
+              child: GestureDetector(
+                child: new Icon(Icons.menu, color: Colors.grey[700]),
+                onTap: () =>
+                  showDialog(context: context,
+                    builder: (context) => _dialogBuilderRules(context)
+                  )
+              )
+            )
+          ]
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -135,7 +229,7 @@ class _State extends State<MyApp> {
                           text: TextSpan(
                             children: <TextSpan>[
                               TextSpan(text: "$blueScoreCounter  ", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 20)),
-                              TextSpan(text: "${String.fromCharCode(0x2014)}  ", style: TextStyle(color: Colors.black)),
+                              TextSpan(text: "${String.fromCharCode(0x2014)}  ", style: TextStyle(color: Colors.black, fontSize: 17)),
                               TextSpan(text: "$redScoreCounter  ", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 20)),
                               TextSpan(text: "(Goal: ", style: TextStyle(color: Colors.black, fontSize: 20)),
                               TextSpan(text: (blueFirst == true) ? "9" : "8", style: TextStyle(color: Colors.blue, fontSize: 20)),
@@ -146,10 +240,22 @@ class _State extends State<MyApp> {
                           )
                         )
                       ),
-                      Positioned(
-                        left: 325,
-                        bottom: 5, 
-                        child: new Text("$currentTeam's turn", style: TextStyle(color: _teamColor(), fontSize: 20))),
+                      Center(
+                        child: Padding(
+                          padding: EdgeInsets.only(bottom: 5),
+                          child: new RichText(
+                            text: TextSpan(
+                              children: <TextSpan>[
+                                TextSpan(text: "$currentTeam's turn", style: TextStyle(color: _teamColor(), fontSize: 20)),
+                                if (currentTeam == "blue") (
+                                  TextSpan(text: (timerSwitchBlue == true && gameOver == false) ? " (${_currentTime} sec)" : "", style: TextStyle(color: _teamColor(), fontWeight: FontWeight.bold, fontSize: 20))
+                                ) else if (currentTeam == "red")
+                                  TextSpan(text: (timerSwitchRed == true && gameOver == false) ? " (${_currentTime} sec)" : "", style: TextStyle(color: _teamColor(), fontWeight: FontWeight.bold, fontSize: 20))
+                              ]
+                            )
+                          )
+                        )
+                      ),
                       Positioned(
                         right: 5,
                         bottom: 0,
@@ -172,7 +278,32 @@ class _State extends State<MyApp> {
                   ),
                 ),
               ),
-              SizedBox(height: 5.0),
+              Center(
+                child: Container(
+                  height: 20,
+                  width: 740,
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        left: 5,
+                        child: Row( 
+                          children: [
+                            Text(((version == 'Pictures') || (version == "Words + Pictures")) ? "Source of images: " : "", 
+                              style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 15)
+                            ),
+                            Link(url: 'https://unsplash.com/', 
+                              child: Text(((version == 'Pictures') || (version == "Words + Pictures")) ? "https://unsplash.com/" : "",
+                                style: TextStyle(color: Colors.blue, fontStyle: FontStyle.italic, decoration: TextDecoration.underline, fontSize: 15), 
+                              )
+                            )
+                          ]
+                        )
+                      )
+                    ]
+                  )
+                )
+              ),
+              SizedBox(height: 3.0),
               Center(
                 child: Container(
                   height: 40,
@@ -193,7 +324,7 @@ class _State extends State<MyApp> {
                               });
                             },
                             color: Colors.grey[350],
-                            child: const Text('Player',
+                            child: const Text('Operative',
                               style: TextStyle(fontSize: 20)
                             ),
                           )
@@ -283,36 +414,48 @@ class _State extends State<MyApp> {
         return new Container(
           decoration: BoxDecoration(
             border: Border.all(
-              color: (spymaster == true || gameOver == true) ? colorList[index] : borderColorListWhiteforPlayers[index],
+              color: (spymaster == true || gameOver == true) ? colorList[index] : borderColorListWhiteforOperatives[index],
               width: (spymaster == true || gameOver == true) ? 10.0 : 0.0,
             ),
           ),
           child: new InkWell(
             onTap: () {
-              if ((spymaster == false) && (gameOver == false)) {
+              if (((spymaster == false || spymasterEnableSwitch == true) && (gameOver == false))) {
                 setState(() {
                   
                   if (colorList[index] == Colors.blue) {
                     if (colorListInteractive[index] != colorList[index]) {
                       blueScoreCounter++;
-                    }
-                    if (currentTeam == "red") {
-                      currentTeam = "blue";
+                      if (currentTeam == "red") {
+                        currentTeam = "blue";
+                        if(timerSwitchBlue == true) {
+                          startTimer(_timeLimitBlue);
+                        }
+                      }
                     }
                   } else if (colorList[index] == Colors.red) {
                     if (colorListInteractive[index] != colorList[index]) {
                       redScoreCounter++;
+                      if (currentTeam == "blue") {
+                        currentTeam = "red";
+                        if(timerSwitchRed == true) {
+                          startTimer(_timeLimitRed);
+                        }
+                      }
                     }
-                    if (currentTeam == "blue") {
-                      currentTeam = "red";
-                    }
-                  } else if (colorList[index] == Colors.brown[200]) {
+                  } else if (colorList[index] == Colors.brown[300]) {
                       if (colorListInteractive[index] != colorList[index]) {
                         if (currentTeam == "blue") {
                           currentTeam = "red";
+                          if (timerSwitchRed == true) {
+                            startTimer(_timeLimitRed);
+                          }
                         } else if (currentTeam == "red") {
                           currentTeam = "blue";
-                        }   
+                          if (timerSwitchBlue == true) {
+                            startTimer(_timeLimitBlue);
+                          }
+                        }
                       }
                   } else if (colorList[index] == Colors.grey[900]) {
                     gameOver = true;
@@ -328,13 +471,12 @@ class _State extends State<MyApp> {
                   colorListInteractive[index] = colorList[index];
                   blendModeListInteractive[index] = blendModeList[index];
 
-                  if (isGameOver() == true) {
+                  if (_isGameOver() == true) {
                     if (colorList[index] == Colors.blue) {
                       winner = "blue";
                     } else if (colorList[index] == Colors.red) {
                       winner = "red";
                     }
-
                     gameOver = true;
                     displayWinner = true;
                   }
@@ -431,7 +573,7 @@ class _State extends State<MyApp> {
       colorList.add(Colors.red);
     }
     for (int n = 0; n < numNeutral; n++) {
-      colorList.add(Colors.brown[200]);
+      colorList.add(Colors.brown[300]);
     }
     for (int a = 0; a < numAssassin; a++) {
       colorList.add(Colors.grey[900]);
@@ -455,7 +597,7 @@ class _State extends State<MyApp> {
     }
   }
 
-  bool isGameOver() {
+  bool _isGameOver() {
     if (blueFirst == true) {
       if ((blueScoreCounter == 9) || (redScoreCounter == 8)) {
         return true;
@@ -480,9 +622,15 @@ class _State extends State<MyApp> {
             setState(() {
               if (currentTeam == "blue") {
                 currentTeam = "red";
+                if(timerSwitchRed == true) {
+                  startTimer(_timeLimitRed);
+                }     
               } else if (currentTeam == "red") {
                 currentTeam = "blue";
-              }         
+                if(timerSwitchBlue == true) {
+                  startTimer(_timeLimitBlue);
+                }  
+              }
             });
           },
           color: Colors.grey[350],
@@ -500,6 +648,310 @@ class _State extends State<MyApp> {
     } else if (currentTeam == "red") {
       return Colors.red;
     }
+  }
+
+  bool isSwitched = false;
+
+  Widget _dialogBuilderSettings(BuildContext context) {
+    return StatefulBuilder(builder: (context, setState) {
+      return SimpleDialog(children: [
+        Align(
+          alignment: Alignment.topRight,
+          child: GestureDetector(
+            onTap: (){
+                Navigator.of(context).pop();
+            },
+            child: Align(
+                alignment: Alignment(0.95, 1),
+                child: Icon(Icons.close, color: Colors.black)
+            ),
+          ),
+        ),
+        Container(
+          height: 250,
+          width: 500,
+          child: Column(children: [
+            Center(child: Text("SETTINGS", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20))),
+            SizedBox(height: 20.0),
+            Container(
+              padding: EdgeInsets.only(left: 25.0),
+              child: Row(children: [
+                Text("Blue Timer", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+                SizedBox(width: 15.0),
+                Switch(
+                  value: timerSwitchTempBlue,
+                  onChanged: (bool newValue) {
+                    setState(() {
+                      timerSwitchTempBlue = newValue;
+                    });
+                  },
+                  activeTrackColor: Colors.lightBlueAccent,
+                  activeColor: Colors.blue,
+                ), 
+                SizedBox(width: 15.0),
+                Container(
+                  height: 30.0, 
+                  width: 50.0, 
+                  child: TextField(
+                    textAlign: TextAlign.center,
+                    controller: timeSettingInputBlue, 
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.only(bottom: 15.0),
+                    )
+                  )
+                ),
+                Text((timerSwitchTempBlue == true && errorTimeSettingInputBlue == true) ? "!" : "", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18)),
+                SizedBox(width: 5.0),
+                Text(" sec", style: TextStyle(color: Colors.black, fontSize: 18)),
+              ])
+            ),
+            Container(
+              padding: EdgeInsets.only(left: 25.0),
+              child: Row(children: [
+                Text("Red Timer", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+                SizedBox(width: 15.0),
+                Switch(
+                  value: timerSwitchTempRed,
+                  onChanged: (bool newValue) {
+                    setState(() {
+                      timerSwitchTempRed = newValue;
+                    });
+                  },
+                  activeTrackColor: Colors.redAccent,
+                  activeColor: Colors.red,
+                ), 
+                SizedBox(width: 15.0),
+                Container(
+                  height: 30.0, 
+                  width: 50.0, 
+                  child: TextField(
+                    textAlign: TextAlign.center,
+                    controller: timeSettingInputRed, 
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.only(bottom: 15.0),
+                    )
+                  )
+                ),
+                Text((timerSwitchTempRed == true && errorTimeSettingInputRed == true) ? "!" : "", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18)),
+                SizedBox(width: 5.0),
+                Text(" sec", style: TextStyle(color: Colors.black, fontSize: 18)),
+              ])
+            ),
+            Container(
+              padding: EdgeInsets.only(left: 25.0),
+              child: Row(children: [
+                Text("Spymaster Guessing", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+                SizedBox(width: 15.0),
+                Switch(
+                  value: spymasterEnableSwitchTemp,
+                  onChanged: (bool newValue) {
+                    setState(() {
+                      spymasterEnableSwitchTemp = newValue;
+                    });
+                  },
+                  activeTrackColor: Colors.grey,
+                  activeColor: Colors.grey[800],
+                ), 
+              ])
+            ),
+            SizedBox(height: 20),
+            Center(child: new RawMaterialButton(
+              fillColor: Colors.blue[800],
+              splashColor: Colors.blue[900],
+              child: Text('Apply', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+              onPressed: () {
+                
+                if (timerSwitchTempBlue == false) {
+                  errorTimeSettingInputBlue = false;
+                } else {
+                  try {
+                    _timeLimitBlue = int.parse(timeSettingInputBlue.text);
+                    errorTimeSettingInputBlue = false;
+                  } catch (e) {
+                    setState(() {
+                      errorTimeSettingInputBlue = true;
+                    });
+                  }
+                } 
+
+                if (timerSwitchTempRed == false) {
+                  errorTimeSettingInputRed = false;
+                } else {
+                  try {
+                    _timeLimitRed = int.parse(timeSettingInputRed.text);
+                    errorTimeSettingInputRed = false;
+                  } catch (e) {
+                    setState(() {
+                      errorTimeSettingInputRed = true;
+                    });
+                  }
+                } 
+                
+                if (errorTimeSettingInputBlue == false && errorTimeSettingInputRed == false) {
+                  Navigator.of(context).pop();
+                  setState(() {
+                    timerSwitchBlue = timerSwitchTempBlue;
+                    timerSwitchRed = timerSwitchTempRed;
+                    spymasterEnableSwitch = spymasterEnableSwitchTemp;
+                    if (currentTeam == "blue" && timerSwitchBlue == true) {
+                      _currentTime = _timeLimitBlue;
+                      startTimer(_timeLimitBlue);
+                    } else if (currentTeam == "red" && timerSwitchRed == true) {
+                      _currentTime = _timeLimitRed;
+                      startTimer(_timeLimitRed);
+                    }
+                    errorTimeSettingInputBlue = false;
+                    errorTimeSettingInputRed = false;
+                  });
+                }
+              }
+            ))
+          ])
+        )
+      ]);
+    });
+  }
+
+  Widget _dialogBuilderRules(BuildContext context) {
+    return SimpleDialog(children: [
+        Align(
+          alignment: Alignment.topRight,
+          child: GestureDetector(
+            onTap: (){
+                Navigator.of(context).pop();
+            },
+            child: Align(
+                alignment: Alignment(0.95, 1),
+                child: Icon(Icons.close, color: Colors.black)
+            ),
+          ),
+        ),
+        Container(
+          height: 650,
+          width: 1000,
+          child: Column(children: [
+            Center(child: Text("TYPICAL RULES", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20))),
+            SizedBox(height: 20.0),
+            Container(
+              padding: EdgeInsets.only(left: 25.0),
+              child: Column(children: [
+                Align(alignment: Alignment.centerLeft, 
+                  child: Text("Setup", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, decoration: TextDecoration.underline, fontSize: 20))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('    ${String.fromCharCode(0x2014)} Players self-organize into 2 teams (1 red team and 1 blue team).',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('    ${String.fromCharCode(0x2014)} Each team selects one Spymaster. The Spymaster clicks the "Spymaster" tab on the bottom left of the game screen.',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('    ${String.fromCharCode(0x2014)} The rest of the players on each team are Operatives. They remain on the "Operative" tab for the whole game.',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('    ${String.fromCharCode(0x2014)} The top left of the game screen indicates the score for each team.',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('    ${String.fromCharCode(0x2014)} The top center of the game screen indicates at the top which team\'s turn it is.',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('    ${String.fromCharCode(0x2014)} To create a timer for each team\'s turn, adjust the game settings in the top left corner of screen.',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+
+                SizedBox(height: 20.0),
+
+                Align(alignment: Alignment.centerLeft, 
+                  child: Text("Gameplay", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, decoration: TextDecoration.underline, fontSize: 20))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('    ${String.fromCharCode(0x2014)} Each team\'s turn consists of two phases:',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('             (1) Spymaster gives a clue consisting of one word and one number.',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('             (2) Operatives work together to try guessing (one at a time) the words/pictures associated with the word clue.',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('    ${String.fromCharCode(0x2014)} Outside of these clues at the start of each turn, the Spymaster should not communicate with anyone.',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('    ${String.fromCharCode(0x2014)} The Operatives have up to (number + 1) attempts to guess.',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('    ${String.fromCharCode(0x2014)} If the Operatives correctly click a word/picture, they continue guessing.',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('    ${String.fromCharCode(0x2014)} If the Operatives click a wrong word/picture (Neutral or opposite team\'s), their turn immediately ends.',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('    ${String.fromCharCode(0x2014)} If the Operatives ever click the Assassin word/picture, that team automatically loses!',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('    ${String.fromCharCode(0x2014)} At any point during a team\'s turn, the Operatives have the option to end their turn.',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+
+                SizedBox(height: 20.0),
+
+                Align(alignment: Alignment.centerLeft, 
+                  child: Text("End of Game", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, decoration: TextDecoration.underline, fontSize: 20))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('    ${String.fromCharCode(0x2014)} Unless the Assassin word/picture is ever guessed, the first team to guess all their words and/or pictures wins!',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('    ${String.fromCharCode(0x2014)} The team that goes first has 9 words/pictures to guess, while the secnod team has 8.',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('    ${String.fromCharCode(0x2014)} For more of a challenge, try playing the "Pictures" or "Pictures + Words" versions.',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('    ${String.fromCharCode(0x2014)} To start a new game, simply select the game version and click "Next Game" at the bottom right of the game screen.',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),   
+
+                SizedBox(height: 40.0),
+                
+                Row(children: [
+                  Text('Special thanks to ', style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 18)),
+                  Link(url: 'https://www.horsepaste.com/', 
+                    child: Text('https://www.horsepaste.com/',
+                      style: TextStyle(color: Colors.blue, fontStyle: FontStyle.italic, decoration: TextDecoration.underline, fontSize: 18), 
+                    )
+                  ),
+                  Text(' for the inspiration and ideas for formatting behind this website!', style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 18)),
+                ])
+              ])
+            )
+          ])
+        )
+    ]);
+  }
+
+  void startTimer(int timeLimit) {
+    
+    const oneSec = const Duration(seconds: 1);
+    
+    if (_timer != null) {
+      _timer.cancel();
+      _currentTime = timeLimit;
+    }
+
+    _timer = new Timer.periodic(
+      oneSec,
+      (Timer timer) {
+        if (_currentTime == 0) {
+          setState(() {
+            timer.cancel();
+          });
+        } else {
+          setState(() {
+            _currentTime--;
+          });
+        }
+      }
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
 }
