@@ -50,10 +50,10 @@ class _HomeState extends State<HomeScreen> {
         ),
         body: Column(
           children: <Widget>[
-            SizedBox(height: 100),
+            SizedBox(height: 125),
             Center(child: Text("Play Codenames online - Words, Pictures, or both mixed together!", 
               style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 35))),
-            SizedBox(height: 80),
+            SizedBox(height: 150),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -234,7 +234,9 @@ class _GameState extends State<GameScreen> {
         child: FutureBuilder(
           future: fetchImages(),
           builder: (context, data) {
-            if (data.hasData == false) {
+            //Needs more testing, but this new line appears to better than "if (data.hasData == false) {" which sometimes can cause "Index Out of Range" issues
+            //the Unsplash API image list calls
+            if (data.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
             } else {         
               return gameBuild();
@@ -267,30 +269,23 @@ class _GameState extends State<GameScreen> {
       redScoreCounter = 0;
       spymaster = false;
       gameOver = false;
-      
-      timerSwitchBlue = false;
-      timerSwitchTempBlue = false;
-      timerSwitchRed = false;
-      timerSwitchTempRed = false;
 
       restart = false;
       runFutures = false;
 
-/*       //Having trouble figuring out a way to restart the timer on a new game because can't call setState (see the startTimer method) 
-      //within FutureBuilder for the "Pictures" and "Pictures + Words" versions (the "Words" only game version works). The following
-      //error message comes up: "setState() or markNeededBuild() called during build. This Gamescreen widget cannot be marked as
-      //needing to build because the framework is already in the process of building widgets..." As a result, for now, cancelling the
-      //timer reset when a new game is started, meaning the players will have to toggle the timer settings again at the start of each
-      //new game.
       if (currentTeam == "blue") {
         if (timerSwitchBlue == true) {
-          startTimer(_minuteLimitBlue * 60 + _secondLimitBlue);
+          _currentTime = _minuteLimitBlue * 60 + _secondLimitBlue;
+          _currentMinutesRemaining = _currentTime ~/ 60;
+          _currentSecondsRemaining = _currentTime % 60;
         }
       } else if (currentTeam == "red") {
         if (timerSwitchRed == true) {
-          startTimer(_minuteLimitRed * 60 + _secondLimitRed);
+          _currentTime = _minuteLimitRed * 60 + _secondLimitRed;
+          _currentMinutesRemaining = _currentTime ~/ 60;
+          _currentSecondsRemaining = _currentTime % 60;
         }
-      }  */
+      } 
     }
 
     return MaterialApp(
@@ -1171,11 +1166,9 @@ class _GameState extends State<GameScreen> {
       _timer.cancel();
     }
 
-    setState(() {
       _currentTime = timeLimit;
       _currentMinutesRemaining = _currentTime ~/ 60;
       _currentSecondsRemaining = _currentTime % 60;
-    });
 
     _timer = new Timer.periodic(
       oneSec,
