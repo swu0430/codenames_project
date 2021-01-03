@@ -11,10 +11,12 @@ import 'package:link/link.dart';
 import 'dart:async';
 
 void main() {
+  String version;
+
   runApp(new MaterialApp(
     home: new HomeScreen(),
     routes: <String, WidgetBuilder>{
-      "playgame" : (BuildContext context) => new GameScreen(),
+      "playgame" : (BuildContext context) => new GameScreen(version: version),
     }
   ));
 }
@@ -25,38 +27,115 @@ class HomeScreen extends StatefulWidget {
 } 
 
 class _HomeState extends State<HomeScreen> {
+  String version = "Words"; 
+  var roomID = TextEditingController()..text = "Some Room ID";
 
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title:"Codenames - Play Online",
+      title:"Codenames - Words & Pictures",
       theme: ThemeData(
         primaryColor: Colors.white,
       ),
       home: new Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.black,
           centerTitle: true,
           title: Text("CODENAMES", 
             style: GoogleFonts.shojumaru(
+              color: Colors.white,
               fontSize: 24.0,
             ), 
           ),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Center(
-                child: new RawMaterialButton(
+        body: Column(
+          children: <Widget>[
+            SizedBox(height: 100),
+            Center(child: Text("Play Codenames online - Words, Pictures, or both mixed together!", 
+              style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 35))),
+            SizedBox(height: 80),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.arrow_forward_rounded),
+                SizedBox(width: 10),
+                Text("Start a new game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 30)),
+              ],
+            ),
+            SizedBox(height: 15),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                DropdownButton(
+                  value: version,
+                  icon: Icon(Icons.arrow_downward),
+                  iconSize: 20,
+                  items: <String>['Words', 'Pictures', 'Words + Pictures']
+                    .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value, style: TextStyle(fontSize: 20)),
+                      );
+                    }).toList(),
+                  onChanged: (String newValue) {
+                    setState(() {
+                      version = newValue;
+                    });
+                  }
+                ),
+                SizedBox(height: 20, width: 15),
+                RawMaterialButton(
                   fillColor: Colors.blue[300],
-                  splashColor: Colors.redAccent,
-                  child: Text('PLAY', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+                  splashColor: Colors.blueAccent,
+                  child: Text('Play', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 20)),
                   onPressed: () {
-                    Navigator.of(context).pushNamed("playgame");
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
+                    //Navigator.of(context).pushNamed("playgame");
                   }
                 )
-              )
-            ]
-          )
+            ]),
+            SizedBox(height: 80),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.arrow_forward_rounded),
+                SizedBox(width: 10),
+                Text("Join an existing game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 30)),
+              ],
+            ),
+            SizedBox(height: 15),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 50.0, 
+                  width: 300.0, 
+                  child: TextField(
+                    textAlign: TextAlign.center,
+                    controller: roomID, 
+                    decoration: InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 3.0)
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black, width: 3.0)
+                      ),
+                      contentPadding: EdgeInsets.only(bottom: 15.0),
+                    )
+                  )
+                ),
+                SizedBox(height: 20, width: 15),
+                RawMaterialButton(
+                  fillColor: Colors.red,
+                  splashColor: Colors.redAccent,
+                  child: Text('Join', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 20)),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
+                    //Navigator.of(context).pushNamed("playgame");
+                  }
+                )
+            ]),
+          ]
         )
       )
     );
@@ -64,8 +143,11 @@ class _HomeState extends State<HomeScreen> {
 }
 
 class GameScreen extends StatefulWidget {
+  final String version;
+  GameScreen({Key key, @required this.version}) : super(key: key);
+
   @override
-  _GameState createState() => _GameState();
+  _GameState createState() => _GameState(this.version);
  }
 
 class _GameState extends State<GameScreen> {
@@ -94,8 +176,8 @@ class _GameState extends State<GameScreen> {
   bool displayWinner = false;
   String currentTeam = "";
   bool gameOver = false;
-  String version = "Words";
-  String versionTemp = "Words";
+  String version;
+  String versionTemp;
   List<String> wordsPicturesRandomOrder = new List<String>();
   Timer _timer;
   int _minuteLimitBlue;
@@ -117,6 +199,11 @@ class _GameState extends State<GameScreen> {
   bool errorSecondSettingInputBlue = false;
   bool errorMinuteSettingInputRed = false;
   bool errorSecondSettingInputRed = false;
+
+   _GameState(version) {
+    this.version = version;
+    this.versionTemp = version;
+  } 
 
   @override
   void initState() {
@@ -196,16 +283,19 @@ class _GameState extends State<GameScreen> {
     }
 
     return MaterialApp(
-      title:"Codenames - Play Online",
+      title:"Codenames - Words & Pictures",
       theme: ThemeData(
         primaryColor: Colors.white,
       ),
       home: Scaffold(
         drawer: MenuDrawer(),
         appBar: AppBar(
+          iconTheme: IconThemeData(color: Colors.white),
+          backgroundColor: Colors.black, 
           centerTitle: true,
           title: Text("CODENAMES: ${version.toUpperCase()}", 
             style: GoogleFonts.shojumaru(
+              color: Colors.white,
               fontSize: 24.0,
             ),
           ),
@@ -612,7 +702,7 @@ class _GameState extends State<GameScreen> {
       return new Text("$winner wins!", style: TextStyle(color: _teamColor(), fontSize: 20));
     } else {
       return new ButtonTheme(
-        minWidth: 125.0,
+        minWidth: 130.0,
         height: 35.0,
         child: new RaisedButton(
           onPressed: () {
@@ -631,8 +721,9 @@ class _GameState extends State<GameScreen> {
             });
           },
           color: Colors.grey[350],
-          child: new Text("End $currentTeam's turn",
-            style: TextStyle(fontSize: 20)
+          child: Container(
+            margin: const EdgeInsets.only(top: 5.0),
+            child: new Text("End $currentTeam's turn", style: TextStyle(fontSize: 20))
           ),
         )
       );
