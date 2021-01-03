@@ -236,7 +236,7 @@ class _GameState extends State<GameScreen> {
           builder: (context, data) {
             if (data.hasData == false) {
               return Center(child: CircularProgressIndicator());
-            } else {
+            } else {         
               return gameBuild();
             }
           }
@@ -268,9 +268,20 @@ class _GameState extends State<GameScreen> {
       spymaster = false;
       gameOver = false;
       
+      timerSwitchBlue = false;
+      timerSwitchTempBlue = false;
+      timerSwitchRed = false;
+      timerSwitchTempRed = false;
+
       restart = false;
       runFutures = false;
 
+/*       //Having trouble figuring out a way to restart the timer on a new game because can't call setState (see the startTimer method) 
+      //within FutureBuilder for the "Pictures" and "Pictures + Words" versions (the "Words" only game version works). The following
+      //error message comes up: "setState() or markNeededBuild() called during build. This Gamescreen widget cannot be marked as
+      //needing to build because the framework is already in the process of building widgets..." As a result, for now, cancelling the
+      //timer reset when a new game is started, meaning the players will have to toggle the timer settings again at the start of each
+      //new game.
       if (currentTeam == "blue") {
         if (timerSwitchBlue == true) {
           startTimer(_minuteLimitBlue * 60 + _secondLimitBlue);
@@ -279,7 +290,7 @@ class _GameState extends State<GameScreen> {
         if (timerSwitchRed == true) {
           startTimer(_minuteLimitRed * 60 + _secondLimitRed);
         }
-      }
+      }  */
     }
 
     return MaterialApp(
@@ -1152,10 +1163,6 @@ class _GameState extends State<GameScreen> {
     ]);
   }
                 
- 
-   
-
-
   void startTimer(int timeLimit) {
     
     const oneSec = const Duration(seconds: 1);
