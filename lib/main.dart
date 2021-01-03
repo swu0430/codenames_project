@@ -28,7 +28,7 @@ class _HomeState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return new MaterialApp(
       title:"Codenames - Play Online",
       theme: ThemeData(
         primaryColor: Colors.white,
@@ -83,6 +83,8 @@ class _GameState extends State<GameScreen> {
   bool spymaster = false;
   bool spymasterEnableSwitch = false;
   bool spymasterEnableSwitchTemp = false;
+  bool enforceTimersSwitch = false;
+  bool enforceTimersSwitchTemp = false;
   bool restart = true;
   bool runFutures = true;
   int blueScoreCounter = 0;
@@ -96,17 +98,25 @@ class _GameState extends State<GameScreen> {
   String versionTemp = "Words";
   List<String> wordsPicturesRandomOrder = new List<String>();
   Timer _timer;
-  int _timeLimitBlue;
-  int _timeLimitRed;
+  int _minuteLimitBlue;
+  int _secondLimitBlue;
+  int _minuteLimitRed;
+  int _secondLimitRed;
   int _currentTime;
+  int _currentMinutesRemaining;
+  int _currentSecondsRemaining;
   bool timerSwitchBlue = false;
   bool timerSwitchTempBlue = false;
   bool timerSwitchRed = false;
   bool timerSwitchTempRed = false;
-  var timeSettingInputBlue = TextEditingController();
-  var timeSettingInputRed = TextEditingController();
-  bool errorTimeSettingInputBlue = false;
-  bool errorTimeSettingInputRed = false;
+  var minuteSettingInputBlue = TextEditingController()..text = '2';
+  var secondSettingInputBlue = TextEditingController()..text = '0';
+  var minuteSettingInputRed = TextEditingController()..text = '2';
+  var secondSettingInputRed = TextEditingController()..text = '0';
+  bool errorMinuteSettingInputBlue = false;
+  bool errorSecondSettingInputBlue = false;
+  bool errorMinuteSettingInputRed = false;
+  bool errorSecondSettingInputRed = false;
 
   @override
   void initState() {
@@ -132,18 +142,24 @@ class _GameState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     if (runFutures == true) {
-      return FutureBuilder(
-        future: fetchImages(),
-        builder: (context, data) {
-          if (data.hasData == false) {
-            return Center(child: CircularProgressIndicator());
-          } else {
-            return gameBuild();
+      return new WillPopScope(
+        onWillPop: () async => Navigator.push(context, MaterialPageRoute(builder: (context) => new HomeScreen())),
+        child: FutureBuilder(
+          future: fetchImages(),
+          builder: (context, data) {
+            if (data.hasData == false) {
+              return Center(child: CircularProgressIndicator());
+            } else {
+              return gameBuild();
+            }
           }
-        }
+        )
       );
     } else {
-      return gameBuild();
+      return new WillPopScope(
+        onWillPop: () async => Navigator.push(context, MaterialPageRoute(builder: (context) => new HomeScreen())),
+        child: gameBuild()
+      );
     }
   }
 
@@ -170,11 +186,11 @@ class _GameState extends State<GameScreen> {
 
       if (currentTeam == "blue") {
         if (timerSwitchBlue == true) {
-          startTimer(_timeLimitBlue);
+          startTimer(_minuteLimitBlue * 60 + _secondLimitBlue);
         }
       } else if (currentTeam == "red") {
         if (timerSwitchRed == true) {
-          startTimer(_timeLimitRed);
+          startTimer(_minuteLimitRed * 60 + _secondLimitRed);
         }
       }
     }
@@ -185,32 +201,14 @@ class _GameState extends State<GameScreen> {
         primaryColor: Colors.white,
       ),
       home: Scaffold(
+        drawer: MenuDrawer(),
         appBar: AppBar(
-          leading: GestureDetector(
-            child: new Icon(Icons.settings, color: Colors.grey[700]),
-            onTap: () => 
-              showDialog(context: context,
-                builder: (context) => _dialogBuilderSettings(context)
-              )
-          ),
           centerTitle: true,
           title: Text("CODENAMES: ${version.toUpperCase()}", 
             style: GoogleFonts.shojumaru(
               fontSize: 24.0,
             ),
           ),
-          actions: <Widget> [
-            Padding(
-              padding: EdgeInsets.only(right: 20),
-              child: GestureDetector(
-                child: new Icon(Icons.menu, color: Colors.grey[700]),
-                onTap: () =>
-                  showDialog(context: context,
-                    builder: (context) => _dialogBuilderRules(context)
-                  )
-              )
-            )
-          ]
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -247,10 +245,9 @@ class _GameState extends State<GameScreen> {
                             text: TextSpan(
                               children: <TextSpan>[
                                 TextSpan(text: "$currentTeam's turn", style: TextStyle(color: _teamColor(), fontSize: 20)),
-                                if (currentTeam == "blue") (
-                                  TextSpan(text: (timerSwitchBlue == true && gameOver == false) ? " (${_currentTime} sec)" : "", style: TextStyle(color: _teamColor(), fontWeight: FontWeight.bold, fontSize: 20))
-                                ) else if (currentTeam == "red")
-                                  TextSpan(text: (timerSwitchRed == true && gameOver == false) ? " (${_currentTime} sec)" : "", style: TextStyle(color: _teamColor(), fontWeight: FontWeight.bold, fontSize: 20))
+                                TextSpan(text: (currentTimerSwitch() == true && gameOver == false) ? " (${_currentMinutesRemaining}:" 
+                                  + ((_currentSecondsRemaining < 10) ? "0" : "") + "${_currentSecondsRemaining})" : "", 
+                                  style: TextStyle(color: _teamColor(), fontWeight: FontWeight.bold, fontSize: 20))
                               ]
                             )
                           )
@@ -429,7 +426,7 @@ class _GameState extends State<GameScreen> {
                       if (currentTeam == "red") {
                         currentTeam = "blue";
                         if(timerSwitchBlue == true) {
-                          startTimer(_timeLimitBlue);
+                          startTimer(_minuteLimitBlue * 60 + _secondLimitBlue);
                         }
                       }
                     }
@@ -439,7 +436,7 @@ class _GameState extends State<GameScreen> {
                       if (currentTeam == "blue") {
                         currentTeam = "red";
                         if(timerSwitchRed == true) {
-                          startTimer(_timeLimitRed);
+                          startTimer(_minuteLimitRed * 60 + _secondLimitRed);
                         }
                       }
                     }
@@ -448,12 +445,12 @@ class _GameState extends State<GameScreen> {
                         if (currentTeam == "blue") {
                           currentTeam = "red";
                           if (timerSwitchRed == true) {
-                            startTimer(_timeLimitRed);
+                            startTimer(_minuteLimitRed * 60 + _secondLimitRed);
                           }
                         } else if (currentTeam == "red") {
                           currentTeam = "blue";
                           if (timerSwitchBlue == true) {
-                            startTimer(_timeLimitBlue);
+                            startTimer(_minuteLimitBlue * 60 + _secondLimitBlue);
                           }
                         }
                       }
@@ -623,12 +620,12 @@ class _GameState extends State<GameScreen> {
               if (currentTeam == "blue") {
                 currentTeam = "red";
                 if(timerSwitchRed == true) {
-                  startTimer(_timeLimitRed);
+                  startTimer(_minuteLimitRed * 60 + _secondLimitRed);
                 }     
               } else if (currentTeam == "red") {
                 currentTeam = "blue";
                 if(timerSwitchBlue == true) {
-                  startTimer(_timeLimitBlue);
+                  startTimer(_minuteLimitBlue * 60 + _secondLimitBlue);
                 }  
               }
             });
@@ -650,166 +647,84 @@ class _GameState extends State<GameScreen> {
     }
   }
 
-  bool isSwitched = false;
+  Widget MenuDrawer() {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          ListTile(
+            leading: Icon(Icons.link, color: Colors.grey[700]),
+            title: Text('Room Link'),
+            onTap: () {
+              showDialog(context: context,
+                builder: (context) => _dialogBuilderRoomLink(context)
+              );              
+            }
+          ),
+          ListTile(
+            leading: Icon(Icons.menu_book, color: Colors.grey[700]),
+            title: Text('How to Play'),
+            onTap: () {
+              showDialog(context: context,
+                builder: (context) => _dialogBuilderRules(context)
+              );
+            }
+          ),
+          ListTile(
+            leading: Icon(Icons.settings, color: Colors.grey[700]),
+            title: Text('Settings'),
+            onTap: () {
+              showDialog(context: context,
+                builder: (context) => _dialogBuilderSettings(context)
+              );
+            }              
+          ),
+          ListTile(
+            leading: Icon(Icons.assignment_outlined, color: Colors.grey[700]),
+            title: Text('Notes'),
+            onTap: () {
+              showDialog(context: context,
+                builder: (context) => _dialogBuilderNotes(context)
+              );
+            }              
+          ),
+        ] 
+      )
+    );
+  }
 
-  Widget _dialogBuilderSettings(BuildContext context) {
-    return StatefulBuilder(builder: (context, setState) {
-      return SimpleDialog(children: [
-        Align(
-          alignment: Alignment.topRight,
-          child: GestureDetector(
-            onTap: (){
-                Navigator.of(context).pop();
-            },
-            child: Align(
-                alignment: Alignment(0.95, 1),
-                child: Icon(Icons.close, color: Colors.black)
-            ),
+  Widget _dialogBuilderRoomLink(BuildContext context) {
+    return SimpleDialog(children: [
+      Align(
+        alignment: Alignment.topRight,
+        child: GestureDetector(
+          onTap: (){
+              Navigator.of(context).pop();
+          },
+          child: Align(
+              alignment: Alignment(0.95, 1),
+              child: Icon(Icons.close, color: Colors.black)
           ),
         ),
-        Container(
-          height: 250,
-          width: 500,
-          child: Column(children: [
-            Center(child: Text("SETTINGS", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20))),
-            SizedBox(height: 20.0),
-            Container(
-              padding: EdgeInsets.only(left: 25.0),
-              child: Row(children: [
-                Text("Blue Timer", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
-                SizedBox(width: 15.0),
-                Switch(
-                  value: timerSwitchTempBlue,
-                  onChanged: (bool newValue) {
-                    setState(() {
-                      timerSwitchTempBlue = newValue;
-                    });
-                  },
-                  activeTrackColor: Colors.lightBlueAccent,
-                  activeColor: Colors.blue,
-                ), 
-                SizedBox(width: 15.0),
-                Container(
-                  height: 30.0, 
-                  width: 50.0, 
-                  child: TextField(
-                    textAlign: TextAlign.center,
-                    controller: timeSettingInputBlue, 
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.only(bottom: 15.0),
-                    )
-                  )
-                ),
-                Text((timerSwitchTempBlue == true && errorTimeSettingInputBlue == true) ? "!" : "", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18)),
-                SizedBox(width: 5.0),
-                Text(" sec", style: TextStyle(color: Colors.black, fontSize: 18)),
-              ])
-            ),
-            Container(
-              padding: EdgeInsets.only(left: 25.0),
-              child: Row(children: [
-                Text("Red Timer", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
-                SizedBox(width: 15.0),
-                Switch(
-                  value: timerSwitchTempRed,
-                  onChanged: (bool newValue) {
-                    setState(() {
-                      timerSwitchTempRed = newValue;
-                    });
-                  },
-                  activeTrackColor: Colors.redAccent,
-                  activeColor: Colors.red,
-                ), 
-                SizedBox(width: 15.0),
-                Container(
-                  height: 30.0, 
-                  width: 50.0, 
-                  child: TextField(
-                    textAlign: TextAlign.center,
-                    controller: timeSettingInputRed, 
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.only(bottom: 15.0),
-                    )
-                  )
-                ),
-                Text((timerSwitchTempRed == true && errorTimeSettingInputRed == true) ? "!" : "", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18)),
-                SizedBox(width: 5.0),
-                Text(" sec", style: TextStyle(color: Colors.black, fontSize: 18)),
-              ])
-            ),
-            Container(
-              padding: EdgeInsets.only(left: 25.0),
-              child: Row(children: [
-                Text("Spymaster Guessing", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
-                SizedBox(width: 15.0),
-                Switch(
-                  value: spymasterEnableSwitchTemp,
-                  onChanged: (bool newValue) {
-                    setState(() {
-                      spymasterEnableSwitchTemp = newValue;
-                    });
-                  },
-                  activeTrackColor: Colors.grey,
-                  activeColor: Colors.grey[800],
-                ), 
-              ])
-            ),
-            SizedBox(height: 20),
-            Center(child: new RawMaterialButton(
-              fillColor: Colors.blue[800],
-              splashColor: Colors.blue[900],
-              child: Text('Apply', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
-              onPressed: () {
-                
-                if (timerSwitchTempBlue == false) {
-                  errorTimeSettingInputBlue = false;
-                } else {
-                  try {
-                    _timeLimitBlue = int.parse(timeSettingInputBlue.text);
-                    errorTimeSettingInputBlue = false;
-                  } catch (e) {
-                    setState(() {
-                      errorTimeSettingInputBlue = true;
-                    });
-                  }
-                } 
-
-                if (timerSwitchTempRed == false) {
-                  errorTimeSettingInputRed = false;
-                } else {
-                  try {
-                    _timeLimitRed = int.parse(timeSettingInputRed.text);
-                    errorTimeSettingInputRed = false;
-                  } catch (e) {
-                    setState(() {
-                      errorTimeSettingInputRed = true;
-                    });
-                  }
-                } 
-                
-                if (errorTimeSettingInputBlue == false && errorTimeSettingInputRed == false) {
-                  Navigator.of(context).pop();
-                  setState(() {
-                    timerSwitchBlue = timerSwitchTempBlue;
-                    timerSwitchRed = timerSwitchTempRed;
-                    spymasterEnableSwitch = spymasterEnableSwitchTemp;
-                    if (currentTeam == "blue" && timerSwitchBlue == true) {
-                      _currentTime = _timeLimitBlue;
-                      startTimer(_timeLimitBlue);
-                    } else if (currentTeam == "red" && timerSwitchRed == true) {
-                      _currentTime = _timeLimitRed;
-                      startTimer(_timeLimitRed);
-                    }
-                    errorTimeSettingInputBlue = false;
-                    errorTimeSettingInputRed = false;
-                  });
-                }
-              }
-            ))
-          ])
-        )
-      ]);
-    });
+      ),
+      Align(
+        alignment: Alignment.center,
+        child: Center(child: Text("ROOM LINK", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20))),
+      ),
+      SizedBox(height: 20.0),
+      Align(
+        alignment: Alignment.center,
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Text('Invite friends to this room with this link: ', style: TextStyle(color: Colors.black, fontSize: 18)),
+          Link(url: 'https://www.google.com/', 
+            child: Text('https://www.google.com/',
+              style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 18), 
+            )
+          )
+        ]),
+      ),
+      SizedBox(height: 20.0)   
+    ]);
   }
 
   Widget _dialogBuilderRules(BuildContext context) {
@@ -847,13 +762,10 @@ class _GameState extends State<GameScreen> {
                   child: Text('    ${String.fromCharCode(0x2014)} The rest of the players on each team are Operatives. They remain on the "Operative" tab for the whole game.',
                     style: TextStyle(color: Colors.black, fontSize: 18))),
                 Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} The top left of the game screen indicates the score for each team.',
+                  child: Text('    ${String.fromCharCode(0x2014)} The top of the game screen indicates the score for each team and which team\'s turn it is.',
                     style: TextStyle(color: Colors.black, fontSize: 18))),
                 Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} The top center of the game screen indicates at the top which team\'s turn it is.',
-                    style: TextStyle(color: Colors.black, fontSize: 18))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} To create a timer for each team\'s turn, adjust the game settings in the top left corner of screen.',
+                  child: Text('    ${String.fromCharCode(0x2014)} To create a timer for each team\'s turn, adjust the game settings.',
                     style: TextStyle(color: Colors.black, fontSize: 18))),
 
                 SizedBox(height: 20.0),
@@ -864,22 +776,34 @@ class _GameState extends State<GameScreen> {
                   child: Text('    ${String.fromCharCode(0x2014)} Each team\'s turn consists of two phases:',
                     style: TextStyle(color: Colors.black, fontSize: 18))),
                 Align(alignment: Alignment.centerLeft,
-                  child: Text('             (1) Spymaster gives a clue consisting of one word and one number.',
+                  child: Text('             (1) Spymaster gives a clue consisting of one Word and one Number.',
                     style: TextStyle(color: Colors.black, fontSize: 18))),
                 Align(alignment: Alignment.centerLeft,
-                  child: Text('             (2) Operatives work together to try guessing (one at a time) the words/pictures associated with the word clue.',
+                  child: Text('             (2) Operatives work together to try guessing (one at a time) the words/pictures associated with the Word.',
                     style: TextStyle(color: Colors.black, fontSize: 18))),
                 Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} Outside of these clues at the start of each turn, the Spymaster should not communicate with anyone.',
+                  child: Text('    ${String.fromCharCode(0x2014)} Outside of the clues at the start of each turn, the Spymaster should not communicate with anyone.',
                     style: TextStyle(color: Colors.black, fontSize: 18))),
                 Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} The Operatives have up to (number + 1) attempts to guess.',
+                  child: Text('    ${String.fromCharCode(0x2014)} The Operatives may communicate with each other as much as they want.',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('    ${String.fromCharCode(0x2014)} On each turn, the Operatives have up to (Number + 1) attempts to guess words/pictures associated with the clue.',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('    ${String.fromCharCode(0x2014)} Example turn:',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('             (1) Spymaster gives the clue: "Animal, 3."',
+                    style: TextStyle(color: Colors.black, fontSize: 18))),
+                Align(alignment: Alignment.centerLeft,
+                  child: Text('             (2) Operatives have up to 4 attempts to guess words/pictures associated with animals.',
                     style: TextStyle(color: Colors.black, fontSize: 18))),
                 Align(alignment: Alignment.centerLeft,
                   child: Text('    ${String.fromCharCode(0x2014)} If the Operatives correctly click a word/picture, they continue guessing.',
                     style: TextStyle(color: Colors.black, fontSize: 18))),
                 Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} If the Operatives click a wrong word/picture (Neutral or opposite team\'s), their turn immediately ends.',
+                  child: Text('    ${String.fromCharCode(0x2014)} If the Operatives click a wrong word/picture (Neutral or Opposing team\'s), their turn immediately ends.',
                     style: TextStyle(color: Colors.black, fontSize: 18))),
                 Align(alignment: Alignment.centerLeft,
                   child: Text('    ${String.fromCharCode(0x2014)} If the Operatives ever click the Assassin word/picture, that team automatically loses!',
@@ -893,29 +817,17 @@ class _GameState extends State<GameScreen> {
                 Align(alignment: Alignment.centerLeft, 
                   child: Text("End of Game", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, decoration: TextDecoration.underline, fontSize: 20))),
                 Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} Unless the Assassin word/picture is ever guessed, the first team to guess all their words and/or pictures wins!',
+                  child: Text('    ${String.fromCharCode(0x2014)} Unless the Assassin word/picture is ever guessed, the first team to guess all their words/pictures wins!',
                     style: TextStyle(color: Colors.black, fontSize: 18))),
                 Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} The team that goes first has 9 words/pictures to guess, while the secnod team has 8.',
+                  child: Text('    ${String.fromCharCode(0x2014)} The team that goes first has 9 words/pictures to guess, while the second team has 8.',
                     style: TextStyle(color: Colors.black, fontSize: 18))),
                 Align(alignment: Alignment.centerLeft,
                   child: Text('    ${String.fromCharCode(0x2014)} For more of a challenge, try playing the "Pictures" or "Pictures + Words" versions.',
                     style: TextStyle(color: Colors.black, fontSize: 18))),
                 Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} To start a new game, simply select the game version and click "Next Game" at the bottom right of the game screen.',
+                  child: Text('    ${String.fromCharCode(0x2014)} To start a new game, simply select the game version and click "Next Game."',
                     style: TextStyle(color: Colors.black, fontSize: 18))),   
-
-                SizedBox(height: 40.0),
-                
-                Row(children: [
-                  Text('Special thanks to ', style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 18)),
-                  Link(url: 'https://www.horsepaste.com/', 
-                    child: Text('https://www.horsepaste.com/',
-                      style: TextStyle(color: Colors.blue, fontStyle: FontStyle.italic, decoration: TextDecoration.underline, fontSize: 18), 
-                    )
-                  ),
-                  Text(' for the inspiration and ideas for formatting behind this website!', style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 18)),
-                ])
               ])
             )
           ])
@@ -923,14 +835,249 @@ class _GameState extends State<GameScreen> {
     ]);
   }
 
+  Widget _dialogBuilderSettings(BuildContext context) {
+    return StatefulBuilder(builder: (context, setState) {
+      return SimpleDialog(children: [
+        Align(
+          alignment: Alignment.topRight,
+          child: GestureDetector(
+            onTap: (){
+                Navigator.of(context).pop();
+            },
+            child: Align(
+                alignment: Alignment(0.95, 1),
+                child: Icon(Icons.close, color: Colors.black)
+            ),
+          ),
+        ),
+        Container(
+          height: 300,
+          width: 500,
+          child: Column(children: [
+            Center(child: Text("SETTINGS", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20))),
+            SizedBox(height: 20.0),
+            Container(
+              padding: EdgeInsets.only(left: 25.0),
+              child: Row(children: [
+                Text("Blue Timer", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+                SizedBox(width: 15.0),
+                Switch(
+                  value: timerSwitchTempBlue,
+                  onChanged: (bool newValue) {
+                    setState(() {
+                      timerSwitchTempBlue = newValue;
+                    });
+                  },
+                  activeTrackColor: Colors.lightBlueAccent,
+                  activeColor: Colors.blue,
+                ), 
+                SizedBox(width: 15.0),
+                _timeSettingInputContainerBlue(),
+              ])
+            ),
+            Container(
+              padding: EdgeInsets.only(left: 25.0),
+              child: Row(children: [
+                Text("Red Timer", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+                SizedBox(width: 15.0),
+                Switch(
+                  value: timerSwitchTempRed,
+                  onChanged: (bool newValue) {
+                    setState(() {
+                      timerSwitchTempRed = newValue;
+                    });
+                  },
+                  activeTrackColor: Colors.redAccent,
+                  activeColor: Colors.red,
+                ), 
+                SizedBox(width: 15.0),
+                _timeSettingInputContainerRed(),
+              ])
+            ),
+            Container(
+              padding: EdgeInsets.only(left: 25.0),
+              child: Row(children: [
+                Text("Enforce Timers", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+                SizedBox(width: 15.0),
+                Switch(
+                  value: enforceTimersSwitchTemp,
+                  onChanged: (bool newValue) {
+                    setState(() {
+                      enforceTimersSwitchTemp = newValue;
+                    });
+                  },
+                  activeTrackColor: Colors.grey,
+                  activeColor: Colors.grey[800],
+                ), 
+              ])
+            ),
+            Container(
+              padding: EdgeInsets.only(left: 25.0),
+              child: Row(children: [
+                Text("Spymaster Can Guess", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+                SizedBox(width: 15.0),
+                Switch(
+                  value: spymasterEnableSwitchTemp,
+                  onChanged: (bool newValue) {
+                    setState(() {
+                      spymasterEnableSwitchTemp = newValue;
+                    });
+                  },
+                  activeTrackColor: Colors.grey,
+                  activeColor: Colors.grey[800],
+                ), 
+              ])
+            ),
+            SizedBox(height: 20),
+            Center(child: new RawMaterialButton(
+              fillColor: Colors.blue[800],
+              splashColor: Colors.blue[900],
+              child: Text('Apply', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+              onPressed: () {
+                
+                if (timerSwitchTempBlue == false) {
+                  errorMinuteSettingInputBlue = false;
+                  errorSecondSettingInputBlue = false;
+                } else {
+                  try {
+                    _minuteLimitBlue = int.parse(minuteSettingInputBlue.text);
+                    errorMinuteSettingInputBlue = false;
+                  } catch (e) {
+                    setState(() {
+                      errorMinuteSettingInputBlue = true;
+                    });
+                  }
+                  try {
+                    _secondLimitBlue = int.parse(secondSettingInputBlue.text);
+                    errorSecondSettingInputBlue = false;
+                  } catch (e) {
+                    setState(() {
+                      errorSecondSettingInputBlue = true;
+                    });
+                  }
+                } 
+
+                if (timerSwitchTempRed == false) {
+                  errorMinuteSettingInputRed = false;
+                  errorSecondSettingInputRed = false;
+                } else {
+                  try {
+                    _minuteLimitRed = int.parse(minuteSettingInputRed.text);
+                    errorMinuteSettingInputRed = false;
+                  } catch (e) {
+                    setState(() {
+                      errorMinuteSettingInputRed = true;
+                    });
+                  }
+                  try {
+                    _secondLimitRed = int.parse(secondSettingInputRed.text);
+                    errorSecondSettingInputRed = false;
+                  } catch (e) {
+                    setState(() {
+                      errorSecondSettingInputRed = true;
+                    });
+                  }
+                } 
+                
+                if (errorMinuteSettingInputBlue == false && errorSecondSettingInputBlue == false
+                && errorMinuteSettingInputRed == false && errorSecondSettingInputRed == false) {
+                  Navigator.of(context).pop();
+                  setState(() {
+                    timerSwitchBlue = timerSwitchTempBlue;
+                    timerSwitchRed = timerSwitchTempRed;
+                    enforceTimersSwitch = enforceTimersSwitchTemp;
+                    spymasterEnableSwitch = spymasterEnableSwitchTemp;
+                    if (currentTeam == "blue" && timerSwitchBlue == true) {
+                      startTimer(_minuteLimitBlue * 60 + _secondLimitBlue);
+                    } else if (currentTeam == "red" && timerSwitchRed == true) {
+                      startTimer(_minuteLimitRed * 60 + _secondLimitRed);
+                    }
+                  });
+                }
+              }
+            ))
+          ])
+        )
+      ]);
+    });
+  }
+
+  Widget _dialogBuilderNotes(BuildContext context) {
+    return SimpleDialog(children: [
+        Align(
+          alignment: Alignment.topRight,
+          child: GestureDetector(
+            onTap: (){
+                Navigator.of(context).pop();
+            },
+            child: Align(
+                alignment: Alignment(0.95, 1),
+                child: Icon(Icons.close, color: Colors.black)
+            ),
+          ),
+        ),
+        Container(
+          height: 180,
+          width: 1000,
+          child: Column(children: [
+            Center(child: Text("NOTES", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20))),
+            SizedBox(height: 20.0),
+            Container(
+              padding: EdgeInsets.only(left: 25.0),
+              child: Column(children: [
+                Row(children: [
+                  Text('${String.fromCharCode(0x2014)} Special thanks to ', style: TextStyle(color: Colors.black, fontSize: 18)),
+                  Link(url: 'https://www.horsepaste.com/', 
+                    child: Text('https://www.horsepaste.com/',
+                      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 18), 
+                    )
+                  ),
+                  Text(' for the inspiration and ideas for formatting behind this website.', style: TextStyle(color: Colors.black, fontSize: 18)),
+                ]),
+                SizedBox(height: 20.0),
+                Row(children: [
+                  Text('${String.fromCharCode(0x2014)} Words in the "Words" and "Words + Pictures" versions were sourced from ', style: TextStyle(color: Colors.black, fontSize: 18)),
+                  Link(url: 'https://github.com/seanlyons/codenames/blob/master/wordlist.txt', 
+                    child: Text('here',
+                      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 18), 
+                    )
+                  ),
+                  Text('.', style: TextStyle(color: Colors.black, fontSize: 18)),
+                ]),
+                SizedBox(height: 20.0),
+                Row(children: [
+                  Text('${String.fromCharCode(0x2014)} Images in the "Pictures" and "Words + Pictures" versions were sourced from ', style: TextStyle(color: Colors.black, fontSize: 18)),
+                  Link(url: 'https://unsplash.com/', 
+                    child: Text('Unsplash',
+                      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 18), 
+                    )
+                  ),
+                  Text('.', style: TextStyle(color: Colors.black, fontSize: 18)),
+                ]),
+              ])
+            )
+          ])
+        )
+    ]);
+  }
+                
+ 
+   
+
+
   void startTimer(int timeLimit) {
     
     const oneSec = const Duration(seconds: 1);
     
     if (_timer != null) {
       _timer.cancel();
-      _currentTime = timeLimit;
     }
+
+    setState(() {
+      _currentTime = timeLimit;
+      _currentMinutesRemaining = _currentTime ~/ 60;
+      _currentSecondsRemaining = _currentTime % 60;
+    });
 
     _timer = new Timer.periodic(
       oneSec,
@@ -938,10 +1085,25 @@ class _GameState extends State<GameScreen> {
         if (_currentTime == 0) {
           setState(() {
             timer.cancel();
+            if (enforceTimersSwitch == true) {
+              if (currentTeam == "blue") {
+                currentTeam = "red";
+                if (timerSwitchRed == true) {
+                  startTimer(_minuteLimitRed * 60 + _secondLimitRed);
+                }
+              } else if (currentTeam == "red") {
+                currentTeam = "blue";
+                if (timerSwitchBlue == true) {
+                  startTimer(_minuteLimitBlue * 60 + _secondLimitBlue);
+                }
+              }
+            }
           });
         } else {
           setState(() {
             _currentTime--;
+            _currentMinutesRemaining = _currentTime ~/ 60;
+            _currentSecondsRemaining = _currentTime % 60;
           });
         }
       }
@@ -952,6 +1114,90 @@ class _GameState extends State<GameScreen> {
   void dispose() {
     _timer.cancel();
     super.dispose();
+  }
+
+  bool currentTimerSwitch() {
+    if (currentTeam == "blue") {
+      return timerSwitchBlue;
+    } else if (currentTeam == "red") {
+      return timerSwitchRed;
+    }
+  }
+
+  Widget _timeSettingInputContainerBlue() {
+    if (timerSwitchTempBlue == true) {
+      return Row(children: [
+        Container(
+          height: 30.0, 
+          width: 40.0, 
+          child: TextField(
+            textAlign: TextAlign.center,
+            controller: minuteSettingInputBlue, 
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.only(bottom: 15.0),
+            )
+          )
+        ),
+        Text((timerSwitchTempBlue == true && errorMinuteSettingInputBlue == true) ? "!" : "", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18)),
+        SizedBox(width: 5.0),
+        Text(" m", style: TextStyle(color: Colors.black, fontSize: 18)),
+        SizedBox(width: 5.0),
+        Container(
+          height: 30.0, 
+          width: 40.0, 
+          child: TextField(
+            textAlign: TextAlign.center,
+            controller: secondSettingInputBlue, 
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.only(bottom: 15.0),
+            )
+          )
+        ),
+        Text((timerSwitchTempBlue == true && errorSecondSettingInputBlue == true) ? "!" : "", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18)),
+        SizedBox(width: 5.0),
+        Text(" s", style: TextStyle(color: Colors.black, fontSize: 18)),
+      ]);
+    } else {
+      return Container();
+    }
+  }
+
+  Widget _timeSettingInputContainerRed() {
+    if (timerSwitchTempRed == true) {
+      return Row(children: [
+        Container(
+          height: 30.0, 
+          width: 40.0, 
+          child: TextField(
+            textAlign: TextAlign.center,
+            controller: minuteSettingInputRed, 
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.only(bottom: 15.0),
+            )
+          )
+        ),
+        Text((timerSwitchTempRed == true && errorMinuteSettingInputRed == true) ? "!" : "", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18)),
+        SizedBox(width: 5.0),
+        Text(" m", style: TextStyle(color: Colors.black, fontSize: 18)),
+        SizedBox(width: 5.0),
+        Container(
+          height: 30.0, 
+          width: 40.0, 
+          child: TextField(
+            textAlign: TextAlign.center,
+            controller: secondSettingInputRed, 
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.only(bottom: 15.0),
+            )
+          )
+        ),
+        Text((timerSwitchTempRed == true && errorSecondSettingInputRed == true) ? "!" : "", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18)),
+        SizedBox(width: 5.0),
+        Text(" s", style: TextStyle(color: Colors.black, fontSize: 18)),
+      ]);
+    } else {
+      return Container();
+    }
   }
 
 }
