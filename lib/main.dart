@@ -50,10 +50,10 @@ class _HomeState extends State<HomeScreen> {
         ),
         body: Column(
           children: <Widget>[
-            SizedBox(height: 125),
+            SizedBox(height: 80),
             Center(child: Text("Play Codenames online - Words, Pictures, or both mixed together!", 
               style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 35))),
-            SizedBox(height: 150),
+            SizedBox(height: 120),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -94,7 +94,7 @@ class _HomeState extends State<HomeScreen> {
                   }
                 )
             ]),
-            SizedBox(height: 80),
+            SizedBox(height: 100),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
