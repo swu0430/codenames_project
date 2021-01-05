@@ -34,7 +34,11 @@ class _HomeState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return new InteractiveViewer(
+
+    return new Zoom(
+      //
+      width: (MediaQuery.of(context).size.width),
+      height: (MediaQuery.of(context).size.height),
       child: LayoutBuilder(
         builder: (context, constraints) {
           return OrientationBuilder(
