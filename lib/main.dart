@@ -52,7 +52,7 @@ class _HomeState extends State<HomeScreen> {
                   title: Text("CODENAMES", 
                     style: GoogleFonts.shojumaru(
                       color: Colors.white,
-                      fontSize: 12.0.sp,
+                      fontSize: 15.0.sp,
                     ), 
                   ),
                 ),
@@ -304,26 +304,26 @@ class _GameState extends State<GameScreen> {
       } 
     }
 
-    return new InteractiveViewer(
-      child: new MaterialApp(
-        title:"Codenames - Words & Pictures",
-        theme: ThemeData(
-          primaryColor: Colors.white,
-        ),
-        home: Scaffold(
-          drawer: MenuDrawer(),
-          appBar: AppBar(
-            iconTheme: IconThemeData(color: Colors.white),
-            backgroundColor: Colors.black, 
-            centerTitle: true,
-            title: Text("CODENAMES: ${version.toUpperCase()}", 
-              style: GoogleFonts.shojumaru(
-                color: Colors.white,
-                fontSize: 24.0,
-              ),
+    return new MaterialApp(
+      title:"Codenames - Words & Pictures",
+      theme: ThemeData(
+        primaryColor: Colors.white,
+      ),
+      home: Scaffold(
+        drawer: MenuDrawer(),
+        appBar: AppBar(
+          iconTheme: IconThemeData(color: Colors.white),
+          backgroundColor: Colors.black, 
+          centerTitle: true,
+          title: Text("CODENAMES: ${version.toUpperCase()}", 
+            style: GoogleFonts.shojumaru(
+              color: Colors.white,
+              fontSize: 24.0,
             ),
           ),
-          body: SingleChildScrollView(
+        ),
+        body: new InteractiveViewer(
+          child: SingleChildScrollView(
             child: Column(
               children: [
                 SizedBox(height: 20.0),
