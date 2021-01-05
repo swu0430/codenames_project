@@ -57,7 +57,7 @@ class _HomeState extends State<HomeScreen> {
                     title: Text("CODENAMES", 
                       style: GoogleFonts.shojumaru(
                         color: Colors.white,
-                        fontSize: 12.0.sp,
+                        fontSize: 30.0.sp,
                       ), 
                     ),
                   ),
