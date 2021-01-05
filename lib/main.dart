@@ -34,6 +34,7 @@ class _HomeState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return new Zoom(
       //
       width: (MediaQuery.of(context).size.width),
