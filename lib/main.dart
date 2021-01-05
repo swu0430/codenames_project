@@ -9,6 +9,8 @@ import 'dart:async' show Future;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:link/link.dart';
 import 'dart:async';
+import 'package:zoom_widget/zoom_widget.dart';
+import 'package:sizer/sizer.dart';
 
 void main() {
   String version;
@@ -32,111 +34,125 @@ class _HomeState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      title:"Codenames - Words & Pictures",
-      theme: ThemeData(
-        primaryColor: Colors.white,
-      ),
-      home: new Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          centerTitle: true,
-          title: Text("CODENAMES", 
-            style: GoogleFonts.shojumaru(
-              color: Colors.white,
-              fontSize: 24.0,
-            ), 
-          ),
-        ),
-        body: Column(
-          children: <Widget>[
-            SizedBox(height: 80),
-            Center(child: Text("Play Codenames online - Words, Pictures, or both mixed together!", 
-              style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 35))),
-            SizedBox(height: 120),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.arrow_forward_rounded),
-                SizedBox(width: 10),
-                Text("Start a new game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 30)),
-              ],
-            ),
-            SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                DropdownButton(
-                  value: version,
-                  icon: Icon(Icons.arrow_downward),
-                  iconSize: 20,
-                  items: <String>['Words', 'Pictures', 'Words + Pictures']
-                    .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value, style: TextStyle(fontSize: 20)),
-                      );
-                    }).toList(),
-                  onChanged: (String newValue) {
-                    setState(() {
-                      version = newValue;
-                    });
-                  }
+    return new Zoom(
+      width: (MediaQuery.of(context).size.width),
+      height: (MediaQuery.of(context).size.height),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return OrientationBuilder(
+            builder: (context, orientation) {
+              //initialize SizerUtil()
+              SizerUtil().init(constraints, orientation);
+              return new MaterialApp(
+                title:"Codenames - Words & Pictures",
+                theme: ThemeData(
+                  primaryColor: Colors.white,
                 ),
-                SizedBox(height: 20, width: 15),
-                RawMaterialButton(
-                  fillColor: Colors.blue[300],
-                  splashColor: Colors.blueAccent,
-                  child: Text('Play', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 20)),
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
-                    //Navigator.of(context).pushNamed("playgame");
-                  }
-                )
-            ]),
-            SizedBox(height: 100),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.arrow_forward_rounded),
-                SizedBox(width: 10),
-                Text("Join an existing game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 30)),
-              ],
-            ),
-            SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 50.0, 
-                  width: 300.0, 
-                  child: TextField(
-                    textAlign: TextAlign.center,
-                    controller: roomID, 
-                    decoration: InputDecoration(
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black, width: 3.0)
+                home: new Scaffold(
+                  appBar: AppBar(
+                    backgroundColor: Colors.black,
+                    centerTitle: true,
+                    title: Text("CODENAMES", 
+                      style: GoogleFonts.shojumaru(
+                        color: Colors.white,
+                        fontSize: 12.0.sp,
+                      ), 
+                    ),
+                  ),
+                  body: Column(
+                    children: <Widget>[
+                      SizedBox(height: 5.0.h),
+                      Center(child: Text("Play Codenames online - Words, Pictures, or both mixed together!", 
+                        style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15.0.sp))),
+                      SizedBox(height: 6.0.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.arrow_forward_rounded),
+                          SizedBox(width: 1.0.w),
+                          Text("Start a new game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
+                        ],
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black, width: 3.0)
+                      SizedBox(height: 0.3.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          DropdownButton(
+                            value: version,
+                            icon: Icon(Icons.arrow_downward),
+                            iconSize: 9.0.sp,
+                            items: <String>['Words', 'Pictures', 'Words + Pictures']
+                              .map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value, style: TextStyle(fontSize: 8.0.sp)),
+                                );
+                              }).toList(),
+                            onChanged: (String newValue) {
+                              setState(() {
+                                version = newValue;
+                              });
+                            }
+                          ),
+                          SizedBox(height: 0.5.h, width: 2.0.w),
+                          RawMaterialButton(
+                            fillColor: Colors.blue[300],
+                            splashColor: Colors.blueAccent,
+                            child: Text('Play', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
+                              //Navigator.of(context).pushNamed("playgame");
+                            }
+                          )
+                      ]),
+                      SizedBox(height: 6.0.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.arrow_forward_rounded),
+                          SizedBox(width: 1.0.w),
+                          Text("Join an existing game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
+                        ],
                       ),
-                      contentPadding: EdgeInsets.only(bottom: 15.0),
-                    )
+                      SizedBox(height: 0.3.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 3.0.h, 
+                            width: 40.0.w, 
+                            child: TextField(
+                              textAlign: TextAlign.center,
+                              controller: roomID, 
+                              decoration: InputDecoration(
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.black, width: 0.3.w)
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.black, width: 0.3.w)
+                                ),
+                                contentPadding: EdgeInsets.only(bottom: 0.15.h),
+                              )
+                            )
+                          ),
+                          SizedBox(height: 0.5.h, width: 2.0.w),
+                          RawMaterialButton(
+                            fillColor: Colors.red,
+                            splashColor: Colors.redAccent,
+                            child: Text('Join', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
+                              //Navigator.of(context).pushNamed("playgame");
+                            }
+                          )
+                      ]),
+                    ]
                   )
-                ),
-                SizedBox(height: 20, width: 15),
-                RawMaterialButton(
-                  fillColor: Colors.red,
-                  splashColor: Colors.redAccent,
-                  child: Text('Join', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 20)),
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
-                    //Navigator.of(context).pushNamed("playgame");
-                  }
                 )
-            ]),
-          ]
-        )
+              );
+            }
+          );
+        }
       )
     );
   }
@@ -288,214 +304,218 @@ class _GameState extends State<GameScreen> {
       } 
     }
 
-    return MaterialApp(
-      title:"Codenames - Words & Pictures",
-      theme: ThemeData(
-        primaryColor: Colors.white,
-      ),
-      home: Scaffold(
-        drawer: MenuDrawer(),
-        appBar: AppBar(
-          iconTheme: IconThemeData(color: Colors.white),
-          backgroundColor: Colors.black, 
-          centerTitle: true,
-          title: Text("CODENAMES: ${version.toUpperCase()}", 
-            style: GoogleFonts.shojumaru(
-              color: Colors.white,
-              fontSize: 24.0,
+    return Zoom(
+      width: (MediaQuery.of(context).size.width),
+      height: (MediaQuery.of(context).size.height),
+      child: new MaterialApp(
+        title:"Codenames - Words & Pictures",
+        theme: ThemeData(
+          primaryColor: Colors.white,
+        ),
+        home: Scaffold(
+          drawer: MenuDrawer(),
+          appBar: AppBar(
+            iconTheme: IconThemeData(color: Colors.white),
+            backgroundColor: Colors.black, 
+            centerTitle: true,
+            title: Text("CODENAMES: ${version.toUpperCase()}", 
+              style: GoogleFonts.shojumaru(
+                color: Colors.white,
+                fontSize: 24.0,
+              ),
             ),
           ),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: 20.0),
-              Center(
-                child: Container(
-                  height: 30,
-                  width: 740,
-                  child: Stack(
-                    children: <Widget>[
-                      Positioned(
-                        left: 5,
-                        bottom: 5,
-                        child: new RichText(
-                          text: TextSpan(
-                            children: <TextSpan>[
-                              TextSpan(text: "$blueScoreCounter  ", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 20)),
-                              TextSpan(text: "${String.fromCharCode(0x2014)}  ", style: TextStyle(color: Colors.black, fontSize: 17)),
-                              TextSpan(text: "$redScoreCounter  ", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 20)),
-                              TextSpan(text: "(Goal: ", style: TextStyle(color: Colors.black, fontSize: 20)),
-                              TextSpan(text: (blueFirst == true) ? "9" : "8", style: TextStyle(color: Colors.blue, fontSize: 20)),
-                              TextSpan(text: " - ", style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 20)),
-                              TextSpan(text: (blueFirst == true) ? "8" : "9", style: TextStyle(color: Colors.red, fontSize: 20)),
-                              TextSpan(text: ")", style: TextStyle(color: Colors.black, fontSize: 20)),
-                            ]
-                          )
-                        )
-                      ),
-                      Center(
-                        child: Padding(
-                          padding: EdgeInsets.only(bottom: 5),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: 20.0),
+                Center(
+                  child: Container(
+                    height: 30,
+                    width: 740,
+                    child: Stack(
+                      children: <Widget>[
+                        Positioned(
+                          left: 5,
+                          bottom: 5,
                           child: new RichText(
                             text: TextSpan(
                               children: <TextSpan>[
-                                TextSpan(text: "$currentTeam's turn", style: TextStyle(color: _teamColor(), fontSize: 20)),
-                                TextSpan(text: (currentTimerSwitch() == true && gameOver == false) ? " (${_currentMinutesRemaining}:" 
-                                  + ((_currentSecondsRemaining < 10) ? "0" : "") + "${_currentSecondsRemaining})" : "", 
-                                  style: TextStyle(color: _teamColor(), fontWeight: FontWeight.bold, fontSize: 20))
+                                TextSpan(text: "$blueScoreCounter  ", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 20)),
+                                TextSpan(text: "${String.fromCharCode(0x2014)}  ", style: TextStyle(color: Colors.black, fontSize: 17)),
+                                TextSpan(text: "$redScoreCounter  ", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 20)),
+                                TextSpan(text: "(Goal: ", style: TextStyle(color: Colors.black, fontSize: 20)),
+                                TextSpan(text: (blueFirst == true) ? "9" : "8", style: TextStyle(color: Colors.blue, fontSize: 20)),
+                                TextSpan(text: " - ", style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 20)),
+                                TextSpan(text: (blueFirst == true) ? "8" : "9", style: TextStyle(color: Colors.red, fontSize: 20)),
+                                TextSpan(text: ")", style: TextStyle(color: Colors.black, fontSize: 20)),
                               ]
                             )
                           )
-                        )
-                      ),
-                      Positioned(
-                        right: 5,
-                        bottom: 0,
-                        child: _turnWidget(),
-                      )
-                    ]
-                  )
-                )
-              ),
-              Center(
-                child: Container(
-                  width: 750, 
-                  height: 750,
-                  padding: const EdgeInsets.all(10.0),
-                  child: new GridView.count(
-                    crossAxisCount: 5, 
-                    crossAxisSpacing: 10.0, 
-                    mainAxisSpacing: 10.0,
-                    children: _buildGridTiles(25),
-                  ),
-                ),
-              ),
-              Center(
-                child: Container(
-                  height: 20,
-                  width: 740,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        left: 5,
-                        child: Row( 
-                          children: [
-                            Text(((version == 'Pictures') || (version == "Words + Pictures")) ? "Source of images: " : "", 
-                              style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 15)
-                            ),
-                            Link(url: 'https://unsplash.com/', 
-                              child: Text(((version == 'Pictures') || (version == "Words + Pictures")) ? "https://unsplash.com/" : "",
-                                style: TextStyle(color: Colors.blue, fontStyle: FontStyle.italic, decoration: TextDecoration.underline, fontSize: 15), 
+                        ),
+                        Center(
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 5),
+                            child: new RichText(
+                              text: TextSpan(
+                                children: <TextSpan>[
+                                  TextSpan(text: "$currentTeam's turn", style: TextStyle(color: _teamColor(), fontSize: 20)),
+                                  TextSpan(text: (currentTimerSwitch() == true && gameOver == false) ? " (${_currentMinutesRemaining}:" 
+                                    + ((_currentSecondsRemaining < 10) ? "0" : "") + "${_currentSecondsRemaining})" : "", 
+                                    style: TextStyle(color: _teamColor(), fontWeight: FontWeight.bold, fontSize: 20))
+                                ]
                               )
                             )
-                          ]
-                        )
-                      )
-                    ]
-                  )
-                )
-              ),
-              SizedBox(height: 3.0),
-              Center(
-                child: Container(
-                  height: 40,
-                  width: 740, 
-                  child: Stack(
-                    children: <Widget>[
-                      Positioned(
-                        left: 5,
-                        bottom: 1,
-                        child: ButtonTheme(
-                          minWidth: 125.0,
-                          height: 35.0,
-                          child: new RaisedButton(
-                            shape: spymaster == false ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
-                            onPressed: () {
-                              setState(() {
-                                spymaster = false;
-                              });
-                            },
-                            color: Colors.grey[350],
-                            child: const Text('Operative',
-                              style: TextStyle(fontSize: 20)
-                            ),
-                          )
-                        )
-                      ),
-                      Positioned(
-                        left: 125,
-                        bottom: 1,
-                        child: ButtonTheme(
-                          minWidth: 125.0,
-                          height: 35.0,
-                          child: new RaisedButton(
-                            shape: spymaster == true ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
-                            onPressed: () {
-                              setState(() {
-                                spymaster = true;
-                              });
-                            },
-                            color: Colors.grey[350],
-                            child: const Text('Spymaster',
-                              style: TextStyle(fontSize: 20)
-                            ),
-                          )
-                        )
-                      ),   
-                      Positioned(
-                        right: 130,
-                        bottom: 0,
-                        child: DropdownButton(
-                          value: versionTemp,
-                          icon: Icon(Icons.arrow_downward),
-                          iconSize: 15,
-                          items: <String>['Words', 'Pictures', 'Words + Pictures']
-                            .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value, style: TextStyle(fontSize: 18)),
-                              );
-                            }).toList(),
-                          onChanged: (String newValue) {
-                            setState(() {
-                              versionTemp = newValue;
-                            });
-                          }
-                        )
-                      ),
-                      Positioned(
-                        right: 5,
-                        bottom: 1,
-                        child: ButtonTheme(
-                          minWidth: 125.0,
-                          height: 35.0,
-                          child: new RaisedButton(
-                            onPressed: () {
-                              setState(() {
-                                version = versionTemp;
-                                restart = true;
-                                if ((version == 'Pictures') || (version == "Words + Pictures")) {
-                                  runFutures = true;
-                                } else {
-                                  runFutures = false;
-                                }
-                              });
-                            },
-                            color: Colors.indigo[800],
-                            textColor: Colors.white,
-                            child: const Text('Next Game',
-                              style: TextStyle(fontSize: 20)
-                            ),
                           )
                         ),
-                      ) 
-                    ]
+                        Positioned(
+                          right: 5,
+                          bottom: 0,
+                          child: _turnWidget(),
+                        )
+                      ]
+                    )
                   )
-                )
-              ),
-              SizedBox(height: 10.0)
-            ] 
+                ),
+                Center(
+                  child: Container(
+                    width: 750, 
+                    height: 750,
+                    padding: const EdgeInsets.all(10.0),
+                    child: new GridView.count(
+                      crossAxisCount: 5, 
+                      crossAxisSpacing: 10.0, 
+                      mainAxisSpacing: 10.0,
+                      children: _buildGridTiles(25),
+                    ),
+                  ),
+                ),
+                Center(
+                  child: Container(
+                    height: 20,
+                    width: 740,
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          left: 5,
+                          child: Row( 
+                            children: [
+                              Text(((version == 'Pictures') || (version == "Words + Pictures")) ? "Source of images: " : "", 
+                                style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 15)
+                              ),
+                              Link(url: 'https://unsplash.com/', 
+                                child: Text(((version == 'Pictures') || (version == "Words + Pictures")) ? "https://unsplash.com/" : "",
+                                  style: TextStyle(color: Colors.blue, fontStyle: FontStyle.italic, decoration: TextDecoration.underline, fontSize: 15), 
+                                )
+                              )
+                            ]
+                          )
+                        )
+                      ]
+                    )
+                  )
+                ),
+                SizedBox(height: 3.0),
+                Center(
+                  child: Container(
+                    height: 40,
+                    width: 740, 
+                    child: Stack(
+                      children: <Widget>[
+                        Positioned(
+                          left: 5,
+                          bottom: 1,
+                          child: ButtonTheme(
+                            minWidth: 125.0,
+                            height: 35.0,
+                            child: new RaisedButton(
+                              shape: spymaster == false ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
+                              onPressed: () {
+                                setState(() {
+                                  spymaster = false;
+                                });
+                              },
+                              color: Colors.grey[350],
+                              child: const Text('Operative',
+                                style: TextStyle(fontSize: 20)
+                              ),
+                            )
+                          )
+                        ),
+                        Positioned(
+                          left: 125,
+                          bottom: 1,
+                          child: ButtonTheme(
+                            minWidth: 125.0,
+                            height: 35.0,
+                            child: new RaisedButton(
+                              shape: spymaster == true ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
+                              onPressed: () {
+                                setState(() {
+                                  spymaster = true;
+                                });
+                              },
+                              color: Colors.grey[350],
+                              child: const Text('Spymaster',
+                                style: TextStyle(fontSize: 20)
+                              ),
+                            )
+                          )
+                        ),   
+                        Positioned(
+                          right: 130,
+                          bottom: 0,
+                          child: DropdownButton(
+                            value: versionTemp,
+                            icon: Icon(Icons.arrow_downward),
+                            iconSize: 15,
+                            items: <String>['Words', 'Pictures', 'Words + Pictures']
+                              .map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value, style: TextStyle(fontSize: 18)),
+                                );
+                              }).toList(),
+                            onChanged: (String newValue) {
+                              setState(() {
+                                versionTemp = newValue;
+                              });
+                            }
+                          )
+                        ),
+                        Positioned(
+                          right: 5,
+                          bottom: 1,
+                          child: ButtonTheme(
+                            minWidth: 125.0,
+                            height: 35.0,
+                            child: new RaisedButton(
+                              onPressed: () {
+                                setState(() {
+                                  version = versionTemp;
+                                  restart = true;
+                                  if ((version == 'Pictures') || (version == "Words + Pictures")) {
+                                    runFutures = true;
+                                  } else {
+                                    runFutures = false;
+                                  }
+                                });
+                              },
+                              color: Colors.indigo[800],
+                              textColor: Colors.white,
+                              child: const Text('Next Game',
+                                style: TextStyle(fontSize: 20)
+                              ),
+                            )
+                          ),
+                        ) 
+                      ]
+                    )
+                  )
+                ),
+                SizedBox(height: 10.0)
+              ] 
+            )
           )
         )
       )
@@ -1122,7 +1142,7 @@ class _GameState extends State<GameScreen> {
                 Row(children: [
                   Text('${String.fromCharCode(0x2014)} Based on the actual ', style: TextStyle(color: Colors.black, fontSize: 18)),
                   Link(url: 'https://czechgames.com/en/codenames/', 
-                    child: Text('game',
+                    child: Text('board game',
                       style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 18), 
                     )
                   ),
