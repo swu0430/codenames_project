@@ -34,30 +34,30 @@ class _HomeState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
 
-    return new InteractiveViewer(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return OrientationBuilder(
-            builder: (context, orientation) {
-              //initialize SizerUtil()
-              SizerUtil().init(constraints, orientation);
-              return new MaterialApp(
-                title:"Codenames - Words & Pictures",
-                theme: ThemeData(
-                  primaryColor: Colors.white,
-                ),
-                home: new Scaffold(
-                  appBar: AppBar(
-                    backgroundColor: Colors.black,
-                    centerTitle: true,
-                    title: Text("CODENAMES", 
-                      style: GoogleFonts.shojumaru(
-                        color: Colors.white,
-                        fontSize: 12.0.sp,
-                      ), 
-                    ),
+    return new LayoutBuilder(
+      builder: (context, constraints) {
+        return OrientationBuilder(
+          builder: (context, orientation) {
+            //initialize SizerUtil()
+            SizerUtil().init(constraints, orientation);
+            return new MaterialApp(
+              title:"Codenames - Words & Pictures",
+              theme: ThemeData(
+                primaryColor: Colors.white,
+              ),
+              home: new Scaffold(
+                appBar: AppBar(
+                  backgroundColor: Colors.black,
+                  centerTitle: true,
+                  title: Text("CODENAMES", 
+                    style: GoogleFonts.shojumaru(
+                      color: Colors.white,
+                      fontSize: 12.0.sp,
+                    ), 
                   ),
-                  body: SingleChildScrollView(
+                ),
+                body: new InteractiveViewer(
+                  child: SingleChildScrollView(
                     child: Column(
                       children: <Widget>[
                         SizedBox(height: 5.0.h),
@@ -149,11 +149,11 @@ class _HomeState extends State<HomeScreen> {
                     )
                   )
                 )
-              );
-            }
-          );
-        }
-      )
+              )
+            );
+          }
+        );
+      }
     );
   }
 }
