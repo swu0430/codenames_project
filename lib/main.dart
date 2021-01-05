@@ -57,98 +57,100 @@ class _HomeState extends State<HomeScreen> {
                     title: Text("CODENAMES", 
                       style: GoogleFonts.shojumaru(
                         color: Colors.white,
-                        fontSize: 30.0.sp,
+                        fontSize: 12.0.sp,
                       ), 
                     ),
                   ),
-                  body: Column(
-                    children: <Widget>[
-                      SizedBox(height: 5.0.h),
-                      Center(child: Text("Play Codenames online - Words, Pictures, or both mixed together!", 
-                        style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15.0.sp))),
-                      SizedBox(height: 6.0.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.arrow_forward_rounded),
-                          SizedBox(width: 1.0.w),
-                          Text("Start a new game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
-                        ],
-                      ),
-                      SizedBox(height: 0.3.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          DropdownButton(
-                            value: version,
-                            icon: Icon(Icons.arrow_downward),
-                            iconSize: 9.0.sp,
-                            items: <String>['Words', 'Pictures', 'Words + Pictures']
-                              .map<DropdownMenuItem<String>>((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value, style: TextStyle(fontSize: 8.0.sp)),
-                                );
-                              }).toList(),
-                            onChanged: (String newValue) {
-                              setState(() {
-                                version = newValue;
-                              });
-                            }
-                          ),
-                          SizedBox(height: 0.5.h, width: 2.0.w),
-                          RawMaterialButton(
-                            fillColor: Colors.blue[300],
-                            splashColor: Colors.blueAccent,
-                            child: Text('Play', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
-                              //Navigator.of(context).pushNamed("playgame");
-                            }
-                          )
-                      ]),
-                      SizedBox(height: 6.0.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.arrow_forward_rounded),
-                          SizedBox(width: 1.0.w),
-                          Text("Join an existing game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
-                        ],
-                      ),
-                      SizedBox(height: 0.3.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            height: 3.0.h, 
-                            width: 40.0.w, 
-                            child: TextField(
-                              textAlign: TextAlign.center,
-                              controller: roomID, 
-                              decoration: InputDecoration(
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black, width: 0.3.w)
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black, width: 0.3.w)
-                                ),
-                                contentPadding: EdgeInsets.only(bottom: 0.15.h),
-                              )
+                  body: SingleChildScrollView(
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(height: 5.0.h),
+                        Center(child: Text("Play Codenames online - Words, Pictures, or both mixed together!", 
+                          style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15.0.sp))),
+                        SizedBox(height: 6.0.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.arrow_forward_rounded),
+                            SizedBox(width: 1.0.w),
+                            Text("Start a new game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
+                          ],
+                        ),
+                        SizedBox(height: 0.3.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            DropdownButton(
+                              value: version,
+                              icon: Icon(Icons.arrow_downward),
+                              iconSize: 9.0.sp,
+                              items: <String>['Words', 'Pictures', 'Words + Pictures']
+                                .map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value, style: TextStyle(fontSize: 8.0.sp)),
+                                  );
+                                }).toList(),
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  version = newValue;
+                                });
+                              }
+                            ),
+                            SizedBox(height: 0.5.h, width: 2.0.w),
+                            RawMaterialButton(
+                              fillColor: Colors.blue[300],
+                              splashColor: Colors.blueAccent,
+                              child: Text('Play', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
+                                //Navigator.of(context).pushNamed("playgame");
+                              }
                             )
-                          ),
-                          SizedBox(height: 0.5.h, width: 2.0.w),
-                          RawMaterialButton(
-                            fillColor: Colors.red,
-                            splashColor: Colors.redAccent,
-                            child: Text('Join', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
-                              //Navigator.of(context).pushNamed("playgame");
-                            }
-                          )
-                      ]),
-                    ]
+                        ]),
+                        SizedBox(height: 6.0.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.arrow_forward_rounded),
+                            SizedBox(width: 1.0.w),
+                            Text("Join an existing game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
+                          ],
+                        ),
+                        SizedBox(height: 0.3.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              height: 3.0.h, 
+                              width: 40.0.w, 
+                              child: TextField(
+                                textAlign: TextAlign.center,
+                                controller: roomID, 
+                                decoration: InputDecoration(
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black, width: 0.3.w)
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black, width: 0.3.w)
+                                  ),
+                                  contentPadding: EdgeInsets.only(bottom: 0.15.h),
+                                )
+                              )
+                            ),
+                            SizedBox(height: 0.5.h, width: 2.0.w),
+                            RawMaterialButton(
+                              fillColor: Colors.red,
+                              splashColor: Colors.redAccent,
+                              child: Text('Join', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
+                                //Navigator.of(context).pushNamed("playgame");
+                              }
+                            )
+                        ]),
+                      ]
+                    )
                   )
                 )
               );
