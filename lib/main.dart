@@ -9,7 +9,6 @@ import 'dart:async' show Future;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:link/link.dart';
 import 'dart:async';
-import 'package:zoom_widget/zoom_widget.dart';
 import 'package:sizer/sizer.dart';
 
 void main() {
@@ -35,10 +34,7 @@ class _HomeState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
 
-    return new Zoom(
-      //
-      width: (MediaQuery.of(context).size.width),
-      height: (MediaQuery.of(context).size.height),
+    return new InteractiveViewer(
       child: LayoutBuilder(
         builder: (context, constraints) {
           return OrientationBuilder(
@@ -308,9 +304,7 @@ class _GameState extends State<GameScreen> {
       } 
     }
 
-    return Zoom(
-      width: (MediaQuery.of(context).size.width),
-      height: (MediaQuery.of(context).size.height),
+    return new InteractiveViewer(
       child: new MaterialApp(
         title:"Codenames - Words & Pictures",
         theme: ThemeData(
