@@ -382,7 +382,7 @@ class _GameState extends State<GameScreen> {
                               ),
                               Positioned(
                                 right: 2.0.w,
-                                bottom: 0.0.h,
+                                top: 3.0.w,
                                 child: _turnWidget(),
                               )
                             ]
@@ -433,16 +433,20 @@ class _GameState extends State<GameScreen> {
                       SizedBox(height: 1.0.w),
                       Center(
                         child: Container(
-                          height: 5.0.h,
+                          height: 4.0.h,
                           width: 90.0.w, 
-                          child: Stack(
+                          //child: Stack(
+                          child: Row(
                             children: <Widget>[
-                              Positioned(
-                                left: 2.0.w,
-                                top: 0.0.w,
-                                child: ButtonTheme(
+                              //Positioned(
+                                //left: 2.0.w,
+                                //top: 0.0.w,
+                                //child: ButtonTheme(
+                                SizedBox(width: 2.0.w),
+                                ButtonTheme(
                                   height: 1.5.h,
-                                  //minWidth: 10.0.w,
+                                  //minWidth: 8.0.w,
+                                  padding: EdgeInsets.zero,
                                   child: new RaisedButton(
                                     shape: spymaster == false ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
                                     onPressed: () {
@@ -455,14 +459,16 @@ class _GameState extends State<GameScreen> {
                                       style: TextStyle(fontSize: 6.5.sp)
                                     ),
                                   )
-                                )
-                              ),
-                              Positioned(
-                                left: 14.0.w,
-                                top: 0.0.w,
-                                child: ButtonTheme(
+                                ),
+                              SizedBox(width: 0.5.w),
+                              //Positioned(
+                                //left: 14.0.w,
+                                //top: 0.0.w,
+                                //child: ButtonTheme(
+                                ButtonTheme(
                                   height: 1.5.h,
-                                  //minWidth: 10.0.w,
+                                  //minWidth: 8.0.w,
+                                  padding: EdgeInsets.zero,
                                   child: new RaisedButton(
                                     shape: spymaster == true ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
                                     onPressed: () {
@@ -475,12 +481,14 @@ class _GameState extends State<GameScreen> {
                                       style: TextStyle(fontSize: 6.5.sp)
                                     ),
                                   )
-                                )
+                                //)
                               ),   
-                              Positioned(
-                                right: 16.0.w,
-                                top: 0.0.w,
-                                child: DropdownButton(
+                              SizedBox(width: 31.0.w),
+                              //Positioned(
+                                //right: 16.0.w,
+                                //top: 0.0.w,
+                                //child: DropdownButton(
+                                DropdownButton(
                                   value: versionTemp,
                                   icon: Icon(Icons.arrow_downward),
                                   iconSize: 6.5.sp,
@@ -496,14 +504,16 @@ class _GameState extends State<GameScreen> {
                                       versionTemp = newValue;
                                     });
                                   }
-                                )
+                                //)
                               ),
-                              Positioned(
-                                right: 2.0.w,
-                                top: 0.3.w,
-                                child: ButtonTheme(
-                                  //minWidth: 10.0.w,
+                              SizedBox(width: 1.0.w),
+                              //Positioned(
+                                //right: 2.0.w,
+                                //top: 0.3.w,
+                                //child: ButtonTheme(
+                                ButtonTheme(  
                                   height: 1.5.h,
+                                  minWidth: 8.0.w,
                                   child: new RaisedButton(
                                     onPressed: () {
                                       setState(() {
@@ -523,7 +533,7 @@ class _GameState extends State<GameScreen> {
                                     ),
                                   )
                                 ),
-                              ) 
+                              //) 
                             ]
                           )
                         )
@@ -746,8 +756,8 @@ class _GameState extends State<GameScreen> {
       return new Text("$winner wins!", style: TextStyle(color: _teamColor(), fontSize: 8.0.sp));
     } else {
       return new ButtonTheme(
-        height: 1.5.h,
-        //minWidth: 10.0.w,
+        height: 1.0.h,
+        minWidth: 10.0.w,
         child: new RaisedButton(
           onPressed: () {
             setState(() {
