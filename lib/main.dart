@@ -335,44 +335,44 @@ class _GameState extends State<GameScreen> {
                       Center(
                         child: Container(
                           height: 2.0.h,
-                          width: 90.0.w,
+                          width: 75.0.w,
                           child: Stack(
                             children: <Widget>[
                               Positioned(
-                                left: 2.0.w,
+                                left: 1.0.w,
                                 bottom: 0.3.h,
                                 child: new RichText(
                                   text: TextSpan(
                                     children: <TextSpan>[
-                                      TextSpan(text: "$blueScoreCounter  ", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
-                                      TextSpan(text: "${String.fromCharCode(0x2014)}  ", style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
-                                      TextSpan(text: "$redScoreCounter  ", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
-                                      TextSpan(text: "(Goal: ", style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
-                                      TextSpan(text: (blueFirst == true) ? "9" : "8", style: TextStyle(color: Colors.blue, fontSize: 8.0.sp)),
-                                      TextSpan(text: " - ", style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 8.0.sp)),
-                                      TextSpan(text: (blueFirst == true) ? "8" : "9", style: TextStyle(color: Colors.red, fontSize: 8.0.sp)),
-                                      TextSpan(text: ")", style: TextStyle(color: Colors.black, fontSize: 8.0.sp))
+                                      TextSpan(text: "$blueScoreCounter  ", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 7.0.sp)),
+                                      TextSpan(text: "${String.fromCharCode(0x2014)}  ", style: TextStyle(color: Colors.black, fontSize: 7.0.sp)),
+                                      TextSpan(text: "$redScoreCounter  ", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 7.0.sp)),
+                                      TextSpan(text: "(Goal: ", style: TextStyle(color: Colors.black, fontSize: 7.0.sp)),
+                                      TextSpan(text: (blueFirst == true) ? "9" : "8", style: TextStyle(color: Colors.blue, fontSize: 7.0.sp)),
+                                      TextSpan(text: " - ", style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 7.0.sp)),
+                                      TextSpan(text: (blueFirst == true) ? "8" : "9", style: TextStyle(color: Colors.red, fontSize: 7.0.sp)),
+                                      TextSpan(text: ")", style: TextStyle(color: Colors.black, fontSize: 7.0.sp))
                                     ]
                                   )
                                 )
                               ),
                               Center(
                                 child: Padding(
-                                  padding: EdgeInsets.only(bottom: 0.3.h),
+                                  padding: EdgeInsets.only(bottom: 0.0.h),
                                   child: new RichText(
                                     text: TextSpan(
                                       children: <TextSpan>[
-                                        TextSpan(text: "$currentTeam's turn", style: TextStyle(color: _teamColor(), fontSize: 8.0.sp)),
+                                        TextSpan(text: "$currentTeam's turn", style: TextStyle(color: _teamColor(), fontSize: 7.0.sp)),
                                         TextSpan(text: (currentTimerSwitch() == true && gameOver == false) ? " (${_currentMinutesRemaining}:" 
                                           + ((_currentSecondsRemaining < 10) ? "0" : "") + "${_currentSecondsRemaining})" : "", 
-                                          style: TextStyle(color: _teamColor(), fontWeight: FontWeight.bold, fontSize: 8.0.sp))
+                                          style: TextStyle(color: _teamColor(), fontWeight: FontWeight.bold, fontSize: 7.0.sp))
                                       ]
                                     )
                                   )
                                 )
                               ),
                               Positioned(
-                                right: 2.0.w,
+                                right: 1.0.w,
                                 bottom: 0.0.w,
                                 child: _turnWidget(),
                               )
@@ -382,13 +382,13 @@ class _GameState extends State<GameScreen> {
                       ),
                       Center(
                         child: Container(
-                          width: 750, 
-                          height: 750,
-                          padding: const EdgeInsets.all(10.0),
+                          height: 38.0.h,
+                          width: 77.0.w, 
+                          padding: EdgeInsets.all(1.0.h),
                           child: new GridView.count(
                             crossAxisCount: 5, 
-                            crossAxisSpacing: 10.0, 
-                            mainAxisSpacing: 10.0,
+                            crossAxisSpacing: 1.0.w, 
+                            mainAxisSpacing: 1.0.w,
                             children: _buildGridTiles(25),
                           ),
                         ),
@@ -636,7 +636,7 @@ class _GameState extends State<GameScreen> {
         child: Text(wordsList[index].toUpperCase(), style: TextStyle(
         color: (colorListInteractive[index] != null) ? Colors.white : Colors.black, 
         fontWeight: FontWeight.bold,
-        fontSize: 19)
+        fontSize: 6.2.sp)
         )
       )
     );
