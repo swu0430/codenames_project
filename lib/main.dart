@@ -985,159 +985,167 @@ class _GameState extends State<GameScreen> {
             ),
           ),
         ),
+        Center(child: Text("SETTINGS", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp))),
+        SizedBox(height: 3.0.w),
         Container(
-          height: 60.0.w,
-          width: 60.0.w,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Center(child: Text("SETTINGS", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20))),
-                SizedBox(height: 3.0.w),
-                Container(
-                  padding: EdgeInsets.only(left: 3.0.w),
-                  child: Row(children: [
-                    Text("Blue Timer", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
-                    SizedBox(width: 1.0.w),
-                    Switch(
-                      value: timerSwitchTempBlue,
-                      onChanged: (bool newValue) {
-                        setState(() {
-                          timerSwitchTempBlue = newValue;
-                        });
-                      },
-                      activeTrackColor: Colors.lightBlueAccent,
-                      activeColor: Colors.blue,
-                    ), 
-                    SizedBox(width: 1.0.w),
-                    _timeSettingInputContainerBlue(),
-                  ])
-                ),
-                Container(
-                  padding: EdgeInsets.only(left: 3.0.w),
-                  child: Row(children: [
-                    Text("Red Timer", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
-                    SizedBox(width: 1.0.w),
-                    Switch(
-                      value: timerSwitchTempRed,
-                      onChanged: (bool newValue) {
-                        setState(() {
-                          timerSwitchTempRed = newValue;
-                        });
-                      },
-                      activeTrackColor: Colors.redAccent,
-                      activeColor: Colors.red,
-                    ), 
-                    SizedBox(width: 1.0.w),
-                    _timeSettingInputContainerRed(),
-                  ])
-                ),
-                Container(
-                  padding: EdgeInsets.only(left: 3.0.w),
-                  child: Row(children: [
-                    Text("Enforce Timers", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
-                    SizedBox(width: 15.0),
-                    Switch(
-                      value: enforceTimersSwitchTemp,
-                      onChanged: (bool newValue) {
-                        setState(() {
-                          enforceTimersSwitchTemp = newValue;
-                        });
-                      },
-                      activeTrackColor: Colors.grey,
-                      activeColor: Colors.grey[800],
-                    ), 
-                  ])
-                ),
-                Container(
-                  padding: EdgeInsets.only(left: 3.0.w),
-                  child: Row(children: [
-                    Text("Spymaster Can Guess", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
-                    SizedBox(width: 1.0.w),
-                    Switch(
-                      value: spymasterEnableSwitchTemp,
-                      onChanged: (bool newValue) {
-                        setState(() {
-                          spymasterEnableSwitchTemp = newValue;
-                        });
-                      },
-                      activeTrackColor: Colors.grey,
-                      activeColor: Colors.grey[800],
-                    ), 
-                  ])
-                ),
-                SizedBox(height: 3.0.w),
-                Center(child: new RawMaterialButton(
-                  fillColor: Colors.blue[800],
-                  splashColor: Colors.blue[900],
-                  child: Text('Apply', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
-                  onPressed: () {
-                    
-                    if (timerSwitchTempBlue == false) {
-                      errorMinuteSettingInputBlue = false;
-                      errorSecondSettingInputBlue = false;
-                    } else {
-                      try {
-                        _minuteLimitBlue = int.parse(minuteSettingInputBlue.text);
-                        errorMinuteSettingInputBlue = false;
-                      } catch (e) {
-                        setState(() {
-                          errorMinuteSettingInputBlue = true;
-                        });
-                      }
-                      try {
-                        _secondLimitBlue = int.parse(secondSettingInputBlue.text);
-                        errorSecondSettingInputBlue = false;
-                      } catch (e) {
-                        setState(() {
-                          errorSecondSettingInputBlue = true;
-                        });
-                      }
-                    } 
+          height: 50.0.w,
+          width: 80.0.w,
+        child: SingleChildScrollView(
 
-                    if (timerSwitchTempRed == false) {
-                      errorMinuteSettingInputRed = false;
-                      errorSecondSettingInputRed = false;
-                    } else {
-                      try {
-                        _minuteLimitRed = int.parse(minuteSettingInputRed.text);
-                        errorMinuteSettingInputRed = false;
-                      } catch (e) {
-                        setState(() {
-                          errorMinuteSettingInputRed = true;
-                        });
-                      }
-                      try {
-                        _secondLimitRed = int.parse(secondSettingInputRed.text);
-                        errorSecondSettingInputRed = false;
-                      } catch (e) {
-                        setState(() {
-                          errorSecondSettingInputRed = true;
-                        });
-                      }
-                    } 
-                    
-                    if (errorMinuteSettingInputBlue == false && errorSecondSettingInputBlue == false
-                    && errorMinuteSettingInputRed == false && errorSecondSettingInputRed == false) {
-                      Navigator.of(context).pop();
-                      setState(() {
-                        timerSwitchBlue = timerSwitchTempBlue;
-                        timerSwitchRed = timerSwitchTempRed;
-                        enforceTimersSwitch = enforceTimersSwitchTemp;
-                        spymasterEnableSwitch = spymasterEnableSwitchTemp;
-                        if (currentTeam == "blue" && timerSwitchBlue == true) {
-                          startTimer(_minuteLimitBlue * 60 + _secondLimitBlue);
-                        } else if (currentTeam == "red" && timerSwitchRed == true) {
-                          startTimer(_minuteLimitRed * 60 + _secondLimitRed);
+      
+          child: Column(
+            children: [
+
+
+                      Container(
+                      alignment: Alignment.centerLeft,
+                      padding: EdgeInsets.only(left: 3.0.w),
+                      child: Row(
+                        children: [
+                        Text("Blue Timer", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+                        SizedBox(width: 1.0.w),
+                        Switch(
+                          value: timerSwitchTempBlue,
+                          onChanged: (bool newValue) {
+                            setState(() {
+                              timerSwitchTempBlue = newValue;
+                            });
+                          },
+                          activeTrackColor: Colors.lightBlueAccent,
+                          activeColor: Colors.blue,
+                        ), 
+                        SizedBox(width: 1.0.w),
+                        _timeSettingInputContainerBlue(),
+                      ])
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(left: 3.0.w),
+                      child: Row(children: [
+                        Text("Red Timer", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+                        SizedBox(width: 1.0.w),
+                        Switch(
+                          value: timerSwitchTempRed,
+                          onChanged: (bool newValue) {
+                            setState(() {
+                              timerSwitchTempRed = newValue;
+                            });
+                          },
+                          activeTrackColor: Colors.redAccent,
+                          activeColor: Colors.red,
+                        ), 
+                        SizedBox(width: 1.0.w),
+                        _timeSettingInputContainerRed(),
+                      ])
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(left: 3.0.w),
+                      child: Row(children: [
+                        Text("Enforce Timers", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+                        SizedBox(width: 15.0),
+                        Switch(
+                          value: enforceTimersSwitchTemp,
+                          onChanged: (bool newValue) {
+                            setState(() {
+                              enforceTimersSwitchTemp = newValue;
+                            });
+                          },
+                          activeTrackColor: Colors.grey,
+                          activeColor: Colors.grey[800],
+                        ), 
+                      ])
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(left: 3.0.w),
+                      child: Row(children: [
+                        Text("Spymaster Can Guess", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+                        SizedBox(width: 1.0.w),
+                        Switch(
+                          value: spymasterEnableSwitchTemp,
+                          onChanged: (bool newValue) {
+                            setState(() {
+                              spymasterEnableSwitchTemp = newValue;
+                            });
+                          },
+                          activeTrackColor: Colors.grey,
+                          activeColor: Colors.grey[800],
+                        ), 
+                      ])
+                    ),
+                    SizedBox(height: 3.0.w),
+                    Center(child: new RawMaterialButton(
+                      fillColor: Colors.blue[800],
+                      splashColor: Colors.blue[900],
+                      child: Text('Apply', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+                      onPressed: () {
+                        
+                        if (timerSwitchTempBlue == false) {
+                          errorMinuteSettingInputBlue = false;
+                          errorSecondSettingInputBlue = false;
+                        } else {
+                          try {
+                            _minuteLimitBlue = int.parse(minuteSettingInputBlue.text);
+                            errorMinuteSettingInputBlue = false;
+                          } catch (e) {
+                            setState(() {
+                              errorMinuteSettingInputBlue = true;
+                            });
+                          }
+                          try {
+                            _secondLimitBlue = int.parse(secondSettingInputBlue.text);
+                            errorSecondSettingInputBlue = false;
+                          } catch (e) {
+                            setState(() {
+                              errorSecondSettingInputBlue = true;
+                            });
+                          }
+                        } 
+
+                        if (timerSwitchTempRed == false) {
+                          errorMinuteSettingInputRed = false;
+                          errorSecondSettingInputRed = false;
+                        } else {
+                          try {
+                            _minuteLimitRed = int.parse(minuteSettingInputRed.text);
+                            errorMinuteSettingInputRed = false;
+                          } catch (e) {
+                            setState(() {
+                              errorMinuteSettingInputRed = true;
+                            });
+                          }
+                          try {
+                            _secondLimitRed = int.parse(secondSettingInputRed.text);
+                            errorSecondSettingInputRed = false;
+                          } catch (e) {
+                            setState(() {
+                              errorSecondSettingInputRed = true;
+                            });
+                          }
+                        } 
+                        
+                        if (errorMinuteSettingInputBlue == false && errorSecondSettingInputBlue == false
+                        && errorMinuteSettingInputRed == false && errorSecondSettingInputRed == false) {
+                          Navigator.of(context).pop();
+                          setState(() {
+                            timerSwitchBlue = timerSwitchTempBlue;
+                            timerSwitchRed = timerSwitchTempRed;
+                            enforceTimersSwitch = enforceTimersSwitchTemp;
+                            spymasterEnableSwitch = spymasterEnableSwitchTemp;
+                            if (currentTeam == "blue" && timerSwitchBlue == true) {
+                              startTimer(_minuteLimitBlue * 60 + _secondLimitBlue);
+                            } else if (currentTeam == "red" && timerSwitchRed == true) {
+                              startTimer(_minuteLimitRed * 60 + _secondLimitRed);
+                            }
+                          });
                         }
-                      });
-                    }
-                  }
-                )),
-                SizedBox(height: 1.0.w),
-              ]
+                      }
+                    )),
+                    SizedBox(height: 1.0.w),
+                  ]
+                )
+              //)            
             )  
           )
-        )
+        
       ]);
     });
   }
