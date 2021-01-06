@@ -334,46 +334,46 @@ class _GameState extends State<GameScreen> {
                       SizedBox(height: 1.0.h),
                       Center(
                         child: Container(
-                          height: 2.0.h,
-                          width: 75.0.w,
+                          height: 2.5.h,
+                          width: 90.0.w,
                           child: Stack(
                             children: <Widget>[
                               Positioned(
-                                left: 1.0.w,
+                                left: 2.0.w,
                                 bottom: 0.3.h,
                                 child: new RichText(
                                   text: TextSpan(
                                     children: <TextSpan>[
-                                      TextSpan(text: "$blueScoreCounter  ", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 7.0.sp)),
-                                      TextSpan(text: "${String.fromCharCode(0x2014)}  ", style: TextStyle(color: Colors.black, fontSize: 7.0.sp)),
-                                      TextSpan(text: "$redScoreCounter  ", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 7.0.sp)),
-                                      TextSpan(text: "(Goal: ", style: TextStyle(color: Colors.black, fontSize: 7.0.sp)),
-                                      TextSpan(text: (blueFirst == true) ? "9" : "8", style: TextStyle(color: Colors.blue, fontSize: 7.0.sp)),
-                                      TextSpan(text: " - ", style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 7.0.sp)),
-                                      TextSpan(text: (blueFirst == true) ? "8" : "9", style: TextStyle(color: Colors.red, fontSize: 7.0.sp)),
-                                      TextSpan(text: ")", style: TextStyle(color: Colors.black, fontSize: 7.0.sp))
+                                      TextSpan(text: "$blueScoreCounter  ", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
+                                      TextSpan(text: "${String.fromCharCode(0x2014)}  ", style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
+                                      TextSpan(text: "$redScoreCounter  ", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
+                                      TextSpan(text: "(Goal: ", style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
+                                      TextSpan(text: (blueFirst == true) ? "9" : "8", style: TextStyle(color: Colors.blue, fontSize: 8.0.sp)),
+                                      TextSpan(text: " - ", style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 8.0.sp)),
+                                      TextSpan(text: (blueFirst == true) ? "8" : "9", style: TextStyle(color: Colors.red, fontSize: 8.0.sp)),
+                                      TextSpan(text: ")", style: TextStyle(color: Colors.black, fontSize: 8.0.sp))
                                     ]
                                   )
                                 )
                               ),
                               Center(
                                 child: Padding(
-                                  padding: EdgeInsets.only(bottom: 0.0.h),
+                                  padding: EdgeInsets.only(bottom: 0.3.h),
                                   child: new RichText(
                                     text: TextSpan(
                                       children: <TextSpan>[
-                                        TextSpan(text: "$currentTeam's turn", style: TextStyle(color: _teamColor(), fontSize: 7.0.sp)),
+                                        TextSpan(text: "$currentTeam's turn", style: TextStyle(color: _teamColor(), fontSize: 8.0.sp)),
                                         TextSpan(text: (currentTimerSwitch() == true && gameOver == false) ? " (${_currentMinutesRemaining}:" 
                                           + ((_currentSecondsRemaining < 10) ? "0" : "") + "${_currentSecondsRemaining})" : "", 
-                                          style: TextStyle(color: _teamColor(), fontWeight: FontWeight.bold, fontSize: 7.0.sp))
+                                          style: TextStyle(color: _teamColor(), fontWeight: FontWeight.bold, fontSize: 8.0.sp))
                                       ]
                                     )
                                   )
                                 )
                               ),
                               Positioned(
-                                right: 1.0.w,
-                                bottom: 0.0.w,
+                                right: 2.0.w,
+                                bottom: 0.3.h,
                                 child: _turnWidget(),
                               )
                             ]
@@ -382,8 +382,8 @@ class _GameState extends State<GameScreen> {
                       ),
                       Center(
                         child: Container(
-                          height: 38.0.h,
-                          width: 77.0.w, 
+                          height: 43.0.h,
+                          width: 90.0.w, 
                           padding: EdgeInsets.all(1.0.h),
                           child: new GridView.count(
                             crossAxisCount: 5, 
@@ -395,20 +395,21 @@ class _GameState extends State<GameScreen> {
                       ),
                       Center(
                         child: Container(
-                          height: 20,
-                          width: 740,
+                          height: 1.5.h,
+                          width: 90.0.w,
                           child: Stack(
                             children: [
                               Positioned(
-                                left: 5,
+                                left: 1.5.w,
+                                top: 0.0.w,
                                 child: Row( 
                                   children: [
                                     Text(((version == 'Pictures') || (version == "Words + Pictures")) ? "Source of images: " : "", 
-                                      style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 15)
+                                      style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 6.0.sp)
                                     ),
                                     Link(url: 'https://unsplash.com/', 
                                       child: Text(((version == 'Pictures') || (version == "Words + Pictures")) ? "https://unsplash.com/" : "",
-                                        style: TextStyle(color: Colors.blue, fontStyle: FontStyle.italic, decoration: TextDecoration.underline, fontSize: 15), 
+                                        style: TextStyle(color: Colors.blue, fontStyle: FontStyle.italic, decoration: TextDecoration.underline, fontSize: 6.0.sp), 
                                       )
                                     )
                                   ]
@@ -418,19 +419,19 @@ class _GameState extends State<GameScreen> {
                           )
                         )
                       ),
-                      SizedBox(height: 3.0),
+                      SizedBox(height: 1.0.w),
                       Center(
                         child: Container(
-                          height: 40,
-                          width: 740, 
+                          height: 3.0.h,
+                          width: 90.0.w, 
                           child: Stack(
                             children: <Widget>[
                               Positioned(
-                                left: 5,
-                                bottom: 1,
+                                left: 2.0.w,
+                                top: 0.0.w,
                                 child: ButtonTheme(
-                                  minWidth: 125.0,
-                                  height: 35.0,
+                                  minWidth: 15.0.w,
+                                  height: 1.5.h,
                                   child: new RaisedButton(
                                     shape: spymaster == false ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
                                     onPressed: () {
@@ -439,18 +440,18 @@ class _GameState extends State<GameScreen> {
                                       });
                                     },
                                     color: Colors.grey[350],
-                                    child: const Text('Operative',
-                                      style: TextStyle(fontSize: 20)
+                                    child: Text('Operative',
+                                      style: TextStyle(fontSize: 8.0.sp)
                                     ),
                                   )
                                 )
                               ),
                               Positioned(
-                                left: 125,
-                                bottom: 1,
+                                left: 16.5.w,
+                                top: 0.0.w,
                                 child: ButtonTheme(
-                                  minWidth: 125.0,
-                                  height: 35.0,
+                                  minWidth: 15.0.w,
+                                  height: 1.5.h,
                                   child: new RaisedButton(
                                     shape: spymaster == true ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
                                     onPressed: () {
@@ -459,19 +460,19 @@ class _GameState extends State<GameScreen> {
                                       });
                                     },
                                     color: Colors.grey[350],
-                                    child: const Text('Spymaster',
-                                      style: TextStyle(fontSize: 20)
+                                    child: Text('Spymaster',
+                                      style: TextStyle(fontSize: 8.0.sp)
                                     ),
                                   )
                                 )
                               ),   
                               Positioned(
-                                right: 130,
-                                bottom: 0,
+                                right: 18.0.w,
+                                top: 0.0.w,
                                 child: DropdownButton(
                                   value: versionTemp,
                                   icon: Icon(Icons.arrow_downward),
-                                  iconSize: 15,
+                                  iconSize: 8.0.sp,
                                   items: <String>['Words', 'Pictures', 'Words + Pictures']
                                     .map<DropdownMenuItem<String>>((String value) {
                                       return DropdownMenuItem<String>(
@@ -487,11 +488,11 @@ class _GameState extends State<GameScreen> {
                                 )
                               ),
                               Positioned(
-                                right: 5,
-                                bottom: 1,
+                                right: 2.0.w,
+                                bottom: 0.0.w,
                                 child: ButtonTheme(
-                                  minWidth: 125.0,
-                                  height: 35.0,
+                                  minWidth: 15.0.w,
+                                  height: 1.5.h,
                                   child: new RaisedButton(
                                     onPressed: () {
                                       setState(() {
@@ -506,8 +507,8 @@ class _GameState extends State<GameScreen> {
                                     },
                                     color: Colors.indigo[800],
                                     textColor: Colors.white,
-                                    child: const Text('Next Game',
-                                      style: TextStyle(fontSize: 20)
+                                    child: Text('Next Game',
+                                      style: TextStyle(fontSize: 8.0.sp)
                                     ),
                                   )
                                 ),
@@ -516,7 +517,7 @@ class _GameState extends State<GameScreen> {
                           )
                         )
                       ),
-                      SizedBox(height: 10.0)
+                      SizedBox(height: 2.0.h)
                     ] 
                   )
                 )
@@ -735,7 +736,7 @@ class _GameState extends State<GameScreen> {
     } else {
       return new ButtonTheme(
         minWidth: 10.0.w,
-        height: 2.0.h,
+        height: 1.5.h,
         child: new RaisedButton(
           onPressed: () {
             setState(() {
