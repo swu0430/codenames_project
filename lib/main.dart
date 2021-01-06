@@ -382,7 +382,8 @@ class _GameState extends State<GameScreen> {
                               ),
                               Positioned(
                                 right: 2.0.w,
-                                top: 3.0.w,
+                                top: 4.0.w,
+                                bottom: 2.0.w,
                                 child: _turnWidget(),
                               )
                             ]
@@ -404,141 +405,113 @@ class _GameState extends State<GameScreen> {
                           ),
                         ),
                       ),
-                      Center(
-                        child: Container(
-                          height: 3.0.h,
-                          width: 90.0.w,
-                          child: Stack(
-                            children: [
-                              Positioned(
-                                left: 2.0.w,
-                                top: 0.0.w,
-                                child: Row( 
-                                  children: [
-                                    Text(((version == 'Pictures') || (version == "Words + Pictures")) ? "Source of images: " : "", 
-                                      style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 6.0.sp)
-                                    ),
-                                    Link(url: 'https://unsplash.com/', 
-                                      child: Text(((version == 'Pictures') || (version == "Words + Pictures")) ? "https://unsplash.com/" : "",
-                                        style: TextStyle(color: Colors.blue, fontStyle: FontStyle.italic, decoration: TextDecoration.underline, fontSize: 6.0.sp), 
-                                      )
-                                    )
-                                  ]
-                                )
-                              )
-                            ]
-                          )
-                        )
-                      ),
-                      SizedBox(height: 1.0.w),
+                      SizedBox(height: 0.5.w),
                       Center(
                         child: Container(
                           height: 4.0.h,
                           width: 90.0.w, 
-                          //child: Stack(
                           child: Row(
+                            //mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              //Positioned(
-                                //left: 2.0.w,
-                                //top: 0.0.w,
-                                //child: ButtonTheme(
-                                SizedBox(width: 2.0.w),
-                                ButtonTheme(
-                                  height: 1.5.h,
-                                  //minWidth: 8.0.w,
-                                  padding: EdgeInsets.zero,
-                                  child: new RaisedButton(
-                                    shape: spymaster == false ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
-                                    onPressed: () {
-                                      setState(() {
-                                        spymaster = false;
-                                      });
-                                    },
-                                    color: Colors.grey[350],
-                                    child: Text('Operative',
-                                      style: TextStyle(fontSize: 6.5.sp)
+                              Container(
+                                height: 4.0.h, 
+                                width: 45.0.w,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    SizedBox(width: 2.0.w),
+                                    ButtonTheme(
+                                      height: 5.0.w,
+                                      minWidth: 12.0.w,
+                                      padding: EdgeInsets.zero,
+                                      child: new RaisedButton(
+                                        shape: spymaster == false ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
+                                        onPressed: () {
+                                          setState(() {
+                                            spymaster = false;
+                                          });
+                                        },
+                                        color: Colors.grey[350],
+                                        child: Text('Operative',
+                                          style: TextStyle(fontSize: 6.5.sp)
+                                        ),
+                                      )
                                     ),
-                                  )
-                                ),
-                              SizedBox(width: 0.5.w),
-                              //Positioned(
-                                //left: 14.0.w,
-                                //top: 0.0.w,
-                                //child: ButtonTheme(
-                                ButtonTheme(
-                                  height: 1.5.h,
-                                  //minWidth: 8.0.w,
-                                  padding: EdgeInsets.zero,
-                                  child: new RaisedButton(
-                                    shape: spymaster == true ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
-                                    onPressed: () {
-                                      setState(() {
-                                        spymaster = true;
-                                      });
-                                    },
-                                    color: Colors.grey[350],
-                                    child: Text('Spymaster',
-                                      style: TextStyle(fontSize: 6.5.sp)
-                                    ),
-                                  )
-                                //)
-                              ),   
-                              SizedBox(width: 31.0.w),
-                              //Positioned(
-                                //right: 16.0.w,
-                                //top: 0.0.w,
-                                //child: DropdownButton(
-                                DropdownButton(
-                                  value: versionTemp,
-                                  icon: Icon(Icons.arrow_downward),
-                                  iconSize: 6.5.sp,
-                                  items: <String>['Words', 'Pictures', 'Words + Pictures']
-                                    .map<DropdownMenuItem<String>>((String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: Text(value, style: TextStyle(fontSize: 6.5.sp)),
-                                      );
-                                    }).toList(),
-                                  onChanged: (String newValue) {
-                                    setState(() {
-                                      versionTemp = newValue;
-                                    });
-                                  }
-                                //)
+                                    SizedBox(width: 0.5.w),
+                                    ButtonTheme(
+                                      height: 5.0.w,
+                                      minWidth: 12.0.w,
+                                      padding: EdgeInsets.zero,
+                                      child: new RaisedButton(
+                                        shape: spymaster == true ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
+                                        onPressed: () {
+                                          setState(() {
+                                            spymaster = true;
+                                          });
+                                        },
+                                        color: Colors.grey[350],
+                                        child: Text('Spymaster',
+                                          style: TextStyle(fontSize: 6.5.sp)
+                                        ),
+                                      )
+                                    )
+                                  ]
+                                )
                               ),
-                              SizedBox(width: 1.0.w),
-                              //Positioned(
-                                //right: 2.0.w,
-                                //top: 0.3.w,
-                                //child: ButtonTheme(
-                                ButtonTheme(  
-                                  height: 1.5.h,
-                                  minWidth: 8.0.w,
-                                  child: new RaisedButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        version = versionTemp;
-                                        restart = true;
-                                        if ((version == 'Pictures') || (version == "Words + Pictures")) {
-                                          runFutures = true;
-                                        } else {
-                                          runFutures = false;
-                                        }
-                                      });
-                                    },
-                                    color: Colors.indigo[800],
-                                    textColor: Colors.white,
-                                    child: Text('Next Game',
-                                      style: TextStyle(fontSize: 6.5.sp)
+                              Container(
+                                height: 4.0.h, 
+                                width: 45.0.w,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    DropdownButton(
+                                      value: versionTemp,
+                                      icon: Icon(Icons.arrow_downward),
+                                      iconSize: 6.5.sp,
+                                      items: <String>['Words', 'Pictures', 'Words + Pictures']
+                                        .map<DropdownMenuItem<String>>((String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value, style: TextStyle(fontSize: 6.5.sp)),
+                                          );
+                                        }).toList(),
+                                      onChanged: (String newValue) {
+                                        setState(() {
+                                          versionTemp = newValue;
+                                        });
+                                      }
                                     ),
-                                  )
-                                ),
-                              //) 
+                                    SizedBox(width: 0.5.w),
+                                    ButtonTheme(  
+                                      height: 5.0.w,
+                                      minWidth: 12.0.w,
+                                      child: new RaisedButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            version = versionTemp;
+                                            restart = true;
+                                            if ((version == 'Pictures') || (version == "Words + Pictures")) {
+                                              runFutures = true;
+                                            } else {
+                                              runFutures = false;
+                                            }
+                                          });
+                                        },
+                                        color: Colors.indigo[800],
+                                        textColor: Colors.white,
+                                        child: Text('Next Game',
+                                          style: TextStyle(fontSize: 6.5.sp)
+                                        ),
+                                      )
+                                    ),
+                                    SizedBox(width: 2.0.w)
+                                  ]
+                                )
+                              ) 
                             ]
                           )
                         )
                       ),
-                      //SizedBox(height: 2.0.h)
                     ] 
                   ))
                 )
