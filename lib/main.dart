@@ -367,7 +367,7 @@ class _GameState extends State<GameScreen> {
                               ),
                               Center(
                                 child: Padding(
-                                  padding: EdgeInsets.only(top: 2.5.h),
+                                  padding: EdgeInsets.only(top: 2.0.h),
                                   child: new RichText(
                                     text: TextSpan(
                                       children: <TextSpan>[
@@ -382,7 +382,7 @@ class _GameState extends State<GameScreen> {
                               ),
                               Positioned(
                                 right: 2.0.w,
-                                bottom: 0.0.h,
+                                top: 2.0.h,
                                 child: _turnWidget(),
                               )
                             ]
@@ -393,7 +393,7 @@ class _GameState extends State<GameScreen> {
 
                   
                         child: Container(
-                          height: 60.0.h,
+                          height: 45.0.h,
                           width: 90.0.w, 
                           padding: EdgeInsets.all(1.0.h),
                           child: new GridView.count(
@@ -406,12 +406,12 @@ class _GameState extends State<GameScreen> {
                       ),
                       Center(
                         child: Container(
-                          height: 1.5.h,
+                          height: 3.0.h,
                           width: 90.0.w,
                           child: Stack(
                             children: [
                               Positioned(
-                                left: 1.5.w,
+                                left: 2.0.w,
                                 top: 0.0.w,
                                 child: Row( 
                                   children: [
@@ -433,7 +433,7 @@ class _GameState extends State<GameScreen> {
                       SizedBox(height: 1.0.w),
                       Center(
                         child: Container(
-                          height: 3.0.h,
+                          height: 5.0.h,
                           width: 90.0.w, 
                           child: Stack(
                             children: <Widget>[
@@ -452,7 +452,7 @@ class _GameState extends State<GameScreen> {
                                     },
                                     color: Colors.grey[350],
                                     child: Text('Operative',
-                                      style: TextStyle(fontSize: 8.0.sp)
+                                      style: TextStyle(fontSize: 7.0.sp)
                                     ),
                                   )
                                 )
@@ -472,7 +472,7 @@ class _GameState extends State<GameScreen> {
                                     },
                                     color: Colors.grey[350],
                                     child: Text('Spymaster',
-                                      style: TextStyle(fontSize: 8.0.sp)
+                                      style: TextStyle(fontSize: 7.0.sp)
                                     ),
                                   )
                                 )
@@ -483,12 +483,12 @@ class _GameState extends State<GameScreen> {
                                 child: DropdownButton(
                                   value: versionTemp,
                                   icon: Icon(Icons.arrow_downward),
-                                  iconSize: 8.0.sp,
+                                  iconSize: 6.5.sp,
                                   items: <String>['Words', 'Pictures', 'Words + Pictures']
                                     .map<DropdownMenuItem<String>>((String value) {
                                       return DropdownMenuItem<String>(
                                         value: value,
-                                        child: Text(value, style: TextStyle(fontSize: 18)),
+                                        child: Text(value, style: TextStyle(fontSize: 6.5.sp)),
                                       );
                                     }).toList(),
                                   onChanged: (String newValue) {
@@ -519,7 +519,7 @@ class _GameState extends State<GameScreen> {
                                     color: Colors.indigo[800],
                                     textColor: Colors.white,
                                     child: Text('Next Game',
-                                      style: TextStyle(fontSize: 8.0.sp)
+                                      style: TextStyle(fontSize: 7.0.sp)
                                     ),
                                   )
                                 ),
