@@ -329,12 +329,21 @@ class _GameState extends State<GameScreen> {
                   ),
                 ),
                 body: new SingleChildScrollView(
+                  
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxHeight: 100.0.h),
+                    //child: ListView(
+                  //child: Center(
+                  //child: Container(
+                    //height: 60.0.w,
+                    //width: 90.0.w,
+
                   child: Column(
                     children: [
                       SizedBox(height: 1.0.h),
                       Center(
                         child: Container(
-                          height: 2.5.h,
+                          height: 5.0.h,
                           width: 90.0.w,
                           child: Stack(
                             children: <Widget>[
@@ -358,7 +367,7 @@ class _GameState extends State<GameScreen> {
                               ),
                               Center(
                                 child: Padding(
-                                  padding: EdgeInsets.only(bottom: 0.3.h),
+                                  padding: EdgeInsets.only(top: 2.5.h),
                                   child: new RichText(
                                     text: TextSpan(
                                       children: <TextSpan>[
@@ -373,7 +382,7 @@ class _GameState extends State<GameScreen> {
                               ),
                               Positioned(
                                 right: 2.0.w,
-                                bottom: 0.3.h,
+                                bottom: 0.0.h,
                                 child: _turnWidget(),
                               )
                             ]
@@ -381,8 +390,10 @@ class _GameState extends State<GameScreen> {
                         )
                       ),
                       Center(
+
+                  
                         child: Container(
-                          height: 43.0.h,
+                          height: 60.0.h,
                           width: 90.0.w, 
                           padding: EdgeInsets.all(1.0.h),
                           child: new GridView.count(
@@ -489,7 +500,7 @@ class _GameState extends State<GameScreen> {
                               ),
                               Positioned(
                                 right: 2.0.w,
-                                bottom: 0.0.w,
+                                top: 0.3.w,
                                 child: ButtonTheme(
                                   minWidth: 15.0.w,
                                   height: 1.5.h,
@@ -519,7 +530,7 @@ class _GameState extends State<GameScreen> {
                       ),
                       SizedBox(height: 2.0.h)
                     ] 
-                  )
+                  ))
                 )
               )
             );
@@ -736,7 +747,7 @@ class _GameState extends State<GameScreen> {
     } else {
       return new ButtonTheme(
         minWidth: 10.0.w,
-        height: 1.5.h,
+        height: 0.0.h,
         child: new RaisedButton(
           onPressed: () {
             setState(() {
