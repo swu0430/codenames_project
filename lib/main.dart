@@ -329,72 +329,76 @@ class _GameState extends State<GameScreen> {
                   ),
                 ),
                 body: new SingleChildScrollView(
-                  
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxHeight: 100.0.h),
-                    //child: ListView(
-                  //child: Center(
-                  //child: Container(
-                    //height: 60.0.w,
-                    //width: 90.0.w,
-
                   child: Column(
                     children: [
-                      SizedBox(height: 1.0.h),
+                      SizedBox(height: 3.0.w),
                       Center(
                         child: Container(
-                          height: 5.0.h,
+                          height: 5.0.w,
                           width: 90.0.w,
-                          child: Stack(
+                          child: Row(
                             children: <Widget>[
-                              Positioned(
-                                left: 2.0.w,
-                                bottom: 0.3.h,
-                                child: new RichText(
-                                  text: TextSpan(
-                                    children: <TextSpan>[
-                                      TextSpan(text: "$blueScoreCounter  ", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
-                                      TextSpan(text: "${String.fromCharCode(0x2014)}  ", style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
-                                      TextSpan(text: "$redScoreCounter  ", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
-                                      TextSpan(text: "(Goal: ", style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
-                                      TextSpan(text: (blueFirst == true) ? "9" : "8", style: TextStyle(color: Colors.blue, fontSize: 8.0.sp)),
-                                      TextSpan(text: " - ", style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 8.0.sp)),
-                                      TextSpan(text: (blueFirst == true) ? "8" : "9", style: TextStyle(color: Colors.red, fontSize: 8.0.sp)),
-                                      TextSpan(text: ")", style: TextStyle(color: Colors.black, fontSize: 8.0.sp))
-                                    ]
-                                  )
-                                )
-                              ),
-                              Center(
-                                child: Padding(
-                                  padding: EdgeInsets.only(top: 2.0.h),
-                                  child: new RichText(
-                                    text: TextSpan(
-                                      children: <TextSpan>[
-                                        TextSpan(text: "$currentTeam's turn", style: TextStyle(color: _teamColor(), fontSize: 8.0.sp)),
-                                        TextSpan(text: (currentTimerSwitch() == true && gameOver == false) ? " (${_currentMinutesRemaining}:" 
-                                          + ((_currentSecondsRemaining < 10) ? "0" : "") + "${_currentSecondsRemaining})" : "", 
-                                          style: TextStyle(color: _teamColor(), fontWeight: FontWeight.bold, fontSize: 8.0.sp))
-                                      ]
+                              Container(
+                                height: 5.0.w,
+                                width: 30.0.w,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    SizedBox(width: 2.0.w),                                  
+                                    RichText(
+                                      text: TextSpan(
+                                        children: <TextSpan>[
+                                          TextSpan(text: "$blueScoreCounter  ", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
+                                          TextSpan(text: "${String.fromCharCode(0x2014)}  ", style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
+                                          TextSpan(text: "$redScoreCounter  ", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
+                                          TextSpan(text: "(Goal: ", style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
+                                          TextSpan(text: (blueFirst == true) ? "9" : "8", style: TextStyle(color: Colors.blue, fontSize: 8.0.sp)),
+                                          TextSpan(text: " - ", style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 8.0.sp)),
+                                          TextSpan(text: (blueFirst == true) ? "8" : "9", style: TextStyle(color: Colors.red, fontSize: 8.0.sp)),
+                                          TextSpan(text: ")", style: TextStyle(color: Colors.black, fontSize: 8.0.sp))
+                                        ]
+                                      )
                                     )
-                                  )
+                                  ]
                                 )
                               ),
-                              Positioned(
-                                right: 2.0.w,
-                                top: 4.0.w,
-                                bottom: 2.0.w,
-                                child: _turnWidget(),
+                              Container(
+                                height: 5.0.w,
+                                width: 30.0.w,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    RichText(
+                                      text: TextSpan(
+                                        children: <TextSpan>[
+                                          TextSpan(text: "$currentTeam's turn", style: TextStyle(color: _teamColor(), fontSize: 8.0.sp)),
+                                          TextSpan(text: (currentTimerSwitch() == true && gameOver == false) ? " (${_currentMinutesRemaining}:" 
+                                            + ((_currentSecondsRemaining < 10) ? "0" : "") + "${_currentSecondsRemaining})" : "", 
+                                            style: TextStyle(color: _teamColor(), fontWeight: FontWeight.bold, fontSize: 8.0.sp))
+                                        ]
+                                      )
+                                    )
+                                  ]
+                                )
+                              ),
+                              Container(
+                                height: 6.0.w,
+                                width: 30.0.w,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    _turnWidget(),
+                                    SizedBox(width: 2.0.w)
+                                  ]
+                                )
                               )
                             ]
                           )
                         )
                       ),
                       Center(
-
-                  
                         child: Container(
-                          height: 45.0.h,
+                          height: 90.0.w,
                           width: 90.0.w, 
                           padding: EdgeInsets.all(1.0.h),
                           child: new GridView.count(
@@ -405,16 +409,15 @@ class _GameState extends State<GameScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 0.5.w),
+                      //SizedBox(height: 1.0.w),
                       Center(
                         child: Container(
-                          height: 4.0.h,
+                          height: 5.0.w,
                           width: 90.0.w, 
                           child: Row(
-                            //mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               Container(
-                                height: 4.0.h, 
+                                height: 5.0.w, 
                                 width: 45.0.w,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
@@ -459,27 +462,31 @@ class _GameState extends State<GameScreen> {
                                 )
                               ),
                               Container(
-                                height: 4.0.h, 
+                                height: 5.0.w, 
                                 width: 45.0.w,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    DropdownButton(
-                                      value: versionTemp,
-                                      icon: Icon(Icons.arrow_downward),
-                                      iconSize: 6.5.sp,
-                                      items: <String>['Words', 'Pictures', 'Words + Pictures']
-                                        .map<DropdownMenuItem<String>>((String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value, style: TextStyle(fontSize: 6.5.sp)),
-                                          );
-                                        }).toList(),
-                                      onChanged: (String newValue) {
-                                        setState(() {
-                                          versionTemp = newValue;
-                                        });
-                                      }
+                                    ButtonTheme(
+                                      height: 5.0.w,
+                                      minWidth: 12.0.w,
+                                      child: new DropdownButton(
+                                        value: versionTemp,
+                                        icon: Icon(Icons.arrow_downward),
+                                        iconSize: 6.5.sp,
+                                        items: <String>['Words', 'Pictures', 'Words + Pictures']
+                                          .map<DropdownMenuItem<String>>((String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(value, style: TextStyle(fontSize: 6.5.sp)),
+                                            );
+                                          }).toList(),
+                                        onChanged: (String newValue) {
+                                          setState(() {
+                                            versionTemp = newValue;
+                                          });
+                                        }
+                                      )
                                     ),
                                     SizedBox(width: 0.5.w),
                                     ButtonTheme(  
@@ -512,8 +519,9 @@ class _GameState extends State<GameScreen> {
                           )
                         )
                       ),
+                      SizedBox(height: 5.0.w),
                     ] 
-                  ))
+                  )
                 )
               )
             );
@@ -729,8 +737,8 @@ class _GameState extends State<GameScreen> {
       return new Text("$winner wins!", style: TextStyle(color: _teamColor(), fontSize: 8.0.sp));
     } else {
       return new ButtonTheme(
-        height: 1.0.h,
-        minWidth: 10.0.w,
+        height: 5.0.w,
+        minWidth: 12.0.w,
         child: new RaisedButton(
           onPressed: () {
             setState(() {
