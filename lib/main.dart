@@ -382,7 +382,7 @@ class _GameState extends State<GameScreen> {
                               ),
                               Positioned(
                                 right: 2.0.w,
-                                bottom: 0.3.h,
+                                bottom: 0.0.h,
                                 child: _turnWidget(),
                               )
                             ]
@@ -433,7 +433,7 @@ class _GameState extends State<GameScreen> {
                       SizedBox(height: 1.0.w),
                       Center(
                         child: Container(
-                          height: 3.0.h,
+                          height: 5.0.h,
                           width: 90.0.w, 
                           child: Stack(
                             children: <Widget>[
@@ -452,7 +452,7 @@ class _GameState extends State<GameScreen> {
                                     },
                                     color: Colors.grey[350],
                                     child: Text('Operative',
-                                      style: TextStyle(fontSize: 7.0.sp)
+                                      style: TextStyle(fontSize: 6.5.sp)
                                     ),
                                   )
                                 )
@@ -472,13 +472,13 @@ class _GameState extends State<GameScreen> {
                                     },
                                     color: Colors.grey[350],
                                     child: Text('Spymaster',
-                                      style: TextStyle(fontSize: 7.0.sp)
+                                      style: TextStyle(fontSize: 6.5.sp)
                                     ),
                                   )
                                 )
                               ),   
                               Positioned(
-                                right: 18.0.w,
+                                right: 16.0.w,
                                 top: 0.0.w,
                                 child: DropdownButton(
                                   value: versionTemp,
@@ -519,7 +519,7 @@ class _GameState extends State<GameScreen> {
                                     color: Colors.indigo[800],
                                     textColor: Colors.white,
                                     child: Text('Next Game',
-                                      style: TextStyle(fontSize: 7.0.sp)
+                                      style: TextStyle(fontSize: 6.5.sp)
                                     ),
                                   )
                                 ),
