@@ -382,7 +382,7 @@ class _GameState extends State<GameScreen> {
                               ),
                               Positioned(
                                 right: 2.0.w,
-                                top: 2.0.h,
+                                bottom: 0.3.h,
                                 child: _turnWidget(),
                               )
                             ]
@@ -433,7 +433,7 @@ class _GameState extends State<GameScreen> {
                       SizedBox(height: 1.0.w),
                       Center(
                         child: Container(
-                          height: 5.0.h,
+                          height: 3.0.h,
                           width: 90.0.w, 
                           child: Stack(
                             children: <Widget>[
@@ -441,7 +441,7 @@ class _GameState extends State<GameScreen> {
                                 left: 2.0.w,
                                 top: 0.0.w,
                                 child: ButtonTheme(
-                                  minWidth: 15.0.w,
+                                  minWidth: 10.0.w,
                                   height: 1.5.h,
                                   child: new RaisedButton(
                                     shape: spymaster == false ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
@@ -458,10 +458,10 @@ class _GameState extends State<GameScreen> {
                                 )
                               ),
                               Positioned(
-                                left: 16.5.w,
+                                left: 15.0.w,
                                 top: 0.0.w,
                                 child: ButtonTheme(
-                                  minWidth: 15.0.w,
+                                  minWidth: 10.0.w,
                                   height: 1.5.h,
                                   child: new RaisedButton(
                                     shape: spymaster == true ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
@@ -502,7 +502,7 @@ class _GameState extends State<GameScreen> {
                                 right: 2.0.w,
                                 top: 0.3.w,
                                 child: ButtonTheme(
-                                  minWidth: 15.0.w,
+                                  minWidth: 10.0.w,
                                   height: 1.5.h,
                                   child: new RaisedButton(
                                     onPressed: () {
@@ -528,7 +528,7 @@ class _GameState extends State<GameScreen> {
                           )
                         )
                       ),
-                      SizedBox(height: 2.0.h)
+                      //SizedBox(height: 2.0.h)
                     ] 
                   ))
                 )
