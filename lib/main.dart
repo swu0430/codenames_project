@@ -441,8 +441,8 @@ class _GameState extends State<GameScreen> {
                                 left: 2.0.w,
                                 top: 0.0.w,
                                 child: ButtonTheme(
-                                  minWidth: 10.0.w,
                                   height: 1.5.h,
+                                  //minWidth: 10.0.w,
                                   child: new RaisedButton(
                                     shape: spymaster == false ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
                                     onPressed: () {
@@ -458,11 +458,11 @@ class _GameState extends State<GameScreen> {
                                 )
                               ),
                               Positioned(
-                                left: 15.0.w,
+                                left: 14.0.w,
                                 top: 0.0.w,
                                 child: ButtonTheme(
-                                  minWidth: 10.0.w,
                                   height: 1.5.h,
+                                  //minWidth: 10.0.w,
                                   child: new RaisedButton(
                                     shape: spymaster == true ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
                                     onPressed: () {
@@ -502,7 +502,7 @@ class _GameState extends State<GameScreen> {
                                 right: 2.0.w,
                                 top: 0.3.w,
                                 child: ButtonTheme(
-                                  minWidth: 10.0.w,
+                                  //minWidth: 10.0.w,
                                   height: 1.5.h,
                                   child: new RaisedButton(
                                     onPressed: () {
@@ -546,7 +546,7 @@ class _GameState extends State<GameScreen> {
           decoration: BoxDecoration(
             border: Border.all(
               color: (spymaster == true || gameOver == true) ? colorList[index] : borderColorListWhiteforOperatives[index],
-              width: (spymaster == true || gameOver == true) ? 10.0 : 0.0,
+              width: (spymaster == true || gameOver == true) ? 1.5.w : 0.0.w,
             ),
           ),
           child: new InkWell(
@@ -746,8 +746,8 @@ class _GameState extends State<GameScreen> {
       return new Text("$winner wins!", style: TextStyle(color: _teamColor(), fontSize: 8.0.sp));
     } else {
       return new ButtonTheme(
-        minWidth: 10.0.w,
-        height: 0.0.h,
+        height: 1.5.h,
+        //minWidth: 10.0.w,
         child: new RaisedButton(
           onPressed: () {
             setState(() {
@@ -766,8 +766,8 @@ class _GameState extends State<GameScreen> {
           },
           color: Colors.grey[350],
           child: Container(
-            margin: EdgeInsets.only(top: 0.3.h),
-            child: new Text("End $currentTeam's turn", style: TextStyle(fontSize: 8.0.sp))
+            //margin: EdgeInsets.only(top: 0.3.h),
+            child: new Text("End $currentTeam's turn", style: TextStyle(fontSize: 6.5.sp))
           ),
         )
       );
