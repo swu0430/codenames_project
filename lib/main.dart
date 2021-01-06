@@ -131,20 +131,21 @@ class _HomeState extends State<HomeScreen> {
 
                       Center(
                         child: Container(
-                          height: 12.0.w,
+                          height: 6.0.w,
                           width: 90.0.w,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               Container(
-                                height: 12.0.w,
+                                height: 6.0.w,
                                 child: SizedBox(
-                                  height: 12.0.w, 
+                                  height: 6.0.w, 
                                   width: 40.0.w, 
                                   child: TextField(
                                     textAlign: TextAlign.center,
                                     controller: roomID, 
                                     decoration: InputDecoration(
+                                      contentPadding: EdgeInsets.all(0),
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(color: Colors.black, width: 0.3.w)
                                       ),
@@ -156,17 +157,17 @@ class _HomeState extends State<HomeScreen> {
                                 )
                               ),
                               Container(
-                                height: 12.0.w,
+                                height: 6.0.w,
                                 child: SizedBox(
-                                  height: 12.0.w,
+                                  height: 6.0.w,
                                   width: 1.0.w,
                                 )
                               ),
                               Container(
-                                padding: EdgeInsets.only(bottom: 5.5.w),
-                                height: 12.0.w,
+                                //padding: EdgeInsets.only(bottom: 5.5.w),
+                                height: 6.0.w,
                                 child: SizedBox(
-                                  height: 12.0.w,
+                                  height: 6.0.w,
                                   width: 10.0.w, 
                                   child: RawMaterialButton(
                                     fillColor: Colors.red,
@@ -1062,7 +1063,7 @@ class _GameState extends State<GameScreen> {
         Center(child: Text("SETTINGS", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp))),
         SizedBox(height: 3.0.w),
         Container(
-          height: 25.0.w,
+          height: 40.0.w,
           width: 50.0.w,
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
