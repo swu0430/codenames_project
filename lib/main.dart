@@ -467,26 +467,22 @@ class _GameState extends State<GameScreen> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    ButtonTheme(
-                                      height: 5.0.w,
-                                      minWidth: 12.0.w,
-                                      child: new DropdownButton(
-                                        value: versionTemp,
-                                        icon: Icon(Icons.arrow_downward),
-                                        iconSize: 6.5.sp,
-                                        items: <String>['Words', 'Pictures', 'Words + Pictures']
-                                          .map<DropdownMenuItem<String>>((String value) {
-                                            return DropdownMenuItem<String>(
-                                              value: value,
-                                              child: Text(value, style: TextStyle(fontSize: 6.5.sp)),
-                                            );
-                                          }).toList(),
-                                        onChanged: (String newValue) {
-                                          setState(() {
-                                            versionTemp = newValue;
-                                          });
-                                        }
-                                      )
+                                    DropdownButton(
+                                      value: versionTemp,
+                                      icon: Icon(Icons.arrow_downward),
+                                      iconSize: 6.5.sp,
+                                      items: <String>['Words', 'Pictures', 'Words + Pictures']
+                                        .map<DropdownMenuItem<String>>((String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value, style: TextStyle(fontSize: 6.5.sp)),
+                                          );
+                                        }).toList(),
+                                      onChanged: (String newValue) {
+                                        setState(() {
+                                          versionTemp = newValue;
+                                        });
+                                      } 
                                     ),
                                     SizedBox(width: 0.5.w),
                                     ButtonTheme(  
@@ -519,7 +515,7 @@ class _GameState extends State<GameScreen> {
                           )
                         )
                       ),
-                      SizedBox(height: 5.0.w),
+                      SizedBox(height: 10.0.w),
                     ] 
                   )
                 )
@@ -825,7 +821,7 @@ class _GameState extends State<GameScreen> {
         alignment: Alignment.topRight,
         child: GestureDetector(
           onTap: (){
-              Navigator.of(context).pop();
+            Navigator.of(context).pop();
           },
           child: Align(
               alignment: Alignment(0.95, 1),
@@ -835,21 +831,33 @@ class _GameState extends State<GameScreen> {
       ),
       Align(
         alignment: Alignment.center,
-        child: Center(child: Text("ROOM LINK", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20))),
+        child: Center(child: Text("ROOM LINK", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 10.0.sp))),
       ),
-      SizedBox(height: 20.0),
-      Align(
-        alignment: Alignment.center,
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text('Invite friends to this room with this link: ', style: TextStyle(color: Colors.black, fontSize: 18)),
-          Link(url: 'https://www.google.com/', 
-            child: Text('https://www.google.com/',
-              style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 18), 
-            )
+      SizedBox(height: 3.0.w),
+      Container(
+        height: 15.0.w, 
+        width: 90.0.w,
+        child: SingleChildScrollView(
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            children: [
+              SizedBox(height: 1.0.w),
+              Wrap(
+                alignment: WrapAlignment.center,
+                children: [
+                  Text('Invite friends to this room with this link: ', style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
+                  Link(url: 'https://www.google.com/', 
+                    child: Text('https://www.google.com/',
+                      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 8.0.sp), 
+                    )
+                  )
+                ]
+              )
+            ]
           )
-        ]),
+        ) 
       ),
-      SizedBox(height: 20.0)   
+      SizedBox(height: 3.0.w)   
     ]);
   }
 
@@ -868,92 +876,96 @@ class _GameState extends State<GameScreen> {
           ),
         ),
         Container(
-          height: 640,
-          width: 1000,
-          child: Column(children: [
-            Center(child: Text("TYPICAL RULES", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20))),
-            SizedBox(height: 20.0),
-            Container(
-              padding: EdgeInsets.only(left: 25.0),
-              child: Column(children: [
-                Align(alignment: Alignment.centerLeft, 
-                  child: Text("Setup", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, decoration: TextDecoration.underline, fontSize: 18))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} Players self-organize into 2 teams (1 red team and 1 blue team).',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} Each team selects one Spymaster. The Spymaster clicks the "Spymaster" tab on the bottom left of the game screen.',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} The rest of the players on each team are Operatives. They remain on the "Operative" tab for the whole game.',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} The top of the game screen indicates the score for each team and which team\'s turn it is.',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} To create a timer for each team\'s turn, adjust the game settings.',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
+          height: 50.0.w,
+          width: 90.0.w,
+          child: SingleChildScrollView(
+            child: Column(children: [
+              Center(child: Text("TYPICAL RULES", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 10.0.sp))),
+              SizedBox(height: 3.0.w),
+              Container(
+                padding: EdgeInsets.only(left: 2.0.w, right: 2.0.w),
+                child: Column(children: [
+                  Align(alignment: Alignment.centerLeft, 
+                    child: Text("Setup", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, decoration: TextDecoration.underline, fontSize: 7.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('    ${String.fromCharCode(0x2014)} Players self-organize into 2 teams (1 red team and 1 blue team).',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('    ${String.fromCharCode(0x2014)} Each team selects one Spymaster. The Spymaster clicks the "Spymaster" tab on the bottom left.',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('    ${String.fromCharCode(0x2014)} The rest of the players on each team are Operatives. They click the "Operative" tab.',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('    ${String.fromCharCode(0x2014)} The top of the game screen indicates the score for each team and which team\'s turn it is.',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('    ${String.fromCharCode(0x2014)} To create a timer for each team\'s turn, adjust the game settings.',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
 
-                SizedBox(height: 20.0),
+                  SizedBox(height: 3.0.w),
 
-                Align(alignment: Alignment.centerLeft, 
-                  child: Text("Gameplay", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, decoration: TextDecoration.underline, fontSize: 18))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} Each team\'s turn consists of two phases:',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('             (1) Spymaster gives a clue consisting of one Word and one Number.',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('             (2) Operatives work together to try guessing (one at a time) the words/pictures associated with the Word.',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} Outside of the clues at the start of each turn, the Spymaster should not communicate with anyone.',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} The Operatives may communicate with each other as much as they want.',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} On each turn, the Operatives have up to (Number + 1) attempts to guess words/pictures associated with the clue.',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} Example turn:',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('             (1) Spymaster gives the clue: "Animal, 3."',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('             (2) Operatives have up to 4 attempts to guess words/pictures associated with animals.',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} If the Operatives correctly click a word/picture, they continue guessing.',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} If the Operatives click a wrong word/picture (Neutral or Opposing team\'s), their turn immediately ends.',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} If the Operatives ever click the Assassin word/picture, that team automatically loses!',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} At any point during a team\'s turn, the Operatives have the option to end their turn.',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
+                  Align(alignment: Alignment.centerLeft, 
+                    child: Text("Gameplay", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, decoration: TextDecoration.underline, fontSize: 7.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('    ${String.fromCharCode(0x2014)} Each team\'s turn consists of two phases:',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('             (1) Spymaster gives a clue consisting of one Word and one Number.',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('             (2) Operatives try guessing (one at a time) the words/pictures associated with the Word.',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('    ${String.fromCharCode(0x2014)} Outside of the clues at the start of each turn, the Spymaster should not communicate with anyone.',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('    ${String.fromCharCode(0x2014)} The Operatives may communicate with each other as much as they want.',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('    ${String.fromCharCode(0x2014)} On each turn, the Operatives have up to (Number + 1) attempts to guess.',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('    ${String.fromCharCode(0x2014)} Example turn:',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('             (1) Spymaster gives the clue: "Animal, 3."',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('             (2) Operatives have up to 4 attempts to guess words/pictures associated with animals.',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('    ${String.fromCharCode(0x2014)} If the Operatives correctly click a word/picture, they continue guessing.',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('    ${String.fromCharCode(0x2014)} If the Operatives click a wrong word/picture (Neutral or Opponent\'s), their turn immediately ends.',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('    ${String.fromCharCode(0x2014)} If the Operatives ever click the Assassin word/picture, that team automatically loses!',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('    ${String.fromCharCode(0x2014)} At any point during a team\'s turn, the Operatives have the option to end their turn.',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
 
-                SizedBox(height: 20.0),
+                  SizedBox(height: 3.0.w),
 
-                Align(alignment: Alignment.centerLeft, 
-                  child: Text("End of Game", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, decoration: TextDecoration.underline, fontSize: 18))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} Unless the Assassin word/picture is ever guessed, the first team to guess all their words/pictures wins!',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} The team that goes first has 9 words/pictures to guess, while the second team has 8.',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),
-                Align(alignment: Alignment.centerLeft,
-                  child: Text('    ${String.fromCharCode(0x2014)} To start a new game, select the game version at the bottom of the screen and click "Next Game."',
-                    style: TextStyle(color: Colors.black, fontSize: 16))),   
-              ])
-            )
-          ])
+                  Align(alignment: Alignment.centerLeft, 
+                    child: Text("End of Game", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, decoration: TextDecoration.underline, fontSize: 7.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('    ${String.fromCharCode(0x2014)} Unless the Assassin word/picture is guessed, the first team to guess all their words/pictures wins!',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('    ${String.fromCharCode(0x2014)} The team that goes first has 9 words/pictures to guess, while the second team has 8.',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+                  Align(alignment: Alignment.centerLeft,
+                    child: Text('    ${String.fromCharCode(0x2014)} To start a new game, select the game version at the bottom of the screen and click "Next Game."',
+                      style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),   
+                  
+                  SizedBox(height: 3.0.w),
+                ])
+              )
+            ])
+          )
         )
     ]);
   }
@@ -974,16 +986,16 @@ class _GameState extends State<GameScreen> {
           ),
         ),
         Container(
-          height: 300,
-          width: 500,
+          height: 40.0.w,
+          width: 50.0.w,
           child: Column(children: [
             Center(child: Text("SETTINGS", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20))),
-            SizedBox(height: 20.0),
+            SizedBox(height: 3.0.w),
             Container(
-              padding: EdgeInsets.only(left: 25.0),
+              padding: EdgeInsets.only(left: 3.0.w),
               child: Row(children: [
                 Text("Blue Timer", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
-                SizedBox(width: 15.0),
+                SizedBox(width: 1.0.w),
                 Switch(
                   value: timerSwitchTempBlue,
                   onChanged: (bool newValue) {
@@ -994,15 +1006,15 @@ class _GameState extends State<GameScreen> {
                   activeTrackColor: Colors.lightBlueAccent,
                   activeColor: Colors.blue,
                 ), 
-                SizedBox(width: 15.0),
+                SizedBox(width: 1.0.w),
                 _timeSettingInputContainerBlue(),
               ])
             ),
             Container(
-              padding: EdgeInsets.only(left: 25.0),
+              padding: EdgeInsets.only(left: 3.0.w),
               child: Row(children: [
                 Text("Red Timer", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
-                SizedBox(width: 15.0),
+                SizedBox(width: 1.0.w),
                 Switch(
                   value: timerSwitchTempRed,
                   onChanged: (bool newValue) {
@@ -1013,12 +1025,12 @@ class _GameState extends State<GameScreen> {
                   activeTrackColor: Colors.redAccent,
                   activeColor: Colors.red,
                 ), 
-                SizedBox(width: 15.0),
+                SizedBox(width: 1.0.w),
                 _timeSettingInputContainerRed(),
               ])
             ),
             Container(
-              padding: EdgeInsets.only(left: 25.0),
+              padding: EdgeInsets.only(left: 3.0.w),
               child: Row(children: [
                 Text("Enforce Timers", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
                 SizedBox(width: 15.0),
@@ -1035,10 +1047,10 @@ class _GameState extends State<GameScreen> {
               ])
             ),
             Container(
-              padding: EdgeInsets.only(left: 25.0),
+              padding: EdgeInsets.only(left: 3.0.w),
               child: Row(children: [
                 Text("Spymaster Can Guess", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
-                SizedBox(width: 15.0),
+                SizedBox(width: 1.0.w),
                 Switch(
                   value: spymasterEnableSwitchTemp,
                   onChanged: (bool newValue) {
@@ -1051,7 +1063,7 @@ class _GameState extends State<GameScreen> {
                 ), 
               ])
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 3.0.w),
             Center(child: new RawMaterialButton(
               fillColor: Colors.blue[800],
               splashColor: Colors.blue[900],
@@ -1118,7 +1130,8 @@ class _GameState extends State<GameScreen> {
                   });
                 }
               }
-            ))
+            )),
+            SizedBox(height: 1.0.w),
           ])
         )
       ]);
@@ -1126,7 +1139,8 @@ class _GameState extends State<GameScreen> {
   }
 
   Widget _dialogBuilderNotes(BuildContext context) {
-    return SimpleDialog(children: [
+    return SimpleDialog(
+      children: [
         Align(
           alignment: Alignment.topRight,
           child: GestureDetector(
@@ -1139,59 +1153,70 @@ class _GameState extends State<GameScreen> {
             ),
           ),
         ),
+        Center(child: Text("NOTES", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 10.0.sp))),
+        SizedBox(height: 3.0.w),
         Container(
-          height: 230,
-          width: 1000,
-          child: Column(children: [
-            Center(child: Text("NOTES", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20))),
-            SizedBox(height: 20.0),
-            Container(
-              padding: EdgeInsets.only(left: 25.0),
-              child: Column(children: [
-                Row(children: [
-                  Text('${String.fromCharCode(0x2014)} Based on the actual ', style: TextStyle(color: Colors.black, fontSize: 18)),
+          height: 30.0.w, 
+          width: 90.0.w,
+          padding: EdgeInsets.only(left: 2.0.w, right: 2.0.w),
+            child: SingleChildScrollView(
+              child: Wrap(
+              children: [
+                SizedBox(height: 1.0.w),
+                Wrap(
+                  children: [
+                  Text('${String.fromCharCode(0x2014)} Based on the actual ', style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
                   Link(url: 'https://czechgames.com/en/codenames/', 
                     child: Text('board game',
-                      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 18), 
+                      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 8.0.sp), 
                     )
                   ),
-                  Text(' by Vlaada Chv${String.fromCharCode(0x00E1)}til.', style: TextStyle(color: Colors.black, fontSize: 18)),
-                ]),
-                SizedBox(height: 20.0),                
-                Row(children: [
-                  Text('${String.fromCharCode(0x2014)} Thanks to ', style: TextStyle(color: Colors.black, fontSize: 18)),
-                  Link(url: 'https://www.horsepaste.com/', 
-                    child: Text('horsepaste',
-                      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 18), 
-                    )
-                  ),
-                  Text(' for the inspiration and ideas for formatting behind this website.', style: TextStyle(color: Colors.black, fontSize: 18)),
-                ]),
-                SizedBox(height: 20.0),
-                Row(children: [
-                  Text('${String.fromCharCode(0x2014)} Words in the "Words" and "Words + Pictures" versions were sourced from ', style: TextStyle(color: Colors.black, fontSize: 18)),
-                  Link(url: 'https://github.com/seanlyons/codenames/blob/master/wordlist.txt', 
-                    child: Text('here',
-                      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 18), 
-                    )
-                  ),
-                  Text('.', style: TextStyle(color: Colors.black, fontSize: 18)),
-                ]),
-                SizedBox(height: 20.0),
-                Row(children: [
-                  Text('${String.fromCharCode(0x2014)} Images in the "Pictures" and "Words + Pictures" versions were sourced from ', style: TextStyle(color: Colors.black, fontSize: 18)),
-                  Link(url: 'https://unsplash.com/', 
-                    child: Text('Unsplash',
-                      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 18), 
-                    )
-                  ),
-                  Text('.', style: TextStyle(color: Colors.black, fontSize: 18)),
-                ]),
-              ])
+                  Text(' by Vlaada Chv${String.fromCharCode(0x00E1)}til.', style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
+                  ]
+                ),
+                SizedBox(height: 1.0.w),                
+                Wrap(
+                  children: [
+                    Text('${String.fromCharCode(0x2014)} Thanks to ', style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
+                    Link(url: 'https://www.horsepaste.com/', 
+                      child: Text('horsepaste',
+                        style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 8.0.sp), 
+                      )
+                    ),
+                    Text(' for the inspiration and ideas for formatting.', style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
+                  ]
+                ),
+                SizedBox(height: 1.0.w),
+                Wrap(
+                  children: [
+                    Text('${String.fromCharCode(0x2014)} Words in the game were sourced from ', style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
+                    Link(url: 'https://github.com/seanlyons/codenames/blob/master/wordlist.txt', 
+                      child: Text('here',
+                        style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 8.0.sp), 
+                      )
+                    ),
+                    Text('.', style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
+                  ]
+                ),
+                SizedBox(height: 1.0.w),
+                Wrap(
+                  children: [
+                    Text('${String.fromCharCode(0x2014)} Images in the game were sourced from ', style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
+                    Link(url: 'https://unsplash.com/', 
+                      child: Text('Unsplash',
+                        style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 8.0.sp), 
+                      )
+                    ),
+                    Text('.', style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
+                  ]
+                ),
+                SizedBox(height: 3.0.w),
+              ]
             )
-          ])
+          ) 
         )
-    ]);
+      ]
+    );
   }
                 
   void startTimer(int timeLimit) {
