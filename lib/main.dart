@@ -60,48 +60,100 @@ class _HomeState extends State<HomeScreen> {
                   child: Column(
                     children: <Widget>[
                       SizedBox(height: 10.0.w),
-                      Center(child: Text("Play Codenames online - Words, Pictures, or both mixed together!", 
-                        style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15.0.sp))),
-                      SizedBox(height: 13.0.w),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.arrow_forward_rounded),
-                          SizedBox(width: 1.0.w),
-                          Text("Start a new game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
-                        ],
-                      ),
-                      SizedBox(height: 1.0.w),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          DropdownButton(
-                            value: version,
-                            icon: Icon(Icons.arrow_downward),
-                            iconSize: 9.0.sp,
-                            items: <String>['Words', 'Pictures', 'Words + Pictures']
-                              .map<DropdownMenuItem<String>>((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value, style: TextStyle(fontSize: 8.0.sp)),
-                                );
-                              }).toList(),
-                            onChanged: (String newValue) {
-                              setState(() {
-                                version = newValue;
-                              });
-                            }
-                          ),
-                          SizedBox(width: 2.0.w),
-                          RawMaterialButton(
-                            fillColor: Colors.blue[300],
-                            splashColor: Colors.blueAccent,
-                            child: Text('Play', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
-                            }
+                      Center(
+                        child: Container(
+                          height: 12.0.w,
+                          width: 90.0.w,
+                          child: Text("Play Codenames online - Words, Pictures, or both mixed together!", textAlign: TextAlign.center,
+                            style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15.0.sp)
                           )
-                      ]),
+                        )
+                      ),
+                      SizedBox(height: 13.0.w),
+                      Center(
+                        child: Container(
+                          height: 5.0.w,
+                          width: 90.0.w,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                height: 5.0.w,
+                                child: Icon(Icons.arrow_forward_rounded)
+                              ),
+                              Container(
+                                height: 5.0.w,
+                                child: SizedBox(width: 1.0.w)
+                              ),
+                              Container(
+                                height: 5.0.w,
+                                child: Text("Start a new game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
+                              )
+                            ]
+                          )
+                        )
+                      ),
+                    
+                      SizedBox(height: 1.0.w),
+
+                      Center(
+                        child: Container(
+                          height: 9.0.w,
+                          width: 90.0.w,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.only(top: 1.0.w),
+                                height: 9.0.w,
+                                child: SizedBox(
+                                  height: 9.0.w,  
+                                  child: DropdownButton(
+                                    value: version,
+                                    icon: Icon(Icons.arrow_downward),
+                                    iconSize: 9.0.sp,
+                                    items: <String>['Words', 'Pictures', 'Words + Pictures']
+                                      .map<DropdownMenuItem<String>>((String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value, style: TextStyle(fontSize: 9.0.sp)),
+                                        );
+                                      }).toList(),
+                                    onChanged: (String newValue) {
+                                      setState(() {
+                                        version = newValue;
+                                      });
+                                    }
+                                  ),
+                                )
+                              ),
+                              Container(
+                                height: 7.0.w,
+                                child: SizedBox(
+                                  height: 7.0.w,
+                                  width: 2.0.w,
+                                )
+                              ),
+                              Container(
+                                height: 7.0.w,
+                                child: SizedBox(
+                                  height: 7.0.w,
+                                  width: 12.0.w, 
+                                  child: RawMaterialButton(
+                                    fillColor: Colors.blue[300],
+                                    splashColor: Colors.blueAccent,
+                                    child: Text('Play', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 10.0.sp)),
+                                    onPressed: () {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
+                                    }
+                                  )
+                                )
+                              )
+                            ]
+                          )
+                        )
+                      ),
+
                       SizedBox(height: 10.0.w),
                       Center(
                         child: Container(
@@ -131,17 +183,21 @@ class _HomeState extends State<HomeScreen> {
 
                       Center(
                         child: Container(
-                          height: 6.0.w,
+                          height: 7.0.w,
                           width: 90.0.w,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               Container(
-                                height: 6.0.w,
+                                height: 7.0.w,
                                 child: SizedBox(
-                                  height: 6.0.w, 
+                                  height: 7.0.w, 
                                   width: 40.0.w, 
                                   child: TextField(
+                                    expands: true,
+                                    maxLines: null,
+                                    minLines: null,
+                                    style: TextStyle(color: Colors.black, fontSize: 10.0.sp),
                                     textAlign: TextAlign.center,
                                     controller: roomID, 
                                     decoration: InputDecoration(
@@ -157,22 +213,21 @@ class _HomeState extends State<HomeScreen> {
                                 )
                               ),
                               Container(
-                                height: 6.0.w,
+                                height: 7.0.w,
                                 child: SizedBox(
-                                  height: 6.0.w,
-                                  width: 1.0.w,
+                                  height: 7.0.w,
+                                  width: 2.0.w,
                                 )
                               ),
                               Container(
-                                //padding: EdgeInsets.only(bottom: 5.5.w),
-                                height: 6.0.w,
+                                height: 7.0.w,
                                 child: SizedBox(
-                                  height: 6.0.w,
-                                  width: 10.0.w, 
+                                  height: 7.0.w,
+                                  width: 12.0.w, 
                                   child: RawMaterialButton(
                                     fillColor: Colors.red,
                                     splashColor: Colors.redAccent,
-                                    child: Text('Join', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
+                                    child: Text('Join', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 10.0.sp)),
                                     onPressed: () {
                                       Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
                                     }
@@ -183,38 +238,6 @@ class _HomeState extends State<HomeScreen> {
                           )
                         )
                       ),
-                      
-                      
-                      /* Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 40.0.w, 
-                            child: TextField(
-                              textAlign: TextAlign.center,
-                              controller: roomID, 
-                              decoration: InputDecoration(
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black, width: 0.3.w)
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black, width: 0.3.w)
-                                )
-                              )
-                            )
-                          ),
-                          SizedBox(width: 2.0.w),
-                          //SizedBox(width: 10.0.w, child:
-                          RawMaterialButton(
-                            fillColor: Colors.red,
-                            splashColor: Colors.redAccent,
-                            child: Text('Join', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
-                            }
-                          )
-                        ]
-                      ), */
                     ]
                   )
                 )
@@ -314,9 +337,10 @@ class _GameState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     if (runFutures == true) {
-      return new WillPopScope(
-        onWillPop: () async => Navigator.push(context, MaterialPageRoute(builder: (context) => new HomeScreen())),
-        child: FutureBuilder(
+      //return new WillPopScope(
+        //onWillPop: () async => Navigator.push(context, MaterialPageRoute(builder: (context) => new HomeScreen())),
+        //child: FutureBuilder(
+        return FutureBuilder(
           future: fetchImages(),
           builder: (context, data) {
             //Needs more testing, but this new line appears to better than "if (data.hasData == false) {" which sometimes can cause "Index Out of Range" issues
@@ -327,13 +351,14 @@ class _GameState extends State<GameScreen> {
               return gameBuild();
             }
           }
-        )
+        //)
       );
     } else {
-      return new WillPopScope(
-        onWillPop: () async => Navigator.push(context, MaterialPageRoute(builder: (context) => new HomeScreen())),
-        child: gameBuild()
-      );
+      //return new WillPopScope(
+        //onWillPop: () async => Navigator.push(context, MaterialPageRoute(builder: (context) => new HomeScreen())),
+        //child: gameBuild()
+        return gameBuild();
+      //);
     }
   }
 
