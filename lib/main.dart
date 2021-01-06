@@ -30,10 +30,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeState extends State<HomeScreen> {
   String version = "Words"; 
   var roomID = TextEditingController()..text = "Some Room ID";
+  var _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
-
     return new LayoutBuilder(
       builder: (context, constraints) {
         return OrientationBuilder(
@@ -52,12 +52,12 @@ class _HomeState extends State<HomeScreen> {
                   title: Text("CODENAMES", 
                     style: GoogleFonts.shojumaru(
                       color: Colors.white,
-                      fontSize: 15.0.sp,
+                      fontSize: 12.0.sp,
                     ), 
                   ),
                 ),
-                body: new InteractiveViewer(
-                  child: SingleChildScrollView(
+                body: new SingleChildScrollView(
+                  //child: InteractiveViewer
                     child: Column(
                       children: <Widget>[
                         SizedBox(height: 5.0.h),
@@ -147,7 +147,7 @@ class _HomeState extends State<HomeScreen> {
                         ]),
                       ]
                     )
-                  )
+                  //)
                 )
               )
             );
@@ -304,219 +304,227 @@ class _GameState extends State<GameScreen> {
       } 
     }
 
-    return new MaterialApp(
-      title:"Codenames - Words & Pictures",
-      theme: ThemeData(
-        primaryColor: Colors.white,
-      ),
-      home: Scaffold(
-        drawer: MenuDrawer(),
-        appBar: AppBar(
-          iconTheme: IconThemeData(color: Colors.white),
-          backgroundColor: Colors.black, 
-          centerTitle: true,
-          title: Text("CODENAMES: ${version.toUpperCase()}", 
-            style: GoogleFonts.shojumaru(
-              color: Colors.white,
-              fontSize: 24.0,
-            ),
-          ),
-        ),
-        body: new InteractiveViewer(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(height: 20.0),
-                Center(
-                  child: Container(
-                    height: 30,
-                    width: 740,
-                    child: Stack(
-                      children: <Widget>[
-                        Positioned(
-                          left: 5,
-                          bottom: 5,
-                          child: new RichText(
-                            text: TextSpan(
-                              children: <TextSpan>[
-                                TextSpan(text: "$blueScoreCounter  ", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 20)),
-                                TextSpan(text: "${String.fromCharCode(0x2014)}  ", style: TextStyle(color: Colors.black, fontSize: 17)),
-                                TextSpan(text: "$redScoreCounter  ", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 20)),
-                                TextSpan(text: "(Goal: ", style: TextStyle(color: Colors.black, fontSize: 20)),
-                                TextSpan(text: (blueFirst == true) ? "9" : "8", style: TextStyle(color: Colors.blue, fontSize: 20)),
-                                TextSpan(text: " - ", style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 20)),
-                                TextSpan(text: (blueFirst == true) ? "8" : "9", style: TextStyle(color: Colors.red, fontSize: 20)),
-                                TextSpan(text: ")", style: TextStyle(color: Colors.black, fontSize: 20)),
-                              ]
-                            )
-                          )
-                        ),
-                        Center(
-                          child: Padding(
-                            padding: EdgeInsets.only(bottom: 5),
-                            child: new RichText(
-                              text: TextSpan(
-                                children: <TextSpan>[
-                                  TextSpan(text: "$currentTeam's turn", style: TextStyle(color: _teamColor(), fontSize: 20)),
-                                  TextSpan(text: (currentTimerSwitch() == true && gameOver == false) ? " (${_currentMinutesRemaining}:" 
-                                    + ((_currentSecondsRemaining < 10) ? "0" : "") + "${_currentSecondsRemaining})" : "", 
-                                    style: TextStyle(color: _teamColor(), fontWeight: FontWeight.bold, fontSize: 20))
-                                ]
-                              )
-                            )
-                          )
-                        ),
-                        Positioned(
-                          right: 5,
-                          bottom: 0,
-                          child: _turnWidget(),
-                        )
-                      ]
-                    )
-                  )
-                ),
-                Center(
-                  child: Container(
-                    width: 750, 
-                    height: 750,
-                    padding: const EdgeInsets.all(10.0),
-                    child: new GridView.count(
-                      crossAxisCount: 5, 
-                      crossAxisSpacing: 10.0, 
-                      mainAxisSpacing: 10.0,
-                      children: _buildGridTiles(25),
+    return new LayoutBuilder(
+      builder: (context, constraints) {
+        return OrientationBuilder(
+          builder: (context, orientation) {
+            //initialize SizerUtil()
+            SizerUtil().init(constraints, orientation);
+            return new MaterialApp(
+              title:"Codenames - Words & Pictures",
+              theme: ThemeData(
+                primaryColor: Colors.white,
+              ),
+              home: Scaffold(
+                drawer: MenuDrawer(),
+                appBar: AppBar(
+                  iconTheme: IconThemeData(color: Colors.white),
+                  backgroundColor: Colors.black, 
+                  centerTitle: true,
+                  title: Text("CODENAMES: ${version.toUpperCase()}", 
+                    style: GoogleFonts.shojumaru(
+                      color: Colors.white,
+                      fontSize: 12.0.sp,
                     ),
                   ),
                 ),
-                Center(
-                  child: Container(
-                    height: 20,
-                    width: 740,
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          left: 5,
-                          child: Row( 
-                            children: [
-                              Text(((version == 'Pictures') || (version == "Words + Pictures")) ? "Source of images: " : "", 
-                                style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 15)
+                body: new SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SizedBox(height: 1.0.h),
+                      Center(
+                        child: Container(
+                          height: 2.0.h,
+                          width: 90.0.w,
+                          child: Stack(
+                            children: <Widget>[
+                              Positioned(
+                                left: 2.0.w,
+                                bottom: 0.3.h,
+                                child: new RichText(
+                                  text: TextSpan(
+                                    children: <TextSpan>[
+                                      TextSpan(text: "$blueScoreCounter  ", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
+                                      TextSpan(text: "${String.fromCharCode(0x2014)}  ", style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
+                                      TextSpan(text: "$redScoreCounter  ", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
+                                      TextSpan(text: "(Goal: ", style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
+                                      TextSpan(text: (blueFirst == true) ? "9" : "8", style: TextStyle(color: Colors.blue, fontSize: 8.0.sp)),
+                                      TextSpan(text: " - ", style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 8.0.sp)),
+                                      TextSpan(text: (blueFirst == true) ? "8" : "9", style: TextStyle(color: Colors.red, fontSize: 8.0.sp)),
+                                      TextSpan(text: ")", style: TextStyle(color: Colors.black, fontSize: 8.0.sp))
+                                    ]
+                                  )
+                                )
                               ),
-                              Link(url: 'https://unsplash.com/', 
-                                child: Text(((version == 'Pictures') || (version == "Words + Pictures")) ? "https://unsplash.com/" : "",
-                                  style: TextStyle(color: Colors.blue, fontStyle: FontStyle.italic, decoration: TextDecoration.underline, fontSize: 15), 
+                              Center(
+                                child: Padding(
+                                  padding: EdgeInsets.only(bottom: 0.3.h),
+                                  child: new RichText(
+                                    text: TextSpan(
+                                      children: <TextSpan>[
+                                        TextSpan(text: "$currentTeam's turn", style: TextStyle(color: _teamColor(), fontSize: 8.0.sp)),
+                                        TextSpan(text: (currentTimerSwitch() == true && gameOver == false) ? " (${_currentMinutesRemaining}:" 
+                                          + ((_currentSecondsRemaining < 10) ? "0" : "") + "${_currentSecondsRemaining})" : "", 
+                                          style: TextStyle(color: _teamColor(), fontWeight: FontWeight.bold, fontSize: 8.0.sp))
+                                      ]
+                                    )
+                                  )
+                                )
+                              ),
+                              Positioned(
+                                right: 2.0.w,
+                                bottom: 0.0.w,
+                                child: _turnWidget(),
+                              )
+                            ]
+                          )
+                        )
+                      ),
+                      Center(
+                        child: Container(
+                          width: 750, 
+                          height: 750,
+                          padding: const EdgeInsets.all(10.0),
+                          child: new GridView.count(
+                            crossAxisCount: 5, 
+                            crossAxisSpacing: 10.0, 
+                            mainAxisSpacing: 10.0,
+                            children: _buildGridTiles(25),
+                          ),
+                        ),
+                      ),
+                      Center(
+                        child: Container(
+                          height: 20,
+                          width: 740,
+                          child: Stack(
+                            children: [
+                              Positioned(
+                                left: 5,
+                                child: Row( 
+                                  children: [
+                                    Text(((version == 'Pictures') || (version == "Words + Pictures")) ? "Source of images: " : "", 
+                                      style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 15)
+                                    ),
+                                    Link(url: 'https://unsplash.com/', 
+                                      child: Text(((version == 'Pictures') || (version == "Words + Pictures")) ? "https://unsplash.com/" : "",
+                                        style: TextStyle(color: Colors.blue, fontStyle: FontStyle.italic, decoration: TextDecoration.underline, fontSize: 15), 
+                                      )
+                                    )
+                                  ]
                                 )
                               )
                             ]
                           )
                         )
-                      ]
-                    )
-                  )
-                ),
-                SizedBox(height: 3.0),
-                Center(
-                  child: Container(
-                    height: 40,
-                    width: 740, 
-                    child: Stack(
-                      children: <Widget>[
-                        Positioned(
-                          left: 5,
-                          bottom: 1,
-                          child: ButtonTheme(
-                            minWidth: 125.0,
-                            height: 35.0,
-                            child: new RaisedButton(
-                              shape: spymaster == false ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
-                              onPressed: () {
-                                setState(() {
-                                  spymaster = false;
-                                });
-                              },
-                              color: Colors.grey[350],
-                              child: const Text('Operative',
-                                style: TextStyle(fontSize: 20)
+                      ),
+                      SizedBox(height: 3.0),
+                      Center(
+                        child: Container(
+                          height: 40,
+                          width: 740, 
+                          child: Stack(
+                            children: <Widget>[
+                              Positioned(
+                                left: 5,
+                                bottom: 1,
+                                child: ButtonTheme(
+                                  minWidth: 125.0,
+                                  height: 35.0,
+                                  child: new RaisedButton(
+                                    shape: spymaster == false ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
+                                    onPressed: () {
+                                      setState(() {
+                                        spymaster = false;
+                                      });
+                                    },
+                                    color: Colors.grey[350],
+                                    child: const Text('Operative',
+                                      style: TextStyle(fontSize: 20)
+                                    ),
+                                  )
+                                )
                               ),
-                            )
-                          )
-                        ),
-                        Positioned(
-                          left: 125,
-                          bottom: 1,
-                          child: ButtonTheme(
-                            minWidth: 125.0,
-                            height: 35.0,
-                            child: new RaisedButton(
-                              shape: spymaster == true ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
-                              onPressed: () {
-                                setState(() {
-                                  spymaster = true;
-                                });
-                              },
-                              color: Colors.grey[350],
-                              child: const Text('Spymaster',
-                                style: TextStyle(fontSize: 20)
-                              ),
-                            )
-                          )
-                        ),   
-                        Positioned(
-                          right: 130,
-                          bottom: 0,
-                          child: DropdownButton(
-                            value: versionTemp,
-                            icon: Icon(Icons.arrow_downward),
-                            iconSize: 15,
-                            items: <String>['Words', 'Pictures', 'Words + Pictures']
-                              .map<DropdownMenuItem<String>>((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value, style: TextStyle(fontSize: 18)),
-                                );
-                              }).toList(),
-                            onChanged: (String newValue) {
-                              setState(() {
-                                versionTemp = newValue;
-                              });
-                            }
-                          )
-                        ),
-                        Positioned(
-                          right: 5,
-                          bottom: 1,
-                          child: ButtonTheme(
-                            minWidth: 125.0,
-                            height: 35.0,
-                            child: new RaisedButton(
-                              onPressed: () {
-                                setState(() {
-                                  version = versionTemp;
-                                  restart = true;
-                                  if ((version == 'Pictures') || (version == "Words + Pictures")) {
-                                    runFutures = true;
-                                  } else {
-                                    runFutures = false;
+                              Positioned(
+                                left: 125,
+                                bottom: 1,
+                                child: ButtonTheme(
+                                  minWidth: 125.0,
+                                  height: 35.0,
+                                  child: new RaisedButton(
+                                    shape: spymaster == true ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
+                                    onPressed: () {
+                                      setState(() {
+                                        spymaster = true;
+                                      });
+                                    },
+                                    color: Colors.grey[350],
+                                    child: const Text('Spymaster',
+                                      style: TextStyle(fontSize: 20)
+                                    ),
+                                  )
+                                )
+                              ),   
+                              Positioned(
+                                right: 130,
+                                bottom: 0,
+                                child: DropdownButton(
+                                  value: versionTemp,
+                                  icon: Icon(Icons.arrow_downward),
+                                  iconSize: 15,
+                                  items: <String>['Words', 'Pictures', 'Words + Pictures']
+                                    .map<DropdownMenuItem<String>>((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value, style: TextStyle(fontSize: 18)),
+                                      );
+                                    }).toList(),
+                                  onChanged: (String newValue) {
+                                    setState(() {
+                                      versionTemp = newValue;
+                                    });
                                   }
-                                });
-                              },
-                              color: Colors.indigo[800],
-                              textColor: Colors.white,
-                              child: const Text('Next Game',
-                                style: TextStyle(fontSize: 20)
+                                )
                               ),
-                            )
-                          ),
-                        ) 
-                      ]
-                    )
+                              Positioned(
+                                right: 5,
+                                bottom: 1,
+                                child: ButtonTheme(
+                                  minWidth: 125.0,
+                                  height: 35.0,
+                                  child: new RaisedButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        version = versionTemp;
+                                        restart = true;
+                                        if ((version == 'Pictures') || (version == "Words + Pictures")) {
+                                          runFutures = true;
+                                        } else {
+                                          runFutures = false;
+                                        }
+                                      });
+                                    },
+                                    color: Colors.indigo[800],
+                                    textColor: Colors.white,
+                                    child: const Text('Next Game',
+                                      style: TextStyle(fontSize: 20)
+                                    ),
+                                  )
+                                ),
+                              ) 
+                            ]
+                          )
+                        )
+                      ),
+                      SizedBox(height: 10.0)
+                    ] 
                   )
-                ),
-                SizedBox(height: 10.0)
-              ] 
-            )
-          )
-        )
-      )
+                )
+              )
+            );
+          }
+        );
+      }
     );
   }
 
@@ -723,11 +731,11 @@ class _GameState extends State<GameScreen> {
 
   Widget _turnWidget() {
     if (gameOver == true) {
-      return new Text("$winner wins!", style: TextStyle(color: _teamColor(), fontSize: 20));
+      return new Text("$winner wins!", style: TextStyle(color: _teamColor(), fontSize: 8.0.sp));
     } else {
       return new ButtonTheme(
-        minWidth: 130.0,
-        height: 35.0,
+        minWidth: 10.0.w,
+        height: 2.0.h,
         child: new RaisedButton(
           onPressed: () {
             setState(() {
@@ -746,8 +754,8 @@ class _GameState extends State<GameScreen> {
           },
           color: Colors.grey[350],
           child: Container(
-            margin: const EdgeInsets.only(top: 5.0),
-            child: new Text("End $currentTeam's turn", style: TextStyle(fontSize: 20))
+            margin: EdgeInsets.only(top: 0.3.h),
+            child: new Text("End $currentTeam's turn", style: TextStyle(fontSize: 8.0.sp))
           ),
         )
       );
