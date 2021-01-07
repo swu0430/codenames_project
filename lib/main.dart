@@ -337,20 +337,28 @@ class _GameState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     if (runFutures == true) {
-      return FutureBuilder(
-        future: fetchImages(),
-        builder: (context, data) {
-          //Needs more testing, but this new line appears to better than "if (data.hasData == false) {" which sometimes can cause "Index Out of Range" issues
-          //the Unsplash API image list calls
-          if (data.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else {         
-            return gameBuild();
+      //return new WillPopScope(
+        //onWillPop: () async => Navigator.push(context, MaterialPageRoute(builder: (context) => new HomeScreen())),
+        //child: FutureBuilder(
+        return FutureBuilder(
+          future: fetchImages(),
+          builder: (context, data) {
+            //Needs more testing, but this new line appears to better than "if (data.hasData == false) {" which sometimes can cause "Index Out of Range" issues
+            //the Unsplash API image list calls
+            if (data.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else {         
+              return gameBuild();
+            }
           }
-        }
+        //)
       );
     } else {
-      return gameBuild();
+      //return new WillPopScope(
+        //onWillPop: () async => Navigator.push(context, MaterialPageRoute(builder: (context) => new HomeScreen())),
+        //child: gameBuild()
+        return gameBuild();
+      //);
     }
   }
 
@@ -430,7 +438,7 @@ class _GameState extends State<GameScreen> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    SizedBox(width: 1.0.w),                                  
+                                    SizedBox(width: 2.0.w),                                  
                                     RichText(
                                       text: TextSpan(
                                         children: <TextSpan>[
@@ -474,7 +482,7 @@ class _GameState extends State<GameScreen> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     _turnWidget(),
-                                    SizedBox(width: 1.0.w)
+                                    SizedBox(width: 2.0.w)
                                   ]
                                 )
                               )
@@ -486,7 +494,7 @@ class _GameState extends State<GameScreen> {
                         child: Container(
                           height: 90.0.w,
                           width: 90.0.w, 
-                          padding: EdgeInsets.all(1.0.w),
+                          padding: EdgeInsets.all(1.0.h),
                           child: new GridView.count(
                             crossAxisCount: 5, 
                             crossAxisSpacing: 1.0.w, 
@@ -495,9 +503,10 @@ class _GameState extends State<GameScreen> {
                           ),
                         ),
                       ),
+                      //SizedBox(height: 1.0.w),
                       Center(
                         child: Container(
-                          height: 6.0.w,
+                          height: 5.0.w,
                           width: 90.0.w, 
                           child: Row(
                             children: <Widget>[
@@ -507,7 +516,7 @@ class _GameState extends State<GameScreen> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    SizedBox(width: 1.0.w),
+                                    SizedBox(width: 2.0.w),
                                     ButtonTheme(
                                       height: 5.0.w,
                                       minWidth: 12.0.w,
@@ -547,7 +556,7 @@ class _GameState extends State<GameScreen> {
                                 )
                               ),
                               Container(
-                                height: 6.0.w, 
+                                height: 5.0.w, 
                                 width: 45.0.w,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
@@ -555,7 +564,7 @@ class _GameState extends State<GameScreen> {
                                     DropdownButton(
                                       value: versionTemp,
                                       icon: Icon(Icons.arrow_downward),
-                                      iconSize: 7.0.sp,
+                                      iconSize: 6.5.sp,
                                       items: <String>['Words', 'Pictures', 'Words + Pictures']
                                         .map<DropdownMenuItem<String>>((String value) {
                                           return DropdownMenuItem<String>(
@@ -592,7 +601,7 @@ class _GameState extends State<GameScreen> {
                                         ),
                                       )
                                     ),
-                                    SizedBox(width: 1.0.w)
+                                    SizedBox(width: 2.0.w)
                                   ]
                                 )
                               ) 
