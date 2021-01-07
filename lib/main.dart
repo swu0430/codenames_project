@@ -10,6 +10,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:link/link.dart';
 import 'dart:async';
 import 'package:sizer/sizer.dart';
+import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 void main() {
   String version;
@@ -31,6 +32,8 @@ class _HomeState extends State<HomeScreen> {
   String version = "Words"; 
   var roomID = TextEditingController()..text = "Some Room ID";
   var _scrollController = ScrollController();
+  double _scale = 1.0;
+  double _previousScale = 1.0;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +59,24 @@ class _HomeState extends State<HomeScreen> {
                     ), 
                   ),
                 ),
-                body: new SingleChildScrollView(
+                body: new GestureDetector(
+                  onScaleStart: (ScaleStartDetails details) {
+                    _previousScale = _scale;
+                    setState(() {});
+                  },
+                  onScaleUpdate: (ScaleUpdateDetails details) {
+                    _scale = _previousScale * details.scale;
+                    setState(() {});
+                  },
+                  onScaleEnd: (ScaleEndDetails details) {
+                    _previousScale = 1.0;
+                    setState(() {});
+                  },
+                  child: Transform(
+                    transform: Matrix4.diagonal3(Vector3(_scale, _scale, _scale)),
+                    child:
+
+                SingleChildScrollView(
                   child: Column(
                     children: <Widget>[
                       SizedBox(height: 10.0.w),
@@ -243,7 +263,7 @@ class _HomeState extends State<HomeScreen> {
                   )
                 )
               )
-            );
+            )));
           }
         );
       }
@@ -308,6 +328,8 @@ class _GameState extends State<GameScreen> {
   bool errorSecondSettingInputBlue = false;
   bool errorMinuteSettingInputRed = false;
   bool errorSecondSettingInputRed = false;
+  double _scale = 1.0;
+  double _previousScale = 1.0;
 
    _GameState(version) {
     this.version = version;
@@ -415,7 +437,24 @@ class _GameState extends State<GameScreen> {
                     ),
                   ),
                 ),
-                body: new SingleChildScrollView(
+                body: new GestureDetector(
+                  onScaleStart: (ScaleStartDetails details) {
+                    _previousScale = _scale;
+                    setState(() {});
+                  },
+                  onScaleUpdate: (ScaleUpdateDetails details) {
+                    _scale = _previousScale * details.scale;
+                    setState(() {});
+                  },
+                  onScaleEnd: (ScaleEndDetails details) {
+                    _previousScale = 1.0;
+                    setState(() {});
+                  },
+                  child: Transform(
+                    transform: Matrix4.diagonal3(Vector3(_scale, _scale, _scale)),
+                    child:
+                
+                new SingleChildScrollView(
                   child: Column(
                     children: [
                       SizedBox(height: 3.0.w),
@@ -604,7 +643,7 @@ class _GameState extends State<GameScreen> {
                       SizedBox(height: 30.0.w),
                     ] 
                   )
-                )
+                )))
               )
             );
           }
