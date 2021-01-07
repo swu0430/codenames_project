@@ -155,7 +155,6 @@ class _HomeState extends State<HomeScreen> {
                       ),
 
                       SizedBox(height: 10.0.w),
-                      
                       Center(
                         child: Container(
                           height: 5.0.w,
