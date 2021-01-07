@@ -10,6 +10,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:link/link.dart';
 import 'dart:async';
 import 'package:sizer/sizer.dart';
+import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 void main() {
   String version;
@@ -30,7 +31,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeState extends State<HomeScreen> {
   String version = "Words"; 
   var roomID = TextEditingController()..text = "Some Room ID";
-  var _scrollController = ScrollController();
+  double _scale = 1.0;
+  double _previousScale = 1.0;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +58,24 @@ class _HomeState extends State<HomeScreen> {
                     ), 
                   ),
                 ),
-                body: new SingleChildScrollView(
+                body: new GestureDetector(
+                  onScaleStart: (ScaleStartDetails details) {
+                    _previousScale = _scale;
+                    setState(() {});
+                  },
+                  onScaleUpdate: (ScaleUpdateDetails details) {
+                    _scale = _previousScale * details.scale;
+                    setState(() {});
+                  },
+                  onScaleEnd: (ScaleEndDetails details) {
+                    _previousScale = 1.0;
+                    setState(() {});
+                  },
+                  child: Transform(
+                    transform: Matrix4.diagonal3(Vector3(_scale, _scale, _scale)),
+                    child:
+                
+                SingleChildScrollView(
                   child: Column(
                     children: <Widget>[
                       SizedBox(height: 10.0.w),
@@ -242,7 +261,7 @@ class _HomeState extends State<HomeScreen> {
                   )
                 )
               )
-            );
+            )));
           }
         );
       }
@@ -307,6 +326,8 @@ class _GameState extends State<GameScreen> {
   bool errorSecondSettingInputBlue = false;
   bool errorMinuteSettingInputRed = false;
   bool errorSecondSettingInputRed = false;
+  double _scale = 1.0;
+  double _previousScale = 1.0;
 
    _GameState(version) {
     this.version = version;
@@ -422,7 +443,24 @@ class _GameState extends State<GameScreen> {
                     ),
                   ),
                 ),
-                body: new SingleChildScrollView(
+                body: new GestureDetector(
+                  onScaleStart: (ScaleStartDetails details) {
+                    _previousScale = _scale;
+                    setState(() {});
+                  },
+                  onScaleUpdate: (ScaleUpdateDetails details) {
+                    _scale = _previousScale * details.scale;
+                    setState(() {});
+                  },
+                  onScaleEnd: (ScaleEndDetails details) {
+                    _previousScale = 1.0;
+                    setState(() {});
+                  },
+                  child: Transform(
+                    transform: Matrix4.diagonal3(Vector3(_scale, _scale, _scale)),
+                    child:
+                
+                SingleChildScrollView(
                   child: Column(
                     children: [
                       SizedBox(height: 3.0.w),
@@ -438,7 +476,7 @@ class _GameState extends State<GameScreen> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    SizedBox(width: 2.0.w),                                  
+                                    SizedBox(width: 1.0.w),                                  
                                     RichText(
                                       text: TextSpan(
                                         children: <TextSpan>[
@@ -482,7 +520,7 @@ class _GameState extends State<GameScreen> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     _turnWidget(),
-                                    SizedBox(width: 2.0.w)
+                                    SizedBox(width: 1.0.w)
                                   ]
                                 )
                               )
@@ -494,7 +532,7 @@ class _GameState extends State<GameScreen> {
                         child: Container(
                           height: 90.0.w,
                           width: 90.0.w, 
-                          padding: EdgeInsets.all(1.0.h),
+                          padding: EdgeInsets.all(1.0.w),
                           child: new GridView.count(
                             crossAxisCount: 5, 
                             crossAxisSpacing: 1.0.w, 
@@ -506,7 +544,7 @@ class _GameState extends State<GameScreen> {
                       //SizedBox(height: 1.0.w),
                       Center(
                         child: Container(
-                          height: 5.0.w,
+                          height: 6.0.w,
                           width: 90.0.w, 
                           child: Row(
                             children: <Widget>[
@@ -516,7 +554,7 @@ class _GameState extends State<GameScreen> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    SizedBox(width: 2.0.w),
+                                    SizedBox(width: 1.0.w),
                                     ButtonTheme(
                                       height: 5.0.w,
                                       minWidth: 12.0.w,
@@ -556,7 +594,7 @@ class _GameState extends State<GameScreen> {
                                 )
                               ),
                               Container(
-                                height: 5.0.w, 
+                                height: 6.0.w, 
                                 width: 45.0.w,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
@@ -564,7 +602,7 @@ class _GameState extends State<GameScreen> {
                                     DropdownButton(
                                       value: versionTemp,
                                       icon: Icon(Icons.arrow_downward),
-                                      iconSize: 6.5.sp,
+                                      iconSize: 7.0.sp,
                                       items: <String>['Words', 'Pictures', 'Words + Pictures']
                                         .map<DropdownMenuItem<String>>((String value) {
                                           return DropdownMenuItem<String>(
@@ -601,7 +639,7 @@ class _GameState extends State<GameScreen> {
                                         ),
                                       )
                                     ),
-                                    SizedBox(width: 2.0.w)
+                                    SizedBox(width: 1.0.w)
                                   ]
                                 )
                               ) 
@@ -614,7 +652,7 @@ class _GameState extends State<GameScreen> {
                   )
                 )
               )
-            );
+            )));
           }
         );
       }
