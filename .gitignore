@@ -45,4 +45,4 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 lib/apiKey.dart
-.gitignore
+web/index.html
