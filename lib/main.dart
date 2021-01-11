@@ -456,13 +456,13 @@ class _GameState extends State<GameScreen> {
                     ),
                   ),
                 ),
-                body: new SingleChildScrollView(
+                body: new InteractiveViewer(
                   //new Scrollbar(
                   //controller: _scrollController,
                   //isAlwaysShown: true,
                   //child: SingleChildScrollView(
                     //controller: _scrollController,
-                  child: InteractiveViewer(
+                  child: SingleChildScrollView(
                     child: Column(
                       children: [
                         SizedBox(height: 3.0.w),
