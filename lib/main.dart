@@ -310,6 +310,8 @@ class _GameState extends State<GameScreen> {
   bool runFutures = true;
   int blueScoreCounter = 0;
   int redScoreCounter = 0;
+  int blueScore;
+  int redScore;
   bool blueFirst; 
   String winner = "";
   bool displayWinner = false;
@@ -422,6 +424,14 @@ class _GameState extends State<GameScreen> {
       } 
     }
 
+    if (blueFirst == true) {
+      blueScore = 9 - blueScoreCounter;
+      redScore = 8 - redScoreCounter;
+    } else {
+      blueScore = 8 - blueScoreCounter;
+      redScore = 9 - redScoreCounter;
+    }
+
     return new LayoutBuilder(
       builder: (context, constraints) {
         return OrientationBuilder(
@@ -473,9 +483,9 @@ class _GameState extends State<GameScreen> {
                                         text: TextSpan(
                                           children: <TextSpan>[
                                             TextSpan(text: "Score:  ", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
-                                            TextSpan(text: "$blueScoreCounter  ", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
+                                            TextSpan(text: "$blueScore  ", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
                                             TextSpan(text: "${String.fromCharCode(0x2014)}  ", style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
-                                            TextSpan(text: "$redScoreCounter  ", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
+                                            TextSpan(text: "$redScore  ", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
                                           ]
                                         )
                                       )
@@ -654,7 +664,7 @@ class _GameState extends State<GameScreen> {
           decoration: BoxDecoration(
             border: Border.all(
               color: (spymaster == true || gameOver == true) ? colorList[index] : borderColorListWhiteforOperatives[index],
-              width: (spymaster == true || gameOver == true) ? 1.5.w : 0.0.w,
+              width: (spymaster == true || gameOver == true) ? 1.0.w : 0.0.w,
             ),
           ),
           child: new InkWell(
