@@ -606,7 +606,8 @@ class _GameState extends State<GameScreen> {
                                       SizedBox(width: 0.5.w),
                                       ButtonTheme(  
                                         height: 5.0.w,
-                                        minWidth: 10.0.w,
+                                        minWidth: 14.0.w,
+                                        padding: EdgeInsets.zero,
                                         child: new RaisedButton(
                                           onPressed: () {
                                             setState(() {
@@ -854,7 +855,8 @@ class _GameState extends State<GameScreen> {
     } else {
       return new ButtonTheme(
         height: 5.0.w,
-        minWidth: 10.0.w,
+        minWidth: 16.0.w,
+        padding: EdgeInsets.zero,
         child: new RaisedButton(
           onPressed: () {
             setState(() {
