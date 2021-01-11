@@ -1,6 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/8.2.2/firebase-app.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+      https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="https://www.gstatic.com/firebasejs/8.2.2/firebase-auth.js"></script>
+
+  <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyCD8Q0YIv-tPOM4KqxtTHYWSrSqI-fGWzs",
+      authDomain: "detective-dingo.firebaseapp.com",
+      projectId: "detective-dingo",
+      storageBucket: "detective-dingo.appspot.com",
+      messagingSenderId: "166411828487",
+      appId: "1:166411828487:web:9f2c343e5f95d6047f99a2"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
+
   <!--
     If you are serving your web app in a path other than the root, change the
     href value below to reflect the base path you are serving from.

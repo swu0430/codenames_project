@@ -1,8 +1,8 @@
+import 'apikey.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'apikey.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math';
 import 'dart:async' show Future;
@@ -10,6 +10,8 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:link/link.dart';
 import 'dart:async';
 import 'package:sizer/sizer.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() {
   String version;
@@ -31,221 +33,249 @@ class _HomeState extends State<HomeScreen> {
   String version = "Words"; 
   var roomID = TextEditingController()..text = "Some Room ID";
 
+  // Create the initialization Future outside of 'build':
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+  
   @override
   Widget build(BuildContext context) {
-    return new LayoutBuilder(
-      builder: (context, constraints) {
-        return OrientationBuilder(
-          builder: (context, orientation) {
-            //initialize SizerUtil()
-            SizerUtil().init(constraints, orientation);
-            return new MaterialApp(
-              title:"Codenames - Words & Pictures",
-              theme: ThemeData(
-                primaryColor: Colors.white,
-              ),
-              home: new Scaffold(
-                appBar: AppBar(
-                  backgroundColor: Colors.black,
-                  centerTitle: true,
-                  title: Text("CODENAMES", 
-                    style: GoogleFonts.shojumaru(
-                      color: Colors.white,
-                      fontSize: 12.0.sp,
-                    ), 
-                  ),
-                ),
-                body: new InteractiveViewer(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: <Widget>[
-                        SizedBox(height: 10.0.w),
-                        Center(
-                          child: Container(
-                            height: 12.0.w,
-                            width: 90.0.w,
-                            child: Text("Play Codenames online - Words, Pictures, or both mixed together!", textAlign: TextAlign.center,
-                              style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15.0.sp)
-                            )
-                          )
-                        ),
-                        SizedBox(height: 13.0.w),
-                        Center(
-                          child: Container(
-                            height: 5.0.w,
-                            width: 90.0.w,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Container(
-                                  height: 5.0.w,
-                                  child: Icon(Icons.arrow_forward_rounded)
-                                ),
-                                Container(
-                                  height: 5.0.w,
-                                  child: SizedBox(width: 1.0.w)
-                                ),
-                                Container(
-                                  height: 5.0.w,
-                                  child: Text("Start a new game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
-                                )
-                              ]
-                            )
-                          )
-                        ),
-                      
-                        SizedBox(height: 1.0.w),
+    return FutureBuilder(
+      // Initialize FlutterFire:
+      future: _initialization,
+      builder: (context, snapshot) {
+        // Check for errors
+        if (snapshot.hasError) {
+          print('Error initializing FlutterFire');
+        }
 
-                        Center(
-                          child: Container(
-                            height: 9.0.w,
-                            width: 90.0.w,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Container(
-                                  padding: EdgeInsets.only(top: 1.0.w),
+        // Once complete, show your application
+        if (snapshot.connectionState == ConnectionState.done) {
+          return new LayoutBuilder(
+            builder: (context, constraints) {
+              return OrientationBuilder(
+                builder: (context, orientation) {
+                  //initialize SizerUtil()
+                  SizerUtil().init(constraints, orientation);
+                  return new MaterialApp(
+                    title:"Codenames - Words & Pictures",
+                    theme: ThemeData(
+                      primaryColor: Colors.white,
+                    ),
+                    home: new Scaffold(
+                      appBar: AppBar(
+                        backgroundColor: Colors.black,
+                        centerTitle: true,
+                        title: Text("CODENAMES", 
+                          style: GoogleFonts.shojumaru(
+                            color: Colors.white,
+                            fontSize: 12.0.sp,
+                          ), 
+                        ),
+                      ),
+                      body: new InteractiveViewer(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: <Widget>[
+                              SizedBox(height: 10.0.w),
+                              Center(
+                                child: Container(
+                                  height: 12.0.w,
+                                  width: 90.0.w,
+                                  child: Text("Play Codenames online - Words, Pictures, or both mixed together!", textAlign: TextAlign.center,
+                                    style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15.0.sp)
+                                  )
+                                )
+                              ),
+                              SizedBox(height: 13.0.w),
+                              Center(
+                                child: Container(
+                                  height: 5.0.w,
+                                  width: 90.0.w,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Container(
+                                        height: 5.0.w,
+                                        child: Icon(Icons.arrow_forward_rounded)
+                                      ),
+                                      Container(
+                                        height: 5.0.w,
+                                        child: SizedBox(width: 1.0.w)
+                                      ),
+                                      Container(
+                                        height: 5.0.w,
+                                        child: Text("Start a new game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
+                                      )
+                                    ]
+                                  )
+                                )
+                              ),
+                            
+                              SizedBox(height: 1.0.w),
+
+                              Center(
+                                child: Container(
                                   height: 9.0.w,
-                                  child: SizedBox(
-                                    height: 9.0.w,  
-                                    child: DropdownButton(
-                                      value: version,
-                                      icon: Icon(Icons.arrow_downward),
-                                      iconSize: 9.0.sp,
-                                      items: <String>['Words', 'Pictures', 'Words + Pictures']
-                                        .map<DropdownMenuItem<String>>((String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value, style: TextStyle(fontSize: 9.0.sp)),
-                                          );
-                                        }).toList(),
-                                      onChanged: (String newValue) {
-                                        setState(() {
-                                          version = newValue;
-                                        });
-                                      }
-                                    ),
-                                  )
-                                ),
-                                Container(
-                                  height: 7.0.w,
-                                  child: SizedBox(
-                                    height: 7.0.w,
-                                    width: 2.0.w,
-                                  )
-                                ),
-                                Container(
-                                  height: 7.0.w,
-                                  child: SizedBox(
-                                    height: 7.0.w,
-                                    width: 12.0.w, 
-                                    child: RawMaterialButton(
-                                      fillColor: Colors.blue[300],
-                                      splashColor: Colors.blueAccent,
-                                      child: Text('Play', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 10.0.sp)),
-                                      onPressed: () {
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
-                                      }
-                                    )
-                                  )
-                                )
-                              ]
-                            )
-                          )
-                        ),
-
-                        SizedBox(height: 10.0.w),
-                        Center(
-                          child: Container(
-                            height: 5.0.w,
-                            width: 90.0.w,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Container(
-                                  height: 5.0.w,
-                                  child: Icon(Icons.arrow_forward_rounded)
-                                ),
-                                Container(
-                                  height: 5.0.w,
-                                  child: SizedBox(width: 1.0.w)
-                                ),
-                                Container(
-                                  height: 5.0.w,
-                                  child: Text("Join an existing game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
-                                )
-                              ]
-                            )
-                          )
-                        ),
-
-                        SizedBox(height: 1.0.w),
-
-                        Center(
-                          child: Container(
-                            height: 7.0.w,
-                            width: 90.0.w,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Container(
-                                  height: 7.0.w,
-                                  child: SizedBox(
-                                    height: 7.0.w, 
-                                    width: 40.0.w, 
-                                    child: TextField(
-                                      expands: true,
-                                      maxLines: null,
-                                      minLines: null,
-                                      style: TextStyle(color: Colors.black, fontSize: 10.0.sp),
-                                      textAlign: TextAlign.center,
-                                      controller: roomID, 
-                                      decoration: InputDecoration(
-                                        contentPadding: EdgeInsets.all(0),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.black, width: 0.3.w)
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.black, width: 0.3.w)
+                                  width: 90.0.w,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Container(
+                                        padding: EdgeInsets.only(top: 1.0.w),
+                                        height: 9.0.w,
+                                        child: SizedBox(
+                                          height: 9.0.w,  
+                                          child: DropdownButton(
+                                            value: version,
+                                            icon: Icon(Icons.arrow_downward),
+                                            iconSize: 9.0.sp,
+                                            items: <String>['Words', 'Pictures', 'Words + Pictures']
+                                              .map<DropdownMenuItem<String>>((String value) {
+                                                return DropdownMenuItem<String>(
+                                                  value: value,
+                                                  child: Text(value, style: TextStyle(fontSize: 9.0.sp)),
+                                                );
+                                              }).toList(),
+                                            onChanged: (String newValue) {
+                                              setState(() {
+                                                version = newValue;
+                                              });
+                                            }
+                                          ),
+                                        )
+                                      ),
+                                      Container(
+                                        height: 7.0.w,
+                                        child: SizedBox(
+                                          height: 7.0.w,
+                                          width: 2.0.w,
+                                        )
+                                      ),
+                                      Container(
+                                        height: 7.0.w,
+                                        child: SizedBox(
+                                          height: 7.0.w,
+                                          width: 12.0.w, 
+                                          child: RawMaterialButton(
+                                            fillColor: Colors.blue[300],
+                                            splashColor: Colors.blueAccent,
+                                            child: Text('Play', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 10.0.sp)),
+                                            onPressed: () {
+                                              FirebaseAuth.instance
+                                                .signInAnonymously()
+                                                .then((UserCredential userCredential) {
+                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
+                                                })
+                                                .catchError((e) {
+                                                  print(e);
+                                                });
+                                            }
+                                          )
                                         )
                                       )
-                                    )
-                                  )
-                                ),
-                                Container(
-                                  height: 7.0.w,
-                                  child: SizedBox(
-                                    height: 7.0.w,
-                                    width: 2.0.w,
-                                  )
-                                ),
-                                Container(
-                                  height: 7.0.w,
-                                  child: SizedBox(
-                                    height: 7.0.w,
-                                    width: 12.0.w, 
-                                    child: RawMaterialButton(
-                                      fillColor: Colors.red,
-                                      splashColor: Colors.redAccent,
-                                      child: Text('Join', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 10.0.sp)),
-                                      onPressed: () {
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
-                                      }
-                                    )
+                                    ]
                                   )
                                 )
-                              ]
-                            )
+                              ),
+
+                              SizedBox(height: 10.0.w),
+                              Center(
+                                child: Container(
+                                  height: 5.0.w,
+                                  width: 90.0.w,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Container(
+                                        height: 5.0.w,
+                                        child: Icon(Icons.arrow_forward_rounded)
+                                      ),
+                                      Container(
+                                        height: 5.0.w,
+                                        child: SizedBox(width: 1.0.w)
+                                      ),
+                                      Container(
+                                        height: 5.0.w,
+                                        child: Text("Join an existing game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
+                                      )
+                                    ]
+                                  )
+                                )
+                              ),
+
+                              SizedBox(height: 1.0.w),
+
+                              Center(
+                                child: Container(
+                                  height: 7.0.w,
+                                  width: 90.0.w,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Container(
+                                        height: 7.0.w,
+                                        child: SizedBox(
+                                          height: 7.0.w, 
+                                          width: 40.0.w, 
+                                          child: TextField(
+                                            expands: true,
+                                            maxLines: null,
+                                            minLines: null,
+                                            style: TextStyle(color: Colors.black, fontSize: 10.0.sp),
+                                            textAlign: TextAlign.center,
+                                            controller: roomID, 
+                                            decoration: InputDecoration(
+                                              contentPadding: EdgeInsets.all(0),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.black, width: 0.3.w)
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.black, width: 0.3.w)
+                                              )
+                                            )
+                                          )
+                                        )
+                                      ),
+                                      Container(
+                                        height: 7.0.w,
+                                        child: SizedBox(
+                                          height: 7.0.w,
+                                          width: 2.0.w,
+                                        )
+                                      ),
+                                      Container(
+                                        height: 7.0.w,
+                                        child: SizedBox(
+                                          height: 7.0.w,
+                                          width: 12.0.w, 
+                                          child: RawMaterialButton(
+                                            fillColor: Colors.red,
+                                            splashColor: Colors.redAccent,
+                                            child: Text('Join', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 10.0.sp)),
+                                            onPressed: () {
+                                              Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
+                                            }
+                                          )
+                                        )
+                                      )
+                                    ]
+                                  )
+                                )
+                              ),
+                            ]
                           )
-                        ),
-                      ]
+                        )
+                      )
                     )
-                  )
-                )
-              )
-            );
-          }
-        );
+                  );
+                }
+              );
+            }
+          );
+        }
+
+        // Otherwise, show something whilst waiting for initialization to complete
+        return Center(child: CircularProgressIndicator());
+
       }
     );
   }
@@ -416,200 +446,196 @@ class _GameState extends State<GameScreen> {
                     ),
                   ),
                 ),
-                body: new InteractiveViewer(
-                  child: Scrollbar(
-                    controller: _scrollController,
-                    isAlwaysShown: true,
-                    child: SingleChildScrollView(
-                      controller: _scrollController,
-                      child: Column(
-                        children: [
-                          SizedBox(height: 3.0.w),
-                          Center(
-                            child: Container(
-                              height: 5.0.w,
-                              width: 90.0.w,
-                              child: Row(
-                                children: <Widget>[
-                                  Container(
-                                    height: 5.0.w,
-                                    width: 30.0.w,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        SizedBox(width: 2.0.w),                                  
-                                        RichText(
-                                          text: TextSpan(
-                                            children: <TextSpan>[
-                                              TextSpan(text: "$blueScoreCounter  ", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
-                                              TextSpan(text: "${String.fromCharCode(0x2014)}  ", style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
-                                              TextSpan(text: "$redScoreCounter  ", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
-                                              TextSpan(text: "(Goal: ", style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
-                                              TextSpan(text: (blueFirst == true) ? "9" : "8", style: TextStyle(color: Colors.blue, fontSize: 8.0.sp)),
-                                              TextSpan(text: " - ", style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 8.0.sp)),
-                                              TextSpan(text: (blueFirst == true) ? "8" : "9", style: TextStyle(color: Colors.red, fontSize: 8.0.sp)),
-                                              TextSpan(text: ")", style: TextStyle(color: Colors.black, fontSize: 8.0.sp))
-                                            ]
-                                          )
+                body: new SingleChildScrollView(
+                  //new Scrollbar(
+                  //controller: _scrollController,
+                  //isAlwaysShown: true,
+                  //child: SingleChildScrollView(
+                    //controller: _scrollController,
+                  child: InteractiveViewer(
+                    child: Column(
+                      children: [
+                        SizedBox(height: 3.0.w),
+                        Center(
+                          child: Container(
+                            height: 5.0.w,
+                            width: 75.0.w,
+                            child: Row(
+                              children: <Widget>[
+                                Container(
+                                  height: 5.0.w,
+                                  width: 25.0.w,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      SizedBox(width: 2.0.w),                                  
+                                      RichText(
+                                        text: TextSpan(
+                                          children: <TextSpan>[
+                                            TextSpan(text: "Score:  ", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
+                                            TextSpan(text: "$blueScoreCounter  ", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
+                                            TextSpan(text: "${String.fromCharCode(0x2014)}  ", style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
+                                            TextSpan(text: "$redScoreCounter  ", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 8.0.sp)),
+                                          ]
                                         )
-                                      ]
-                                    )
-                                  ),
-                                  Container(
-                                    height: 5.0.w,
-                                    width: 30.0.w,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        RichText(
-                                          text: TextSpan(
-                                            children: <TextSpan>[
-                                              TextSpan(text: "$currentTeam's turn", style: TextStyle(color: _teamColor(), fontSize: 8.0.sp)),
-                                              TextSpan(text: (currentTimerSwitch() == true && gameOver == false) ? " (${_currentMinutesRemaining}:" 
-                                                + ((_currentSecondsRemaining < 10) ? "0" : "") + "${_currentSecondsRemaining})" : "", 
-                                                style: TextStyle(color: _teamColor(), fontWeight: FontWeight.bold, fontSize: 8.0.sp))
-                                            ]
-                                          )
-                                        )
-                                      ]
-                                    )
-                                  ),
-                                  Container(
-                                    height: 6.0.w,
-                                    width: 30.0.w,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        _turnWidget(),
-                                        SizedBox(width: 2.0.w)
-                                      ]
-                                    )
+                                      )
+                                    ]
                                   )
-                                ]
-                              )
+                                ),
+                                Container(
+                                  height: 5.0.w,
+                                  width: 25.0.w,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      RichText(
+                                        text: TextSpan(
+                                          children: <TextSpan>[
+                                            TextSpan(text: "$currentTeam's turn", style: TextStyle(color: _teamColor(), fontSize: 8.0.sp)),
+                                            TextSpan(text: (currentTimerSwitch() == true && gameOver == false) ? " (${_currentMinutesRemaining}:" 
+                                              + ((_currentSecondsRemaining < 10) ? "0" : "") + "${_currentSecondsRemaining})" : "", 
+                                              style: TextStyle(color: _teamColor(), fontWeight: FontWeight.bold, fontSize: 8.0.sp))
+                                          ]
+                                        )
+                                      )
+                                    ]
+                                  )
+                                ),
+                                Container(
+                                  height: 6.0.w,
+                                  width: 25.0.w,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      _turnWidget(),
+                                      SizedBox(width: 2.0.w)
+                                    ]
+                                  )
+                                )
+                              ]
                             )
-                          ),
-                          Center(
-                            child: Container(
-                              height: 90.0.w,
-                              width: 90.0.w, 
-                              padding: EdgeInsets.all(1.0.h),
-                              child: new GridView.count(
-                                crossAxisCount: 5, 
-                                crossAxisSpacing: 1.0.w, 
-                                mainAxisSpacing: 1.0.w,
-                                children: _buildGridTiles(25),
-                              ),
+                          )
+                        ),
+                        Center(
+                          child: Container(
+                            height: 75.0.w,
+                            width: 75.0.w, 
+                            padding: EdgeInsets.all(1.0.h),
+                            child: new GridView.count(
+                              crossAxisCount: 5, 
+                              crossAxisSpacing: 1.0.w, 
+                              mainAxisSpacing: 1.0.w,
+                              children: _buildGridTiles(25),
                             ),
                           ),
-                          Center(
-                            child: Container(
-                              height: 6.0.w,
-                              width: 90.0.w, 
-                              child: Row(
-                                children: <Widget>[
-                                  Container(
-                                    height: 5.0.w, 
-                                    width: 45.0.w,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        SizedBox(width: 2.0.w),
-                                        ButtonTheme(
-                                          height: 5.0.w,
-                                          minWidth: 12.0.w,
-                                          padding: EdgeInsets.zero,
-                                          child: new RaisedButton(
-                                            shape: spymaster == false ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
-                                            onPressed: () {
-                                              setState(() {
-                                                spymaster = false;
-                                              });
-                                            },
-                                            color: Colors.grey[350],
-                                            child: Text('Operative',
-                                              style: TextStyle(fontSize: 6.5.sp)
-                                            ),
-                                          )
-                                        ),
-                                        SizedBox(width: 0.5.w),
-                                        ButtonTheme(
-                                          height: 5.0.w,
-                                          minWidth: 12.0.w,
-                                          padding: EdgeInsets.zero,
-                                          child: new RaisedButton(
-                                            shape: spymaster == true ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
-                                            onPressed: () {
-                                              setState(() {
-                                                spymaster = true;
-                                              });
-                                            },
-                                            color: Colors.grey[350],
-                                            child: Text('Spymaster',
-                                              style: TextStyle(fontSize: 6.5.sp)
-                                            ),
-                                          )
-                                        )
-                                      ]
-                                    )
-                                  ),
-                                  Container(
-                                    height: 6.0.w, 
-                                    width: 45.0.w,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        DropdownButton(
-                                          value: versionTemp,
-                                          icon: Icon(Icons.arrow_downward),
-                                          iconSize: 7.0.sp,
-                                          items: <String>['Words', 'Pictures', 'Words + Pictures']
-                                            .map<DropdownMenuItem<String>>((String value) {
-                                              return DropdownMenuItem<String>(
-                                                value: value,
-                                                child: Text(value, style: TextStyle(fontSize: 6.5.sp)),
-                                              );
-                                            }).toList(),
-                                          onChanged: (String newValue) {
+                        ),
+                        Center(
+                          child: Container(
+                            height: 6.0.w,
+                            width: 75.0.w, 
+                            child: Row(
+                              children: <Widget>[
+                                Container(
+                                  height: 5.0.w, 
+                                  width: 37.5.w,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      SizedBox(width: 2.0.w),
+                                      ButtonTheme(
+                                        height: 5.0.w,
+                                        minWidth: 12.0.w,
+                                        padding: EdgeInsets.zero,
+                                        child: new RaisedButton(
+                                          shape: spymaster == false ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
+                                          onPressed: () {
                                             setState(() {
-                                              versionTemp = newValue;
+                                              spymaster = false;
                                             });
-                                          } 
-                                        ),
-                                        SizedBox(width: 0.5.w),
-                                        ButtonTheme(  
-                                          height: 5.0.w,
-                                          minWidth: 12.0.w,
-                                          child: new RaisedButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                version = versionTemp;
-                                                restart = true;
-                                                if ((version == 'Pictures') || (version == "Words + Pictures")) {
-                                                  runFutures = true;
-                                                } else {
-                                                  runFutures = false;
-                                                }
-                                              });
-                                            },
-                                            color: Colors.indigo[800],
-                                            textColor: Colors.white,
-                                            child: Text('Next Game',
-                                              style: TextStyle(fontSize: 6.5.sp)
-                                            ),
-                                          )
-                                        ),
-                                        SizedBox(width: 2.0.w)
-                                      ]
-                                    )
-                                  ) 
-                                ]
-                              )
+                                          },
+                                          color: Colors.grey[350],
+                                          child: Text('Operative',
+                                            style: TextStyle(fontSize: 6.5.sp)
+                                          ),
+                                        )
+                                      ),
+                                      SizedBox(width: 0.5.w),
+                                      ButtonTheme(
+                                        height: 5.0.w,
+                                        minWidth: 12.0.w,
+                                        padding: EdgeInsets.zero,
+                                        child: new RaisedButton(
+                                          shape: spymaster == true ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
+                                          onPressed: () {
+                                            setState(() {
+                                              spymaster = true;
+                                            });
+                                          },
+                                          color: Colors.grey[350],
+                                          child: Text('Spymaster',
+                                            style: TextStyle(fontSize: 6.5.sp)
+                                          ),
+                                        )
+                                      )
+                                    ]
+                                  )
+                                ),
+                                Container(
+                                  height: 6.0.w, 
+                                  width: 37.5.w,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      DropdownButton(
+                                        value: versionTemp,
+                                        icon: Icon(Icons.arrow_downward),
+                                        iconSize: 7.0.sp,
+                                        items: <String>['Words', 'Pictures', 'Words + Pictures']
+                                          .map<DropdownMenuItem<String>>((String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(value, style: TextStyle(fontSize: 6.5.sp)),
+                                            );
+                                          }).toList(),
+                                        onChanged: (String newValue) {
+                                          setState(() {
+                                            versionTemp = newValue;
+                                          });
+                                        } 
+                                      ),
+                                      SizedBox(width: 0.5.w),
+                                      ButtonTheme(  
+                                        height: 5.0.w,
+                                        minWidth: 12.0.w,
+                                        child: new RaisedButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              version = versionTemp;
+                                              restart = true;
+                                              if ((version == 'Pictures') || (version == "Words + Pictures")) {
+                                                runFutures = true;
+                                              } else {
+                                                runFutures = false;
+                                              }
+                                            });
+                                          },
+                                          color: Colors.indigo[800],
+                                          textColor: Colors.white,
+                                          child: Text('Next Game',
+                                            style: TextStyle(fontSize: 6.5.sp)
+                                          ),
+                                        )
+                                      ),
+                                      SizedBox(width: 2.0.w)
+                                    ]
+                                  )
+                                ) 
+                              ]
                             )
-                          ),
-                          SizedBox(height: 30.0.w),
-                        ] 
-                      )
+                          )
+                        ),
+                        //SizedBox(height: 10.0.w),
+                      ] 
                     )
                   )
                 )
