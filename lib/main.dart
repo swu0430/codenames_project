@@ -606,7 +606,7 @@ class _GameState extends State<GameScreen> {
                                       SizedBox(width: 0.5.w),
                                       ButtonTheme(  
                                         height: 5.0.w,
-                                        minWidth: 12.0.w,
+                                        minWidth: 10.0.w,
                                         child: new RaisedButton(
                                           onPressed: () {
                                             setState(() {
@@ -755,7 +755,7 @@ class _GameState extends State<GameScreen> {
         child: Text(wordsList[index].toUpperCase(), style: TextStyle(
         color: (colorListInteractive[index] != null) ? Colors.white : Colors.black, 
         fontWeight: FontWeight.bold,
-        fontSize: 6.2.sp)
+        fontSize: 6.0.sp)
         )
       )
     );
@@ -854,7 +854,7 @@ class _GameState extends State<GameScreen> {
     } else {
       return new ButtonTheme(
         height: 5.0.w,
-        minWidth: 12.0.w,
+        minWidth: 10.0.w,
         child: new RaisedButton(
           onPressed: () {
             setState(() {
@@ -873,7 +873,6 @@ class _GameState extends State<GameScreen> {
           },
           color: Colors.grey[350],
           child: Container(
-            //margin: EdgeInsets.only(top: 0.3.h),
             child: new Text("End $currentTeam's turn", style: TextStyle(fontSize: 6.5.sp))
           ),
         )
