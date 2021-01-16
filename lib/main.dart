@@ -12,6 +12,7 @@ import 'dart:async';
 import 'package:sizer/sizer.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
   String version;
@@ -45,6 +46,7 @@ class _HomeState extends State<HomeScreen> {
         // Check for errors
         if (snapshot.hasError) {
           print('Error initializing FlutterFire');
+          return Text('Something went wrong!');
         }
 
         // Once complete, show your application
@@ -351,6 +353,7 @@ class _GameState extends State<GameScreen> {
   void initState() {
     super.initState();
     loadWords();
+    fetchImages(); // Testing whether this line needs to be here to avoid having the game fail to load the first time
     for (int i = 0; i < 25; i++) {
       blendModeList.add(BlendMode.hardLight); 
       borderColorListWhiteforOperatives.add(Colors.white);
