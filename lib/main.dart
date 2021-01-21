@@ -13,32 +13,99 @@ import 'package:sizer/sizer.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 void main() {
-  String version;
-
-  runApp(new MaterialApp(
-    home: new HomeScreen(),
-    routes: <String, WidgetBuilder>{
-      "playgame" : (BuildContext context) => new GameScreen(version: version),
-    }
-  ));
+  runApp(MyApp());
 }
 
-class HomeScreen extends StatefulWidget {
+class MyApp extends StatefulWidget {
   @override
-  _HomeState createState() => _HomeState();
-} 
+  State<StatefulWidget> createState() => _MyAppState();
+}
 
-class _HomeState extends State<HomeScreen> {
-  String version = "Words"; 
-  var roomID = TextEditingController()..text = "Some Room ID";
-
-  // Create the initialization Future outside of 'build':
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+class _MyAppState extends State<MyApp> {
+  bool showGame = false;
+  String version = "Words";
   
   @override
   Widget build(BuildContext context) {
+    return new MaterialApp(
+      home: new Navigator(
+        pages: [
+          MaterialPage(
+            child: new HomeScreen(
+              version: this.version,
+              onTap: _handlePlayButtonTapped,
+            ),
+          ),
+          if (showGame == true)
+            MaterialPage(
+              child: new GameScreen(version: this.version),
+            ),
+        ],
+        onPopPage: (route, result) {
+          if (!route.didPop(result)) {
+            return false;
+          }
+          setState(() {
+            showGame = false;
+          });
+          return true;
+        }
+      )
+    );
+  }
+
+  void _handlePlayButtonTapped(String version) {
+    setState(() {
+      this.version = version;
+      showGame = true;
+    });
+  }
+}
+
+class HomeScreen extends StatefulWidget {
+  
+  String version;
+  ValueChanged<String> onTap;
+
+  HomeScreen({Key key, @required this.version, @required this.onTap}) : super(key: key);
+  
+  @override
+  _HomeState createState() => _HomeState(this.version, this.onTap);
+} 
+
+class _HomeState extends State<HomeScreen> {
+  String version;
+  var roomID = TextEditingController()..text = "Some Room ID";
+  ValueChanged<String> onTap;
+
+  _HomeState(version, onTap) {
+    this.version = version;
+    this.onTap = onTap;
+  }
+
+  // Create the initialization Future outside of 'build':
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  
+  @override
+  Widget build(BuildContext context) {
+
+    CollectionReference players = FirebaseFirestore.instance.collection('players');
+
+/*     Future<void> addUser() {
+      // Call the player's CollectionReference to add a new user
+      return players
+          .add({
+            'id': fullName, // John Doe
+          })
+          .then((value) => print("User Added"))
+          .catchError((error) => print("Failed to add user: $error"));
+    } */
+    
+
     return FutureBuilder(
       // Initialize FlutterFire:
       future: _initialization,
@@ -48,7 +115,7 @@ class _HomeState extends State<HomeScreen> {
           print('Error initializing FlutterFire');
           return Text('Something went wrong!');
         }
-
+        
         // Once complete, show your application
         if (snapshot.connectionState == ConnectionState.done) {
           return new LayoutBuilder(
@@ -161,16 +228,18 @@ class _HomeState extends State<HomeScreen> {
                                             fillColor: Colors.blue[300],
                                             splashColor: Colors.blueAccent,
                                             child: Text('Play', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 10.0.sp)),
-                                            onPressed: () {
-                                              FirebaseAuth.instance
+                                            onPressed: () => onTap(version),
+                                              
+
+/*                                               FirebaseAuth.instance
                                                 .signInAnonymously()
                                                 .then((UserCredential userCredential) {
                                                   Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
-                                                })
+                                                })    
                                                 .catchError((e) {
                                                   print(e);
-                                                });
-                                            }
+                                                }); */
+                                            
                                           )
                                         )
                                       )
@@ -254,7 +323,7 @@ class _HomeState extends State<HomeScreen> {
                                             splashColor: Colors.redAccent,
                                             child: Text('Join', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 10.0.sp)),
                                             onPressed: () {
-                                              Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
+                                              //Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
                                             }
                                           )
                                         )
