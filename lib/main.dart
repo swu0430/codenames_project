@@ -1,4 +1,5 @@
 import 'apikey.dart';
+import 'game_route_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
@@ -27,41 +28,219 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   bool showGame = false;
   String version = "Words";
+
+  // Create the initialization Future outside of 'build':
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  String roomId;
+
+  CollectionReference rooms = FirebaseFirestore.instance.collection('rooms');
   
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      home: new Navigator(
-        pages: [
-          MaterialPage(
-            child: new HomeScreen(
-              version: this.version,
-              onTap: _handlePlayButtonTapped,
-            ),
-          ),
-          if (showGame == true)
-            MaterialPage(
-              child: new GameScreen(version: this.version),
-            ),
-        ],
-        onPopPage: (route, result) {
-          if (!route.didPop(result)) {
-            return false;
-          }
-          setState(() {
-            showGame = false;
-          });
-          return true;
+    return FutureBuilder(
+      // Initialize FlutterFire:
+      future: _initialization,
+      builder: (context, snapshot) {
+        // Check for errors
+        if (snapshot.hasError) {
+          print('Error initializing FlutterFire');
+          return Text('Something went wrong!');
         }
-      )
+        // Once complete, show your application
+        if (snapshot.connectionState == ConnectionState.done) {
+          return new MaterialApp.router(
+            title:"Codenames - Words & Pictures",
+            theme: ThemeData(
+              primaryColor: Colors.white,
+            ),
+            routerDelegate: GameRouterDelegate(showGame, roomId, version),
+            routeInformationParser: GameRouteInformationParser(),
+          );
+        } else {
+          // Otherwise, show something whilst waiting for initialization to complete
+          return Center(child: CircularProgressIndicator());
+        }
+      }
     );
   }
 
-  void _handlePlayButtonTapped(String version) {
+  Future<void> addRoom(String roomId) async {
+    return rooms
+      .doc(roomId)
+      .set({
+        'success': true
+      })
+      .then((value) => print("Room Added"))
+      .catchError((error) => print("Failed to add room: $error"));
+  }
+
+  void _handlePlayButtonTapped(String version) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    UserCredential userCredential = await auth.signInAnonymously();
+
+    if (auth.currentUser != null) {
+      this.roomId = auth.currentUser.uid;
+      print(this.roomId);
+      addRoom(this.roomId);
+    }
+
     setState(() {
       this.version = version;
       showGame = true;
     });
+  }
+}
+
+class GameRouteInformationParser extends RouteInformationParser<GameRoutePath> {
+  @override
+  Future<GameRoutePath> parseRouteInformation(RouteInformation routeInformation) async {
+    final uri = Uri.parse(routeInformation.location);
+
+    // Handle home screen route ('/')
+    if(uri.pathSegments.length == 0) return GameRoutePath.home();
+
+    // Handle game screen route ('/:roomId')
+    if(uri.pathSegments.length == 1) {
+      final id = uri.pathSegments.elementAt(0);
+      if (id == null) return GameRoutePath.unknown();
+      return GameRoutePath.game(id);
+    }
+
+    // Handle unknown routes
+    return GameRoutePath.unknown();
+  }
+    
+  @override
+  RouteInformation restoreRouteInformation(GameRoutePath path) {
+    if (path.isUnknown) return RouteInformation(location: '/404');
+    if (path.isHomePage) return RouteInformation(location: '/');
+    if (path.isGamePage) return RouteInformation(location: '/${path.roomId}');
+    return null;
+  }
+}
+
+class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifier, PopNavigatorRouterDelegateMixin<GameRoutePath>{
+  bool showGame;
+  bool show404 = false;
+  String roomId;
+  String version;
+
+  GameRouterDelegate(showGame, roomId, version) {
+    this.showGame = showGame;
+    this.roomId = roomId;
+    this.version = version;
+  }
+  
+  @override
+  // TODO: implement navigatorKey
+  GlobalKey<NavigatorState> get navigatorKey => GlobalKey<NavigatorState>();
+
+  CollectionReference rooms = FirebaseFirestore.instance.collection('rooms');
+
+  Future<void> addRoom(String roomId) async {
+    return rooms
+      .doc(roomId)
+      .set({
+        'success': true
+      })
+      .then((value) => print("Room Added"))
+      .catchError((error) => print("Failed to add room: $error"));
+  }
+  
+  void _handlePlayButtonTapped(String version) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    UserCredential userCredential = await auth.signInAnonymously();
+
+    if (auth.currentUser != null) {
+      this.roomId = auth.currentUser.uid;
+      print(this.roomId);
+      addRoom(this.roomId);
+    }
+
+    this.version = version;
+    showGame = true;
+    notifyListeners();
+  }
+
+  @override
+  GameRoutePath get currentConfiguration {
+    if (show404) return GameRoutePath.unknown();
+    if (showGame == false) return GameRoutePath.home();
+    return GameRoutePath.game(roomId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Navigator(
+      key: navigatorKey,
+      pages: [
+        MaterialPage(
+          child: new HomeScreen(
+            version: this.version,
+            onTap: _handlePlayButtonTapped,
+          ),
+        ),
+        if (show404) 
+          MaterialPage(key: ValueKey('UnknownKey'), child: UnknownPage())
+        else if (showGame == true) 
+          MaterialPage(
+            child: new GameScreen(roomId: this.roomId, version: this.version),
+          ),
+      ],
+      onPopPage: (route, result) {
+        if (!route.didPop(result)) {
+          return false;
+        }
+        showGame = false;
+        show404 = false;
+        notifyListeners();
+
+        return true;
+      }
+    );
+  }
+  
+  //This function takes user input for the URL and displays the appropriate page.
+  @override
+  Future<void> setNewRoutePath(GameRoutePath path) async {
+    if (path.isUnknown) {
+      showGame = false;
+      show404 = true;
+      return;
+    }
+
+    if (path.isGamePage) {
+      //Check if roomId exists in the Firestore database
+      FirebaseFirestore.instance
+        .collection("rooms")
+        .doc(path.roomId)
+        .get()
+        .then((doc) {
+          if(!doc.exists) {
+            print("Room doesn't exist!");
+            show404 = true;
+            return;
+          } else {
+            print("Found the room!");
+          }
+      });
+    } else {
+      showGame = false;
+    }
+    show404 = false;
+  }
+}
+
+class UnknownPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Center(
+        child: Text('Not found - 404'),
+      )
+    );
   }
 }
 
@@ -86,281 +265,249 @@ class _HomeState extends State<HomeScreen> {
     this.onTap = onTap;
   }
 
-  // Create the initialization Future outside of 'build':
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
-  
   @override
   Widget build(BuildContext context) {
-
-    CollectionReference players = FirebaseFirestore.instance.collection('players');
-
-/*     Future<void> addUser() {
-      // Call the player's CollectionReference to add a new user
-      return players
-          .add({
-            'id': fullName, // John Doe
-          })
-          .then((value) => print("User Added"))
-          .catchError((error) => print("Failed to add user: $error"));
-    } */
-    
-
-    return FutureBuilder(
-      // Initialize FlutterFire:
-      future: _initialization,
-      builder: (context, snapshot) {
-        // Check for errors
-        if (snapshot.hasError) {
-          print('Error initializing FlutterFire');
-          return Text('Something went wrong!');
-        }
-        
-        // Once complete, show your application
-        if (snapshot.connectionState == ConnectionState.done) {
-          return new LayoutBuilder(
-            builder: (context, constraints) {
-              return OrientationBuilder(
-                builder: (context, orientation) {
-                  //initialize SizerUtil()
-                  SizerUtil().init(constraints, orientation);
-                  return new MaterialApp(
-                    title:"Codenames - Words & Pictures",
-                    theme: ThemeData(
-                      primaryColor: Colors.white,
-                    ),
-                    home: new Scaffold(
-                      appBar: AppBar(
-                        backgroundColor: Colors.black,
-                        centerTitle: true,
-                        title: Text("CODENAMES", 
-                          style: GoogleFonts.shojumaru(
-                            color: Colors.white,
-                            fontSize: 12.0.sp,
-                          ), 
+    return new LayoutBuilder(
+      builder: (context, constraints) {
+        return OrientationBuilder(
+          builder: (context, orientation) {
+            //initialize SizerUtil()
+            SizerUtil().init(constraints, orientation);
+            return new /* MaterialApp(
+              title:"Codenames - Words & Pictures",
+              theme: ThemeData(
+                primaryColor: Colors.white,
+              ),
+              home: new */ Scaffold(
+                appBar: AppBar(
+                  backgroundColor: Colors.black,
+                  centerTitle: true,
+                  title: Text("CODENAMES", 
+                    style: GoogleFonts.shojumaru(
+                      color: Colors.white,
+                      fontSize: 12.0.sp,
+                    ), 
+                  ),
+                ),
+                body: new InteractiveViewer(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(height: 10.0.w),
+                        Center(
+                          child: Container(
+                            height: 12.0.w,
+                            width: 90.0.w,
+                            child: Text("Play Codenames online - Words, Pictures, or both mixed together!", textAlign: TextAlign.center,
+                              style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15.0.sp)
+                            )
+                          )
                         ),
-                      ),
-                      body: new InteractiveViewer(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: <Widget>[
-                              SizedBox(height: 10.0.w),
-                              Center(
-                                child: Container(
-                                  height: 12.0.w,
-                                  width: 90.0.w,
-                                  child: Text("Play Codenames online - Words, Pictures, or both mixed together!", textAlign: TextAlign.center,
-                                    style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15.0.sp)
-                                  )
-                                )
-                              ),
-                              SizedBox(height: 13.0.w),
-                              Center(
-                                child: Container(
+                        SizedBox(height: 13.0.w),
+                        Center(
+                          child: Container(
+                            height: 5.0.w,
+                            width: 90.0.w,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Container(
                                   height: 5.0.w,
-                                  width: 90.0.w,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Container(
-                                        height: 5.0.w,
-                                        child: Icon(Icons.arrow_forward_rounded)
-                                      ),
-                                      Container(
-                                        height: 5.0.w,
-                                        child: SizedBox(width: 1.0.w)
-                                      ),
-                                      Container(
-                                        height: 5.0.w,
-                                        child: Text("Start a new game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
-                                      )
-                                    ]
-                                  )
+                                  child: Icon(Icons.arrow_forward_rounded)
+                                ),
+                                Container(
+                                  height: 5.0.w,
+                                  child: SizedBox(width: 1.0.w)
+                                ),
+                                Container(
+                                  height: 5.0.w,
+                                  child: Text("Start a new game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
                                 )
-                              ),
-                            
-                              SizedBox(height: 1.0.w),
+                              ]
+                            )
+                          )
+                        ),
+                      
+                        SizedBox(height: 1.0.w),
 
-                              Center(
-                                child: Container(
+                        Center(
+                          child: Container(
+                            height: 9.0.w,
+                            width: 90.0.w,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Container(
+                                  padding: EdgeInsets.only(top: 1.0.w),
                                   height: 9.0.w,
-                                  width: 90.0.w,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Container(
-                                        padding: EdgeInsets.only(top: 1.0.w),
-                                        height: 9.0.w,
-                                        child: SizedBox(
-                                          height: 9.0.w,  
-                                          child: DropdownButton(
-                                            value: version,
-                                            icon: Icon(Icons.arrow_downward),
-                                            iconSize: 9.0.sp,
-                                            items: <String>['Words', 'Pictures', 'Words + Pictures']
-                                              .map<DropdownMenuItem<String>>((String value) {
-                                                return DropdownMenuItem<String>(
-                                                  value: value,
-                                                  child: Text(value, style: TextStyle(fontSize: 9.0.sp)),
-                                                );
-                                              }).toList(),
-                                            onChanged: (String newValue) {
-                                              setState(() {
-                                                version = newValue;
-                                              });
-                                            }
-                                          ),
-                                        )
-                                      ),
-                                      Container(
-                                        height: 7.0.w,
-                                        child: SizedBox(
-                                          height: 7.0.w,
-                                          width: 2.0.w,
-                                        )
-                                      ),
-                                      Container(
-                                        height: 7.0.w,
-                                        child: SizedBox(
-                                          height: 7.0.w,
-                                          width: 12.0.w, 
-                                          child: RawMaterialButton(
-                                            fillColor: Colors.blue[300],
-                                            splashColor: Colors.blueAccent,
-                                            child: Text('Play', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 10.0.sp)),
-                                            onPressed: () => onTap(version),
-                                              
+                                  child: SizedBox(
+                                    height: 9.0.w,  
+                                    child: DropdownButton(
+                                      value: version,
+                                      icon: Icon(Icons.arrow_downward),
+                                      iconSize: 9.0.sp,
+                                      items: <String>['Words', 'Pictures', 'Words + Pictures']
+                                        .map<DropdownMenuItem<String>>((String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value, style: TextStyle(fontSize: 9.0.sp)),
+                                          );
+                                        }).toList(),
+                                      onChanged: (String newValue) {
+                                        setState(() {
+                                          version = newValue;
+                                        });
+                                      }
+                                    ),
+                                  )
+                                ),
+                                Container(
+                                  height: 7.0.w,
+                                  child: SizedBox(
+                                    height: 7.0.w,
+                                    width: 2.0.w,
+                                  )
+                                ),
+                                Container(
+                                  height: 7.0.w,
+                                  child: SizedBox(
+                                    height: 7.0.w,
+                                    width: 12.0.w, 
+                                    child: RawMaterialButton(
+                                      fillColor: Colors.blue[300],
+                                      splashColor: Colors.blueAccent,
+                                      child: Text('Play', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 10.0.sp)),
+                                      onPressed: () => onTap(version),
+                                        
 
 /*                                               FirebaseAuth.instance
-                                                .signInAnonymously()
-                                                .then((UserCredential userCredential) {
-                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
-                                                })    
-                                                .catchError((e) {
-                                                  print(e);
-                                                }); */
-                                            
-                                          )
-                                        )
-                                      )
-                                    ]
+                                          .signInAnonymously()
+                                          .then((UserCredential userCredential) {
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
+                                          })    
+                                          .catchError((e) {
+                                            print(e);
+                                          }); */
+                                      
+                                    )
                                   )
                                 )
-                              ),
-
-                              SizedBox(height: 10.0.w),
-                              Center(
-                                child: Container(
-                                  height: 5.0.w,
-                                  width: 90.0.w,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Container(
-                                        height: 5.0.w,
-                                        child: Icon(Icons.arrow_forward_rounded)
-                                      ),
-                                      Container(
-                                        height: 5.0.w,
-                                        child: SizedBox(width: 1.0.w)
-                                      ),
-                                      Container(
-                                        height: 5.0.w,
-                                        child: Text("Join an existing game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
-                                      )
-                                    ]
-                                  )
-                                )
-                              ),
-
-                              SizedBox(height: 1.0.w),
-
-                              Center(
-                                child: Container(
-                                  height: 7.0.w,
-                                  width: 90.0.w,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Container(
-                                        height: 7.0.w,
-                                        child: SizedBox(
-                                          height: 7.0.w, 
-                                          width: 40.0.w, 
-                                          child: TextField(
-                                            expands: true,
-                                            maxLines: null,
-                                            minLines: null,
-                                            style: TextStyle(color: Colors.black, fontSize: 10.0.sp),
-                                            textAlign: TextAlign.center,
-                                            controller: roomID, 
-                                            decoration: InputDecoration(
-                                              contentPadding: EdgeInsets.all(0),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(color: Colors.black, width: 0.3.w)
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(color: Colors.black, width: 0.3.w)
-                                              )
-                                            )
-                                          )
-                                        )
-                                      ),
-                                      Container(
-                                        height: 7.0.w,
-                                        child: SizedBox(
-                                          height: 7.0.w,
-                                          width: 2.0.w,
-                                        )
-                                      ),
-                                      Container(
-                                        height: 7.0.w,
-                                        child: SizedBox(
-                                          height: 7.0.w,
-                                          width: 12.0.w, 
-                                          child: RawMaterialButton(
-                                            fillColor: Colors.red,
-                                            splashColor: Colors.redAccent,
-                                            child: Text('Join', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 10.0.sp)),
-                                            onPressed: () {
-                                              //Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
-                                            }
-                                          )
-                                        )
-                                      )
-                                    ]
-                                  )
-                                )
-                              ),
-                            ]
+                              ]
+                            )
                           )
-                        )
-                      )
+                        ),
+
+                        SizedBox(height: 10.0.w),
+                        Center(
+                          child: Container(
+                            height: 5.0.w,
+                            width: 90.0.w,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Container(
+                                  height: 5.0.w,
+                                  child: Icon(Icons.arrow_forward_rounded)
+                                ),
+                                Container(
+                                  height: 5.0.w,
+                                  child: SizedBox(width: 1.0.w)
+                                ),
+                                Container(
+                                  height: 5.0.w,
+                                  child: Text("Join an existing game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
+                                )
+                              ]
+                            )
+                          )
+                        ),
+
+                        SizedBox(height: 1.0.w),
+
+                        Center(
+                          child: Container(
+                            height: 7.0.w,
+                            width: 90.0.w,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Container(
+                                  height: 7.0.w,
+                                  child: SizedBox(
+                                    height: 7.0.w, 
+                                    width: 40.0.w, 
+                                    child: TextField(
+                                      expands: true,
+                                      maxLines: null,
+                                      minLines: null,
+                                      style: TextStyle(color: Colors.black, fontSize: 10.0.sp),
+                                      textAlign: TextAlign.center,
+                                      controller: roomID, 
+                                      decoration: InputDecoration(
+                                        contentPadding: EdgeInsets.all(0),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.black, width: 0.3.w)
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.black, width: 0.3.w)
+                                        )
+                                      )
+                                    )
+                                  )
+                                ),
+                                Container(
+                                  height: 7.0.w,
+                                  child: SizedBox(
+                                    height: 7.0.w,
+                                    width: 2.0.w,
+                                  )
+                                ),
+                                Container(
+                                  height: 7.0.w,
+                                  child: SizedBox(
+                                    height: 7.0.w,
+                                    width: 12.0.w, 
+                                    child: RawMaterialButton(
+                                      fillColor: Colors.red,
+                                      splashColor: Colors.redAccent,
+                                      child: Text('Join', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 10.0.sp)),
+                                      onPressed: () {
+                                        //Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
+                                      }
+                                    )
+                                  )
+                                )
+                              ]
+                            )
+                          )
+                        ),
+                      ]
                     )
-                  );
-                }
-              );
-            }
-          );
-        }
-
-        // Otherwise, show something whilst waiting for initialization to complete
-        return Center(child: CircularProgressIndicator());
-
+                  )
+                )
+              //)
+            );
+          }
+        );
       }
     );
   }
 }
 
 class GameScreen extends StatefulWidget {
+  final String roomId;
   final String version;
-  GameScreen({Key key, @required this.version}) : super(key: key);
+  GameScreen({Key key, @required this.roomId, @required this.version}) : super(key: key);
 
   @override
-  _GameState createState() => _GameState(this.version);
+  _GameState createState() => _GameState(this.roomId, this.version);
  }
 
 class _GameState extends State<GameScreen> {
+
+  String roomId;
+  String version;
+  String versionTemp;
 
   static final String DEVELOPER_KEY = ApiDevKey.DEV_KEY;
   List<String> wordsListFull = new List<String>();
@@ -388,8 +535,6 @@ class _GameState extends State<GameScreen> {
   bool displayWinner = false;
   String currentTeam = "";
   bool gameOver = false;
-  String version;
-  String versionTemp;
   List<String> wordsPicturesRandomOrder = new List<String>();
   Timer _timer;
   int _minuteLimitBlue;
@@ -413,7 +558,8 @@ class _GameState extends State<GameScreen> {
   bool errorSecondSettingInputRed = false;
   final _scrollController = ScrollController();
 
-   _GameState(version) {
+   _GameState(roomId, version) {
+    this.roomId = roomId;
     this.version = version;
     this.versionTemp = version;
   } 
@@ -510,12 +656,12 @@ class _GameState extends State<GameScreen> {
           builder: (context, orientation) {
             //initialize SizerUtil()
             SizerUtil().init(constraints, orientation);
-            return new MaterialApp(
+            return new /* MaterialApp(
               title:"Codenames - Words & Pictures",
               theme: ThemeData(
                 primaryColor: Colors.white,
               ),
-              home: Scaffold(
+              home: */ Scaffold(
                 drawer: MenuDrawer(),
                 appBar: AppBar(
                   iconTheme: IconThemeData(color: Colors.white),
@@ -722,7 +868,7 @@ class _GameState extends State<GameScreen> {
                     )
                   )
                 )
-              )
+              //)
             );
           }
         );
