@@ -1,3 +1,21 @@
+class GameRoutePath {
+  final String roomId;
+  final bool isUnknown;
+
+  GameRoutePath.home() 
+    : roomId = null,
+      isUnknown = false;
+
+  GameRoutePath.game(this.roomId) : isUnknown = false;
+
+  GameRoutePath.unknown() 
+    : roomId = null, 
+      isUnknown = true;
+
+  bool get isHomePage => roomId == null;
+  bool get isGamePage => roomId != null;
+}
+
 /* class GameRoutePath {
   static bool isHomePage = false;
   static bool isGamePage = false;
@@ -54,22 +72,3 @@
   bool get isHomePage => roomId == null;
   bool get isGamePage => roomId != null; 
 } */
-
-
-class GameRoutePath {
-  final String roomId;
-  final bool isUnknown;
-
-  GameRoutePath.home() 
-    : roomId = null,
-      isUnknown = false;
-
-  GameRoutePath.game(this.roomId) : isUnknown = false;
-
-  GameRoutePath.unknown() 
-    : roomId = null, 
-      isUnknown = true;
-
-  bool get isHomePage => roomId == null;
-  bool get isGamePage => roomId != null;
-}

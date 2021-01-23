@@ -92,39 +92,6 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-/* class GameRoutePath {
-  static bool isHomePage = false;
-  static bool isGamePage = false;
-  static bool isUnknown = false;
-
-  GameRoutePath(String roomId) {
-    
-    if (roomId == null) {
-      isHomePage = true;
-      isGamePage = false;
-      isUnknown = false;
-    }
-
-    FirebaseFirestore.instance
-    .collection("rooms")
-    .doc(roomId)
-    .get()
-    .then((doc) {
-      if(!doc.exists) {
-        print("Room doesn't exist!");
-        isHomePage = false;
-        isGamePage = false;
-        isUnknown = true;
-      } else {
-        print("Found the room!");
-        isHomePage = true;
-        isGamePage = false;
-        isUnknown = false;
-      }
-    });
-  }
-} */
-
 class GameRouteInformationParser extends RouteInformationParser<GameRoutePath> {
   @override
   Future<GameRoutePath> parseRouteInformation(RouteInformation routeInformation) async {
@@ -137,49 +104,27 @@ class GameRouteInformationParser extends RouteInformationParser<GameRoutePath> {
     
     final id = uri.pathSegments.elementAt(0);
 
-
-    //return GameRoutePath.game(id);
-    //return GameRoutePath.unknown();
-
     final document = await FirebaseFirestore.instance
       .collection("rooms")
       .doc(id)
       .get();
 
     if (!document.exists) {
-      print("Room doesn't exist!");
-      print("404 Page");
       return GameRoutePath.unknown();
     } else {
-      print("Found the room!");
-      print("Game Page");
       return GameRoutePath.game(id);
     }
-/*     .then((doc) {
-      if(!doc.exists) {
-        print("Room doesn't exist!");
-        print("404 Page");
-        return GameRoutePath.unknown();
-      } else {
-        print("Found the room!");
-        print("Game Page");
-        return GameRoutePath.game(id);
-      }
-    });  */
   }
     
   @override
   RouteInformation restoreRouteInformation(GameRoutePath path) {
     if (path.isUnknown) {
-      print("404 Page!");
       return RouteInformation(location: '/404');
     }
     if (path.isHomePage) {
-      print("Home Page!");
       return RouteInformation(location: '/');
     }
     if (path.isGamePage) {
-      print("Game Page!");
       return RouteInformation(location: '/${path.roomId}');
     }
     return null;
@@ -199,7 +144,6 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
   }
   
   @override
-  // TODO: implement navigatorKey
   GlobalKey<NavigatorState> get navigatorKey => GlobalKey<NavigatorState>();
 
   CollectionReference rooms = FirebaseFirestore.instance.collection('rooms');
@@ -244,7 +188,7 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
         MaterialPage(
           child: new HomeScreen(
             version: this.version,
-            onTap: _handlePlayButtonTapped,
+            onTapPlay: _handlePlayButtonTapped,
           ),
         ),
         if (show404) 
@@ -272,7 +216,6 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
   Future<void> setNewRoutePath(GameRoutePath path) async {
     
     if (path.isUnknown) {
-      print("Unknown");
       showGame = false;
       show404 = true;
       return;
@@ -281,10 +224,8 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
     if (path.isGamePage) {
       this.roomId = path.roomId;
       showGame = true;
-      print('Game Page');
       print(this.roomId);
     } else {
-      print('Home Page');
       showGame = false;
     }
     show404 = false;
@@ -306,22 +247,22 @@ class UnknownPage extends StatelessWidget {
 class HomeScreen extends StatefulWidget {
   
   String version;
-  ValueChanged<String> onTap;
+  ValueChanged<String> onTapPlay;
 
-  HomeScreen({Key key, @required this.version, @required this.onTap}) : super(key: key);
+  HomeScreen({Key key, @required this.version, @required this.onTapPlay}) : super(key: key);
   
   @override
-  _HomeState createState() => _HomeState(this.version, this.onTap);
+  _HomeState createState() => _HomeState(this.version, this.onTapPlay);
 } 
 
 class _HomeState extends State<HomeScreen> {
   String version;
   var roomID = TextEditingController()..text = "Some Room ID";
-  ValueChanged<String> onTap;
+  ValueChanged<String> onTapPlay;
 
-  _HomeState(version, onTap) {
+  _HomeState(version, onTapPlay) {
     this.version = version;
-    this.onTap = onTap;
+    this.onTapPlay = onTapPlay;
   }
 
   @override
@@ -436,7 +377,7 @@ class _HomeState extends State<HomeScreen> {
                                       fillColor: Colors.blue[300],
                                       splashColor: Colors.blueAccent,
                                       child: Text('Play', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 10.0.sp)),
-                                      onPressed: () => onTap(version),
+                                      onPressed: () => onTapPlay(version),
                                         
 
 /*                                               FirebaseAuth.instance
