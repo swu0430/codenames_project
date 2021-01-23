@@ -1,8 +1,40 @@
-class GameRoutePath {
-  String roomId;
-  bool isUnknown;
+/* class GameRoutePath {
+  static bool isHomePage = false;
+  static bool isGamePage = false;
+  static bool isUnknown = false;
 
-  //Try putting database checker from "setNewRoutePath" function in here...
+  GameRoutePath(String roomId) {
+    
+    if (roomId == null) {
+      isHomePage = true;
+      isGamePage = false;
+      isUnknown = false;
+    }
+
+    FirebaseFirestore.instance
+    .collection("rooms")
+    .doc(roomId)
+    .get()
+    .then((doc) {
+      if(!doc.exists) {
+        print("Room doesn't exist!");
+        isHomePage = false;
+        isGamePage = false;
+        isUnknown = true;
+      } else {
+        print("Found the room!");
+        isHomePage = true;
+        isGamePage = false;
+        isUnknown = false;
+      }
+    });
+  }
+} */
+  
+  
+/* class GameRoutePath { 
+  String roomId;
+  bool isUnknown = false;
 
   GameRoutePath.home() {
     this.roomId = null;
@@ -20,10 +52,12 @@ class GameRoutePath {
   }
 
   bool get isHomePage => roomId == null;
-  bool get isGamePage => roomId != null;
+  bool get isGamePage => roomId != null; 
+} */
 
 
-/*   final String roomId;
+class GameRoutePath {
+  final String roomId;
   final bool isUnknown;
 
   GameRoutePath.home() 
@@ -37,6 +71,5 @@ class GameRoutePath {
       isUnknown = true;
 
   bool get isHomePage => roomId == null;
-  bool get isGamePage => roomId != null; */
-
+  bool get isGamePage => roomId != null;
 }

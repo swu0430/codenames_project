@@ -92,30 +92,96 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
+/* class GameRoutePath {
+  static bool isHomePage = false;
+  static bool isGamePage = false;
+  static bool isUnknown = false;
+
+  GameRoutePath(String roomId) {
+    
+    if (roomId == null) {
+      isHomePage = true;
+      isGamePage = false;
+      isUnknown = false;
+    }
+
+    FirebaseFirestore.instance
+    .collection("rooms")
+    .doc(roomId)
+    .get()
+    .then((doc) {
+      if(!doc.exists) {
+        print("Room doesn't exist!");
+        isHomePage = false;
+        isGamePage = false;
+        isUnknown = true;
+      } else {
+        print("Found the room!");
+        isHomePage = true;
+        isGamePage = false;
+        isUnknown = false;
+      }
+    });
+  }
+} */
+
 class GameRouteInformationParser extends RouteInformationParser<GameRoutePath> {
   @override
   Future<GameRoutePath> parseRouteInformation(RouteInformation routeInformation) async {
     final uri = Uri.parse(routeInformation.location);
-
+    
     // Handle home screen route ('/')
-    if(uri.pathSegments.length == 0) return GameRoutePath.home();
+    if (uri.pathSegments.length == 0) {
+      return GameRoutePath.home();
+    }
+    
+    final id = uri.pathSegments.elementAt(0);
 
-    // Handle game screen route ('/:roomId')
-    if(uri.pathSegments.length == 1) {
-      final id = uri.pathSegments.elementAt(0);
-      if (id == null) return GameRoutePath.unknown();
+
+    //return GameRoutePath.game(id);
+    //return GameRoutePath.unknown();
+
+    final document = await FirebaseFirestore.instance
+      .collection("rooms")
+      .doc(id)
+      .get();
+
+    if (!document.exists) {
+      print("Room doesn't exist!");
+      print("404 Page");
+      return GameRoutePath.unknown();
+    } else {
+      print("Found the room!");
+      print("Game Page");
       return GameRoutePath.game(id);
     }
-
-    // Handle unknown routes
-    return GameRoutePath.unknown();
+/*     .then((doc) {
+      if(!doc.exists) {
+        print("Room doesn't exist!");
+        print("404 Page");
+        return GameRoutePath.unknown();
+      } else {
+        print("Found the room!");
+        print("Game Page");
+        return GameRoutePath.game(id);
+      }
+    });  */
   }
     
   @override
   RouteInformation restoreRouteInformation(GameRoutePath path) {
-    if (path.isUnknown) return RouteInformation(location: '/404');
-    if (path.isHomePage) return RouteInformation(location: '/');
-    if (path.isGamePage) return RouteInformation(location: '/${path.roomId}');
+    if (path.isUnknown) {
+      print("404 Page!");
+      return RouteInformation(location: '/404');
+    }
+    if (path.isHomePage) {
+      print("Home Page!");
+      return RouteInformation(location: '/');
+    }
+    if (path.isGamePage) {
+      print("Game Page!");
+      return RouteInformation(location: '/${path.roomId}');
+    }
     return null;
   }
 }
@@ -204,28 +270,21 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
   //This function takes user input for the URL and displays the appropriate page.
   @override
   Future<void> setNewRoutePath(GameRoutePath path) async {
+    
     if (path.isUnknown) {
+      print("Unknown");
       showGame = false;
       show404 = true;
       return;
     }
 
     if (path.isGamePage) {
-      //Check if roomId exists in the Firestore database
-      FirebaseFirestore.instance
-        .collection("rooms")
-        .doc(path.roomId)
-        .get()
-        .then((doc) {
-          if(!doc.exists) {
-            print("Room doesn't exist!");
-            show404 = true;
-            return;
-          } else {
-            print("Found the room!");
-          }
-      });
+      this.roomId = path.roomId;
+      showGame = true;
+      print('Game Page');
+      print(this.roomId);
     } else {
+      print('Home Page');
       showGame = false;
     }
     show404 = false;
