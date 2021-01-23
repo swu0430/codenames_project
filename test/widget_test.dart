@@ -11,6 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:codenames_project/main.dart';
 
 void main() {
+  String roomId;
   String version;
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
