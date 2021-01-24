@@ -709,13 +709,13 @@ class _GameState extends State<GameScreen> {
   //final _scrollController = ScrollController();
 
   bool roomExists = false;
+  bool runRoomExistsCheck = true;
 
    _GameState(roomId, version) {
     this.roomId = roomId;
     this.version = version;
     this.versionTemp = version;
   } 
-
 
   @override
   void initState() {
@@ -755,35 +755,59 @@ class _GameState extends State<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getDoc(),
-      builder: (context, data) {
-        if (data.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else {
-          if (!roomExists) {
-            return UnknownPage();
-          } else { 
-            if (runFutures == true) {
-              return FutureBuilder(
-                future: fetchImages(),
-                builder: (context, data) {
-                  //Needs more testing, but this new line appears to better than "if (data.hasData == false) {" which sometimes can cause "Index Out of Range" issues
-                  //the Unsplash API image list calls
-                  if (data.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else {         
-                    return gameBuild();
+    if (runRoomExistsCheck) {
+      runRoomExistsCheck = false;
+      return FutureBuilder(
+        future: getDoc(),
+        builder: (context, data) {
+          if (data.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else {
+            if (!roomExists) {
+              return UnknownPage();
+            } else { 
+              if (runFutures == true) {
+                return FutureBuilder(
+                  future: fetchImages(),
+                  builder: (context, data) {
+                    //Needs more testing, but this new line appears to better than "if (data.hasData == false) {" which sometimes can cause "Index Out of Range" issues
+                    //the Unsplash API image list calls
+                    if (data.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else {         
+                      return gameBuild();
+                    }
                   }
-                }
-              );
-            } else {
-              return gameBuild();
+                );
+              } else {
+                return gameBuild();
+              }
             }
           }
         }
+      );
+    } else {
+      if (!roomExists) {
+        return UnknownPage();
+      } else { 
+        if (runFutures == true) {
+          return FutureBuilder(
+            future: fetchImages(),
+            builder: (context, data) {
+              //Needs more testing, but this new line appears to better than "if (data.hasData == false) {" which sometimes can cause "Index Out of Range" issues
+              //the Unsplash API image list calls
+              if (data.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else {         
+                return gameBuild();
+              }
+            }
+          );
+        } else {
+          return gameBuild();
+        }
       }
-    );
+    }
   }
 
   Widget gameBuild() {
@@ -1373,7 +1397,7 @@ class _GameState extends State<GameScreen> {
               child: ListView(
                 children: [
                   SelectableText('Invite friends to this room with this link: ', style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
-                  SelectableText('https://www.detective-dingo.web.app/#/${this.roomId}/', style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, decoration: TextDecoration.underline, fontSize: 8.0.sp)),
+                  SelectableText('www.detective-dingo.web.app/#/${this.roomId}/', style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, decoration: TextDecoration.underline, fontSize: 8.0.sp)),
 /*                   Link(url: 'https://www.detective-dingo.web.app/#/${this.roomId}/', 
                     child: Text('https://www.detective-dingo.web.app/#/${this.roomId}/',
                       style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 8.0.sp),  
