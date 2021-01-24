@@ -38,7 +38,7 @@ class _MyAppState extends State<MyApp> {
   CollectionReference rooms = FirebaseFirestore.instance.collection('rooms');
 
   @override
-  Widget build(BuildContext context) {
+  /* Widget build(BuildContext context) {
     return FutureBuilder(
       // Initialize FlutterFire:
       future: _initialization,
@@ -64,9 +64,9 @@ class _MyAppState extends State<MyApp> {
         }
       }
     );
-  }
+  } */
 
-/*   Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return new MaterialApp.router(
       title:"Codenames - Words & Pictures",
       theme: ThemeData(
@@ -75,7 +75,7 @@ class _MyAppState extends State<MyApp> {
       routerDelegate: GameRouterDelegate(showGame, roomId, version),
       routeInformationParser: GameRouteInformationParser(),
     );
-  } */
+  }
 
 /*   static Future<void> _getRoomList() async {
     final QuerySnapshot querySnapshot =
@@ -231,11 +231,11 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
         'wordsListFull': wordsListFull, 
         'wordsList': wordsList, 
         'imageData': imageData,
-        'colorListInteractive': colorListInteractive,
-        'colorList': colorList,
-        'blendModeListInteractive': blendModeListInteractive,
-        'blendModeList': blendModeList,
-        'borderColorListWhiteforOperatives': borderColorListWhiteforOperatives,
+        //'colorListInteractive': colorListInteractive,
+        //'colorList': colorList,
+        //'blendModeListInteractive': blendModeListInteractive,
+        //'blendModeList': blendModeList,
+        //'borderColorListWhiteforOperatives': borderColorListWhiteforOperatives,
         'spymaster': spymaster,
         'spymasterEnableSwitch': spymasterEnableSwitch,
         'spymasterEnableSwitchTemp': spymasterEnableSwitchTemp,
@@ -626,7 +626,7 @@ class _GameState extends State<GameScreen> {
   String roomId;
   String version;
   String versionTemp;
-
+  
   static final String DEVELOPER_KEY = ApiDevKey.DEV_KEY;
   List<String> wordsListFull = new List<String>();
   List<String> wordsList = new List<String>();
