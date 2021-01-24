@@ -86,11 +86,11 @@ class _MyAppState extends State<MyApp> {
     print(ROOM_LIST);
   } */
   
-  /* Future<void> addRoom(String roomId) async {
+  Future<void> addRoom(String roomId) async {
     return rooms
       .doc(roomId)
       .set({
-
+        'Success': true,
       })
       .then((value) => print("Room Added"))
       .catchError((error) => print("Failed to add room: $error"));
@@ -103,14 +103,14 @@ class _MyAppState extends State<MyApp> {
     if (auth.currentUser != null) {
       this.roomId = auth.currentUser.uid;
       print(this.roomId);
-      addRoom(this.roomId);
+      //addRoom(this.roomId);
     }
 
     setState(() {
       this.version = version;
       showGame = true;
     });
-  } */
+  }
 
 }
 
