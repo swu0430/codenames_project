@@ -32,9 +32,8 @@ class _MyAppState extends State<MyApp> {
   static List<String> ROOM_LIST;
   
   // Create the initialization Future outside of 'build':
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+  //final Future<FirebaseApp> _initialization = Firebase.initializeApp();
   FirebaseFirestore firestore = FirebaseFirestore.instance;
- 
   CollectionReference rooms = FirebaseFirestore.instance.collection('rooms');
 
   @override
@@ -76,15 +75,6 @@ class _MyAppState extends State<MyApp> {
       routeInformationParser: GameRouteInformationParser(),
     );
   }
-
-/*   static Future<void> _getRoomList() async {
-    final QuerySnapshot querySnapshot =
-      await FirebaseFirestore.instance.collection('rooms').get();
-    final roomData = querySnapshot.docs.map((doc) => doc.id).toList();
-    print(roomData);
-    ROOM_LIST = List<String>.from(roomData);
-    print(ROOM_LIST);
-  } */
   
   Future<void> addRoom(String roomId) async {
     return rooms
@@ -231,7 +221,7 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
         'wordsListFull': wordsListFull, 
         'wordsList': wordsList, 
         'imageData': imageData,
-        //'colorListInteractive': colorListInteractive,
+        //'colorListInteractive': colorListInteractive, // Create boolean arrays for these
         //'colorList': colorList,
         //'blendModeListInteractive': blendModeListInteractive,
         //'blendModeList': blendModeList,
@@ -383,230 +373,272 @@ class _HomeState extends State<HomeScreen> {
     this.onTapPlay = onTapPlay;
   }
 
+  // Create the initialization Future outside of 'build':
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  CollectionReference rooms = FirebaseFirestore.instance.collection('rooms');
+
+  @override
+  /* Widget build(BuildContext context) {
+    return FutureBuilder(
+      // Initialize FlutterFire:
+      future: _initialization,
+      builder: (context, snapshot) {
+        // Check for errors
+        if (snapshot.hasError) {
+          print('Error initializing FlutterFire');
+          return Text('Something went wrong!');
+        }
+        // Once complete, show your application
+        if (snapshot.connectionState == ConnectionState.done) {
+          return new MaterialApp.router(
+            title:"Codenames - Words & Pictures",
+            theme: ThemeData(
+              primaryColor: Colors.white,
+            ),
+            routerDelegate: GameRouterDelegate(showGame, roomId, version),
+            routeInformationParser: GameRouteInformationParser(),
+          );
+        } else {
+          // Otherwise, show something whilst waiting for initialization to complete
+          return Center(child: CircularProgressIndicator());
+        }
+      }
+    );
+  } */
+
+
   @override
   Widget build(BuildContext context) {
-    return new LayoutBuilder(
-      builder: (context, constraints) {
-        return OrientationBuilder(
-          builder: (context, orientation) {
-            //initialize SizerUtil()
-            SizerUtil().init(constraints, orientation);
-            return new /* MaterialApp(
-              title:"Codenames - Words & Pictures",
-              theme: ThemeData(
-                primaryColor: Colors.white,
-              ),
-              home: new */ Scaffold(
-                appBar: AppBar(
-                  backgroundColor: Colors.black,
-                  centerTitle: true,
-                  title: Text("CODENAMES", 
-                    style: GoogleFonts.shojumaru(
-                      color: Colors.white,
-                      fontSize: 12.0.sp,
-                    ), 
-                  ),
-                ),
-                body: new InteractiveViewer(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: <Widget>[
-                        SizedBox(height: 10.0.w),
-                        Center(
-                          child: Container(
-                            height: 12.0.w,
-                            width: 90.0.w,
-                            child: Text("Play Codenames online - Words, Pictures, or both mixed together!", textAlign: TextAlign.center,
-                              style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15.0.sp)
-                            )
-                          )
+    return FutureBuilder(
+      // Initialize FlutterFire:
+      future: _initialization,
+      builder: (context, snapshot) {
+        // Check for errors
+        if (snapshot.hasError) {
+          print('Error initializing FlutterFire');
+          return Text('Something went wrong!');
+        }
+        // Once complete, show your application
+        if (snapshot.connectionState == ConnectionState.done) {
+    
+          return new LayoutBuilder(
+            builder: (context, constraints) {
+              return OrientationBuilder(
+                builder: (context, orientation) {
+                  //initialize SizerUtil()
+                  SizerUtil().init(constraints, orientation);
+                  return new /* MaterialApp(
+                    title:"Codenames - Words & Pictures",
+                    theme: ThemeData(
+                      primaryColor: Colors.white,
+                    ),
+                    home: new */ Scaffold(
+                      appBar: AppBar(
+                        backgroundColor: Colors.black,
+                        centerTitle: true,
+                        title: SelectableText("CODENAMES", 
+                          style: GoogleFonts.shojumaru(
+                            color: Colors.white,
+                            fontSize: 12.0.sp,
+                          ), 
                         ),
-                        SizedBox(height: 13.0.w),
-                        Center(
-                          child: Container(
-                            height: 5.0.w,
-                            width: 90.0.w,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Container(
-                                  height: 5.0.w,
-                                  child: Icon(Icons.arrow_forward_rounded)
-                                ),
-                                Container(
-                                  height: 5.0.w,
-                                  child: SizedBox(width: 1.0.w)
-                                ),
-                                Container(
-                                  height: 5.0.w,
-                                  child: Text("Start a new game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
+                      ),
+                      body: new InteractiveViewer(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: <Widget>[
+                              SizedBox(height: 10.0.w),
+                              Center(
+                                child: Container(
+                                  height: 12.0.w,
+                                  width: 90.0.w,
+                                  child: SelectableText("Play Codenames online - Words, Pictures, or both mixed together!", textAlign: TextAlign.center,
+                                    style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15.0.sp)
+                                  )
                                 )
-                              ]
-                            )
-                          )
-                        ),
-                      
-                        SizedBox(height: 1.0.w),
+                              ),
+                              SizedBox(height: 13.0.w),
+                              Center(
+                                child: Container(
+                                  height: 5.0.w,
+                                  width: 90.0.w,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Container(
+                                        height: 5.0.w,
+                                        child: Icon(Icons.arrow_forward_rounded)
+                                      ),
+                                      Container(
+                                        height: 5.0.w,
+                                        child: SizedBox(width: 1.0.w)
+                                      ),
+                                      Container(
+                                        height: 5.0.w,
+                                        child: SelectableText("Start a new game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
+                                      )
+                                    ]
+                                  )
+                                )
+                              ),
+                            
+                              SizedBox(height: 1.0.w),
 
-                        Center(
-                          child: Container(
-                            height: 9.0.w,
-                            width: 90.0.w,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Container(
-                                  padding: EdgeInsets.only(top: 1.0.w),
+                              Center(
+                                child: Container(
                                   height: 9.0.w,
-                                  child: SizedBox(
-                                    height: 9.0.w,  
-                                    child: DropdownButton(
-                                      value: version,
-                                      icon: Icon(Icons.arrow_downward),
-                                      iconSize: 9.0.sp,
-                                      items: <String>['Words', 'Pictures', 'Words + Pictures']
-                                        .map<DropdownMenuItem<String>>((String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value, style: TextStyle(fontSize: 9.0.sp)),
-                                          );
-                                        }).toList(),
-                                      onChanged: (String newValue) {
-                                        setState(() {
-                                          version = newValue;
-                                        });
-                                      }
-                                    ),
-                                  )
-                                ),
-                                Container(
-                                  height: 7.0.w,
-                                  child: SizedBox(
-                                    height: 7.0.w,
-                                    width: 2.0.w,
-                                  )
-                                ),
-                                Container(
-                                  height: 7.0.w,
-                                  child: SizedBox(
-                                    height: 7.0.w,
-                                    width: 12.0.w, 
-                                    child: RawMaterialButton(
-                                      fillColor: Colors.blue[300],
-                                      splashColor: Colors.blueAccent,
-                                      child: Text('Play', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 10.0.sp)),
-                                      onPressed: () => onTapPlay(version),
-                                        
-
-/*                                               FirebaseAuth.instance
-                                          .signInAnonymously()
-                                          .then((UserCredential userCredential) {
-                                            Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
-                                          })    
-                                          .catchError((e) {
-                                            print(e);
-                                          }); */
-                                      
-                                    )
-                                  )
-                                )
-                              ]
-                            )
-                          )
-                        ),
-
-                        SizedBox(height: 10.0.w),
-                        Center(
-                          child: Container(
-                            height: 5.0.w,
-                            width: 90.0.w,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Container(
-                                  height: 5.0.w,
-                                  child: Icon(Icons.arrow_forward_rounded)
-                                ),
-                                Container(
-                                  height: 5.0.w,
-                                  child: SizedBox(width: 1.0.w)
-                                ),
-                                Container(
-                                  height: 5.0.w,
-                                  child: Text("Join an existing game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
-                                )
-                              ]
-                            )
-                          )
-                        ),
-
-                        SizedBox(height: 1.0.w),
-
-                        Center(
-                          child: Container(
-                            height: 7.0.w,
-                            width: 90.0.w,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Container(
-                                  height: 7.0.w,
-                                  child: SizedBox(
-                                    height: 7.0.w, 
-                                    width: 40.0.w, 
-                                    child: TextField(
-                                      expands: true,
-                                      maxLines: null,
-                                      minLines: null,
-                                      style: TextStyle(color: Colors.black, fontSize: 10.0.sp),
-                                      textAlign: TextAlign.center,
-                                      controller: roomID, 
-                                      decoration: InputDecoration(
-                                        contentPadding: EdgeInsets.all(0),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.black, width: 0.3.w)
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.black, width: 0.3.w)
+                                  width: 90.0.w,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Container(
+                                        padding: EdgeInsets.only(top: 1.0.w),
+                                        height: 9.0.w,
+                                        child: SizedBox(
+                                          height: 9.0.w,  
+                                          child: DropdownButton(
+                                            value: version,
+                                            icon: Icon(Icons.arrow_downward),
+                                            iconSize: 9.0.sp,
+                                            items: <String>['Words', 'Pictures', 'Words + Pictures']
+                                              .map<DropdownMenuItem<String>>((String value) {
+                                                return DropdownMenuItem<String>(
+                                                  value: value,
+                                                  child: Text(value, style: TextStyle(fontSize: 9.0.sp)),
+                                                );
+                                              }).toList(),
+                                            onChanged: (String newValue) {
+                                              setState(() {
+                                                version = newValue;
+                                              });
+                                            }
+                                          ),
+                                        )
+                                      ),
+                                      Container(
+                                        height: 7.0.w,
+                                        child: SizedBox(
+                                          height: 7.0.w,
+                                          width: 2.0.w,
+                                        )
+                                      ),
+                                      Container(
+                                        height: 7.0.w,
+                                        child: SizedBox(
+                                          height: 7.0.w,
+                                          width: 12.0.w, 
+                                          child: RawMaterialButton(
+                                            fillColor: Colors.blue[300],
+                                            splashColor: Colors.blueAccent,
+                                            child: Text('Play', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 10.0.sp)),
+                                            onPressed: () => onTapPlay(version),
+                                          )
                                         )
                                       )
-                                    )
-                                  )
-                                ),
-                                Container(
-                                  height: 7.0.w,
-                                  child: SizedBox(
-                                    height: 7.0.w,
-                                    width: 2.0.w,
-                                  )
-                                ),
-                                Container(
-                                  height: 7.0.w,
-                                  child: SizedBox(
-                                    height: 7.0.w,
-                                    width: 12.0.w, 
-                                    child: RawMaterialButton(
-                                      fillColor: Colors.red,
-                                      splashColor: Colors.redAccent,
-                                      child: Text('Join', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 10.0.sp)),
-                                      onPressed: () {
-                                        //Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
-                                      }
-                                    )
+                                    ]
                                   )
                                 )
-                              ]
-                            )
+                              ),
+
+                              SizedBox(height: 10.0.w),
+                              Center(
+                                child: Container(
+                                  height: 5.0.w,
+                                  width: 90.0.w,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Container(
+                                        height: 5.0.w,
+                                        child: Icon(Icons.arrow_forward_rounded)
+                                      ),
+                                      Container(
+                                        height: 5.0.w,
+                                        child: SizedBox(width: 1.0.w)
+                                      ),
+                                      Container(
+                                        height: 5.0.w,
+                                        child: SelectableText("Join an existing game:", style: GoogleFonts.gaegu(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp)),
+                                      )
+                                    ]
+                                  )
+                                )
+                              ),
+
+                              SizedBox(height: 1.0.w),
+
+                              Center(
+                                child: Container(
+                                  height: 7.0.w,
+                                  width: 90.0.w,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Container(
+                                        height: 7.0.w,
+                                        child: SizedBox(
+                                          height: 7.0.w, 
+                                          width: 40.0.w, 
+                                          child: TextField(
+                                            expands: true,
+                                            maxLines: null,
+                                            minLines: null,
+                                            style: TextStyle(color: Colors.black, fontSize: 10.0.sp),
+                                            textAlign: TextAlign.center,
+                                            controller: roomID, 
+                                            decoration: InputDecoration(
+                                              contentPadding: EdgeInsets.all(0),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.black, width: 0.3.w)
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.black, width: 0.3.w)
+                                              )
+                                            )
+                                          )
+                                        )
+                                      ),
+                                      Container(
+                                        height: 7.0.w,
+                                        child: SizedBox(
+                                          height: 7.0.w,
+                                          width: 2.0.w,
+                                        )
+                                      ),
+                                      Container(
+                                        height: 7.0.w,
+                                        child: SizedBox(
+                                          height: 7.0.w,
+                                          width: 12.0.w, 
+                                          child: RawMaterialButton(
+                                            fillColor: Colors.red,
+                                            splashColor: Colors.redAccent,
+                                            child: Text('Join', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 10.0.sp)),
+                                            onPressed: () {
+                                              //Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
+                                            }
+                                          )
+                                        )
+                                      )
+                                    ]
+                                  )
+                                )
+                              ),
+                            ]
                           )
-                        ),
-                      ]
-                    )
-                  )
-                )
-              //)
-            );
-          }
-        );
+                        )
+                      )
+                    //)
+                  );
+                }
+              );
+            }
+          );
+        } else {
+          // Otherwise, show something whilst waiting for initialization to complete
+          return Center(child: CircularProgressIndicator());
+        }
       }
     );
   }
@@ -815,7 +847,7 @@ class _GameState extends State<GameScreen> {
                   iconTheme: IconThemeData(color: Colors.white),
                   backgroundColor: Colors.black, 
                   centerTitle: true,
-                  title: Text("CODENAMES: ${version.toUpperCase()}", 
+                  title: SelectableText("CODENAMES: ${version.toUpperCase()}", 
                     style: GoogleFonts.shojumaru(
                       color: Colors.white,
                       fontSize: 12.0.sp,
@@ -1327,11 +1359,11 @@ class _GameState extends State<GameScreen> {
             ),
           ),
         ),
-        Center(child: Text("ROOM LINK", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 10.0.sp))),
+        Center(child: SelectableText("ROOM LINK", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 10.0.sp))),
         SizedBox(height: 3.0.w),
         Container(
           height: 15.0.w,
-          width: 60.0.w,
+          width: 98.0.w,
           alignment: Alignment.topCenter,
           padding: EdgeInsets.only(left: 3.0.w),
           child: SingleChildScrollView(
@@ -1340,12 +1372,13 @@ class _GameState extends State<GameScreen> {
               width: 500.0.w,
               child: ListView(
                 children: [
-                  Text('Invite friends to this room with this link: ', style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
-                  Link(url: 'https://www.google.com/', 
-                    child: Text('https://www.google.com/',
-                      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 8.0.sp), 
+                  SelectableText('Invite friends to this room with this link: ', style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
+                  SelectableText('https://www.detective-dingo.web.app/#/${this.roomId}/', style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, decoration: TextDecoration.underline, fontSize: 8.0.sp)),
+/*                   Link(url: 'https://www.detective-dingo.web.app/#/${this.roomId}/', 
+                    child: Text('https://www.detective-dingo.web.app/#/${this.roomId}/',
+                      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 8.0.sp),  
                     )
-                  )
+                  ) */
                 ]
               )
             )
@@ -1371,7 +1404,7 @@ class _GameState extends State<GameScreen> {
             ),
           ),
         ),
-        Center(child: Text("TYPICAL RULES", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 10.0.sp))),
+        Center(child: SelectableText("TYPICAL RULES", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 10.0.sp))),
         SizedBox(height: 3.0.w),
         Container(
           height: 50.0.w,
@@ -1386,81 +1419,27 @@ class _GameState extends State<GameScreen> {
                     padding: EdgeInsets.only(left: 2.0.w, right: 2.0.w),
                     child: Column(children: [
                       Align(alignment: Alignment.centerLeft, 
-                        child: Text("Setup", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, decoration: TextDecoration.underline, fontSize: 7.0.sp))),
+                        child: SelectableText("Setup", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, decoration: TextDecoration.underline, fontSize: 7.0.sp))),
                       Align(alignment: Alignment.centerLeft,
-                        child: Text('    ${String.fromCharCode(0x2014)} Players self-organize into 2 teams (1 red team and 1 blue team).',
+                        child: SelectableText('    ${String.fromCharCode(0x2014)} Players self-organize into 2 teams (1 red team and 1 blue team).\n    ${String.fromCharCode(0x2014)} Each team selects one Spymaster. The Spymaster clicks the "Spymaster" tab on the bottom left.\n    ${String.fromCharCode(0x2014)} The rest of the players on each team are Operatives. They click the "Operative" tab.\n    ${String.fromCharCode(0x2014)} The top of the game screen indicates the score for each team and which team\'s turn it is.\n    ${String.fromCharCode(0x2014)} To create a timer for each team\'s turn, adjust the game settings.',
                           style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('    ${String.fromCharCode(0x2014)} Each team selects one Spymaster. The Spymaster clicks the "Spymaster" tab on the bottom left.',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('    ${String.fromCharCode(0x2014)} The rest of the players on each team are Operatives. They click the "Operative" tab.',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('    ${String.fromCharCode(0x2014)} The top of the game screen indicates the score for each team and which team\'s turn it is.',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('    ${String.fromCharCode(0x2014)} To create a timer for each team\'s turn, adjust the game settings.',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-
-                      SizedBox(height: 3.0.w),
-
-                      Align(alignment: Alignment.centerLeft, 
-                        child: Text("Gameplay", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, decoration: TextDecoration.underline, fontSize: 7.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('    ${String.fromCharCode(0x2014)} Each team\'s turn consists of two phases:',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('             (1) Spymaster gives a clue consisting of one Word and one Number.',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('             (2) Operatives try guessing (one at a time) the words/pictures associated with the Word.',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('    ${String.fromCharCode(0x2014)} Outside of the clues at the start of each turn, the Spymaster should not communicate with anyone.',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('    ${String.fromCharCode(0x2014)} The Operatives may communicate with each other as much as they want.',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('    ${String.fromCharCode(0x2014)} On each turn, the Operatives have up to (Number + 1) attempts to guess.',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('    ${String.fromCharCode(0x2014)} Example turn:',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('             (1) Spymaster gives the clue: "Animal, 3."',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('             (2) Operatives have up to 4 attempts to guess words/pictures associated with animals.',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('    ${String.fromCharCode(0x2014)} If the Operatives correctly click a word/picture, they continue guessing.',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('    ${String.fromCharCode(0x2014)} If the Operatives click a wrong word/picture (Neutral or Opponent\'s), their turn immediately ends.',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('    ${String.fromCharCode(0x2014)} If the Operatives ever click the Assassin word/picture, that team automatically loses!',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('    ${String.fromCharCode(0x2014)} At any point during a team\'s turn, the Operatives have the option to end their turn.',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-
-                      SizedBox(height: 3.0.w),
-
-                      Align(alignment: Alignment.centerLeft, 
-                        child: Text("End of Game", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, decoration: TextDecoration.underline, fontSize: 7.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('    ${String.fromCharCode(0x2014)} Unless the Assassin word/picture is guessed, the first team to guess all their words/pictures wins!',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('    ${String.fromCharCode(0x2014)} The team that goes first has 9 words/pictures to guess, while the second team has 8.',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
-                      Align(alignment: Alignment.centerLeft,
-                        child: Text('    ${String.fromCharCode(0x2014)} To start a new game, select the game version at the bottom of the screen and click "Next Game."',
-                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),   
                       
+                      SizedBox(height: 3.0.w),
+
+                      Align(alignment: Alignment.centerLeft, 
+                        child: SelectableText("Gameplay", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, decoration: TextDecoration.underline, fontSize: 7.0.sp))),
+                      Align(alignment: Alignment.centerLeft,
+                        child: SelectableText('    ${String.fromCharCode(0x2014)} Each team\'s turn consists of two phases:\n             (1) Spymaster gives a clue consisting of one Word and one Number.\n             (2) Operatives try guessing (one at a time) the words/pictures associated with the Word.\n    ${String.fromCharCode(0x2014)} Outside of the clues at the start of each turn, the Spymaster should not communicate with anyone.\n    ${String.fromCharCode(0x2014)} The Operatives may communicate with each other as much as they want.\n    ${String.fromCharCode(0x2014)} On each turn, the Operatives have up to (Number + 1) attempts to guess.\n    ${String.fromCharCode(0x2014)} Example turn:\n             (1) Spymaster gives the clue: "Animal, 3."\n             (2) Operatives have up to 4 attempts to guess words/pictures associated with animals.\n    ${String.fromCharCode(0x2014)} If the Operatives correctly click a word/picture, they continue guessing.\n    ${String.fromCharCode(0x2014)} If the Operatives click a wrong word/picture (Neutral or Opponent\'s), their turn immediately ends.\n    ${String.fromCharCode(0x2014)} If the Operatives ever click the Assassin word/picture, that team automatically loses!\n    ${String.fromCharCode(0x2014)} At any point during a team\'s turn, the Operatives have the option to end their turn.',
+                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+
+                      SizedBox(height: 3.0.w),
+
+                      Align(alignment: Alignment.centerLeft, 
+                        child: SelectableText("End of Game", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, decoration: TextDecoration.underline, fontSize: 7.0.sp))),
+                      Align(alignment: Alignment.centerLeft,
+                        child: SelectableText('    ${String.fromCharCode(0x2014)} Unless the Assassin word/picture is guessed, the first team to guess all their words/pictures wins!\n    ${String.fromCharCode(0x2014)} The team that goes first has 9 words/pictures to guess, while the second team has 8.\n    ${String.fromCharCode(0x2014)} To start a new game, select the game version at the bottom of the screen and click "Next Game."',
+                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp))),
+
                       SizedBox(height: 3.0.w),
                     ])
                   )
@@ -1488,7 +1467,7 @@ class _GameState extends State<GameScreen> {
             ),
           ),
         ),
-        Center(child: Text("SETTINGS", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp))),
+        Center(child: SelectableText("SETTINGS", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0.sp))),
         SizedBox(height: 3.0.w),
         Container(
           height: 40.0.w,
@@ -1504,7 +1483,7 @@ class _GameState extends State<GameScreen> {
                     padding: EdgeInsets.only(left: 3.0.w),
                     child: Row(
                       children: [
-                        Text("Blue Timer", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+                        SelectableText("Blue Timer", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
                         SizedBox(width: 1.0.w),
                         Switch(
                           value: timerSwitchTempBlue,
@@ -1523,7 +1502,7 @@ class _GameState extends State<GameScreen> {
                   Container(
                     padding: EdgeInsets.only(left: 3.0.w),
                     child: Row(children: [
-                      Text("Red Timer", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+                      SelectableText("Red Timer", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
                       SizedBox(width: 1.0.w),
                       Switch(
                         value: timerSwitchTempRed,
@@ -1542,7 +1521,7 @@ class _GameState extends State<GameScreen> {
                   Container(
                     padding: EdgeInsets.only(left: 3.0.w),
                     child: Row(children: [
-                      Text("Enforce Timers", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+                      SelectableText("Enforce Timers", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
                       SizedBox(width: 15.0),
                       Switch(
                         value: enforceTimersSwitchTemp,
@@ -1559,7 +1538,7 @@ class _GameState extends State<GameScreen> {
                   Container(
                     padding: EdgeInsets.only(left: 3.0.w),
                     child: Row(children: [
-                      Text("Spymaster Can Guess", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+                      SelectableText("Spymaster Can Guess", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
                       SizedBox(width: 1.0.w),
                       Switch(
                         value: spymasterEnableSwitchTemp,
@@ -1666,7 +1645,7 @@ class _GameState extends State<GameScreen> {
             ),
           ),
         ),
-        Center(child: Text("NOTES", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 10.0.sp))),
+        Center(child: SelectableText("NOTES", style: GoogleFonts.shojumaru(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 10.0.sp))),
         SizedBox(height: 3.0.w),
         Container(
           height: 30.0.w,
@@ -1806,9 +1785,9 @@ class _GameState extends State<GameScreen> {
             )
           )
         ),
-        Text((timerSwitchTempBlue == true && errorMinuteSettingInputBlue == true) ? "!" : "", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18)),
+        SelectableText((timerSwitchTempBlue == true && errorMinuteSettingInputBlue == true) ? "!" : "", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18)),
         SizedBox(width: 5.0),
-        Text(" m", style: TextStyle(color: Colors.black, fontSize: 18)),
+        SelectableText(" m", style: TextStyle(color: Colors.black, fontSize: 18)),
         SizedBox(width: 5.0),
         Container(
           height: 30.0, 
@@ -1821,9 +1800,9 @@ class _GameState extends State<GameScreen> {
             )
           )
         ),
-        Text((timerSwitchTempBlue == true && errorSecondSettingInputBlue == true) ? "!" : "", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18)),
+        SelectableText((timerSwitchTempBlue == true && errorSecondSettingInputBlue == true) ? "!" : "", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18)),
         SizedBox(width: 5.0),
-        Text(" s", style: TextStyle(color: Colors.black, fontSize: 18)),
+        SelectableText(" s", style: TextStyle(color: Colors.black, fontSize: 18)),
       ]);
     } else {
       return Container();
@@ -1844,9 +1823,9 @@ class _GameState extends State<GameScreen> {
             )
           )
         ),
-        Text((timerSwitchTempRed == true && errorMinuteSettingInputRed == true) ? "!" : "", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18)),
+        SelectableText((timerSwitchTempRed == true && errorMinuteSettingInputRed == true) ? "!" : "", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18)),
         SizedBox(width: 5.0),
-        Text(" m", style: TextStyle(color: Colors.black, fontSize: 18)),
+        SelectableText(" m", style: TextStyle(color: Colors.black, fontSize: 18)),
         SizedBox(width: 5.0),
         Container(
           height: 30.0, 
@@ -1859,9 +1838,9 @@ class _GameState extends State<GameScreen> {
             )
           )
         ),
-        Text((timerSwitchTempRed == true && errorSecondSettingInputRed == true) ? "!" : "", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18)),
+        SelectableText((timerSwitchTempRed == true && errorSecondSettingInputRed == true) ? "!" : "", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18)),
         SizedBox(width: 5.0),
-        Text(" s", style: TextStyle(color: Colors.black, fontSize: 18)),
+        SelectableText(" s", style: TextStyle(color: Colors.black, fontSize: 18)),
       ]);
     } else {
       return Container();
@@ -1875,7 +1854,7 @@ class UnknownPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(),
       body: Center(
-        child: Text('Not found - 404'),
+        child: SelectableText('Not found - 404'),
       )
     );
   }
