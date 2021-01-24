@@ -708,7 +708,7 @@ class _GameState extends State<GameScreen> {
   bool errorSecondSettingInputRed = false;
   //final _scrollController = ScrollController();
 
-  bool roomExists = false;
+  bool roomExists = true;
   bool runRoomExistsCheck = true;
 
    _GameState(roomId, version) {
@@ -749,6 +749,7 @@ class _GameState extends State<GameScreen> {
       roomExists = true;
       print("Room exists!");
     } else {
+      roomExists = false;
       print("Room doesn't exist!");
     }
   }
@@ -1397,9 +1398,9 @@ class _GameState extends State<GameScreen> {
               child: ListView(
                 children: [
                   SelectableText('Invite friends to this room with this link: ', style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
-                  SelectableText('www.detective-dingo.web.app/#/${this.roomId}/', style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, decoration: TextDecoration.underline, fontSize: 8.0.sp)),
-/*                   Link(url: 'https://www.detective-dingo.web.app/#/${this.roomId}/', 
-                    child: Text('https://www.detective-dingo.web.app/#/${this.roomId}/',
+                  SelectableText('https://detective-dingo.web.app/#/${this.roomId}/      ', style: TextStyle(color: Colors.black, fontStyle: FontStyle.italic, decoration: TextDecoration.underline, fontSize: 8.0.sp)),
+/*                   Link(url: 'https://detective-dingo.web.app/#/${this.roomId}/', 
+                    child: Text('https://detective-dingo.web.app/#/${this.roomId}/',
                       style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 8.0.sp),  
                     )
                   ) */
@@ -1696,7 +1697,7 @@ class _GameState extends State<GameScreen> {
                   Wrap(
                     children: [
                       Text('${String.fromCharCode(0x2014)} Thanks to ', style: TextStyle(color: Colors.black, fontSize: 8.0.sp)),
-                      Link(url: 'https://www.horsepaste.com/', 
+                      Link(url: 'https://horsepaste.com/', 
                         child: Text('horsepaste',
                           style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 8.0.sp), 
                         )
