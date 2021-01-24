@@ -756,7 +756,6 @@ class _GameState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     if (runRoomExistsCheck) {
-      runRoomExistsCheck = false;
       return FutureBuilder(
         future: getDoc(),
         builder: (context, data) {
@@ -766,6 +765,7 @@ class _GameState extends State<GameScreen> {
             if (!roomExists) {
               return UnknownPage();
             } else { 
+              runRoomExistsCheck = false;
               if (runFutures == true) {
                 return FutureBuilder(
                   future: fetchImages(),
@@ -787,9 +787,9 @@ class _GameState extends State<GameScreen> {
         }
       );
     } else {
-      if (!roomExists) {
-        return UnknownPage();
-      } else { 
+      //if (!roomExists) {
+        //return UnknownPage();
+      //} else { 
         if (runFutures == true) {
           return FutureBuilder(
             future: fetchImages(),
@@ -806,7 +806,7 @@ class _GameState extends State<GameScreen> {
         } else {
           return gameBuild();
         }
-      }
+      //}
     }
   }
 
