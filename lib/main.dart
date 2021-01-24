@@ -27,17 +27,18 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool showGame = false;
+  String roomId;
   String version = "Words";
-
+  static List<String> ROOM_LIST;
+  
   // Create the initialization Future outside of 'build':
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  String roomId;
-
+ 
   CollectionReference rooms = FirebaseFirestore.instance.collection('rooms');
-  
+
   @override
-  Widget build(BuildContext context) {
+  /* Widget build(BuildContext context) {
     return FutureBuilder(
       // Initialize FlutterFire:
       future: _initialization,
@@ -62,14 +63,34 @@ class _MyAppState extends State<MyApp> {
           return Center(child: CircularProgressIndicator());
         }
       }
+    ); */
+
+  Widget build(BuildContext context) {
+    return new MaterialApp.router(
+      title:"Codenames - Words & Pictures",
+      theme: ThemeData(
+        primaryColor: Colors.white,
+      ),
+      routerDelegate: GameRouterDelegate(showGame, roomId, version),
+      routeInformationParser: GameRouteInformationParser(),
     );
+  
   }
 
-  Future<void> addRoom(String roomId) async {
+/*   static Future<void> _getRoomList() async {
+    final QuerySnapshot querySnapshot =
+      await FirebaseFirestore.instance.collection('rooms').get();
+    final roomData = querySnapshot.docs.map((doc) => doc.id).toList();
+    print(roomData);
+    ROOM_LIST = List<String>.from(roomData);
+    print(ROOM_LIST);
+  } */
+  
+  /* Future<void> addRoom(String roomId) async {
     return rooms
       .doc(roomId)
       .set({
-        'success': true
+
       })
       .then((value) => print("Room Added"))
       .catchError((error) => print("Failed to add room: $error"));
@@ -89,10 +110,12 @@ class _MyAppState extends State<MyApp> {
       this.version = version;
       showGame = true;
     });
-  }
+  } */
+
 }
 
 class GameRouteInformationParser extends RouteInformationParser<GameRoutePath> {
+
   @override
   Future<GameRoutePath> parseRouteInformation(RouteInformation routeInformation) async {
     final uri = Uri.parse(routeInformation.location);
@@ -103,28 +126,22 @@ class GameRouteInformationParser extends RouteInformationParser<GameRoutePath> {
     }
     
     final id = uri.pathSegments.elementAt(0);
+    return GameRoutePath.game(id);
 
-    final document = await FirebaseFirestore.instance
-      .collection("rooms")
-      .doc(id)
-      .get();
-
-    if (!document.exists) {
-      return GameRoutePath.unknown();
-    } else {
-      return GameRoutePath.game(id);
-    }
   }
     
   @override
   RouteInformation restoreRouteInformation(GameRoutePath path) {
     if (path.isUnknown) {
+      print("Unknown");
       return RouteInformation(location: '/404');
     }
     if (path.isHomePage) {
+      print("Home");
       return RouteInformation(location: '/');
     }
     if (path.isGamePage) {
+      print("Game");
       return RouteInformation(location: '/${path.roomId}');
     }
     return null;
@@ -142,7 +159,65 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
     this.roomId = roomId;
     this.version = version;
   }
-  
+
+
+
+  // Initilialize game variables
+  String versionTemp;
+  List<String> wordsListFull = new List<String>();
+  List<String> wordsList = new List<String>();
+  List imageData;
+  List colorListInteractive = new List<Color>(25);
+  List colorList = new List<Color>();
+  List blendModeListInteractive = new List<BlendMode>(25);
+  List blendModeList = new List<BlendMode>();
+  List borderColorListWhiteforOperatives = new List<Color>();
+  bool spymaster = false;
+  bool spymasterEnableSwitch = false;
+  bool spymasterEnableSwitchTemp = false;
+  bool enforceTimersSwitch = false;
+  bool enforceTimersSwitchTemp = false;
+  bool restart = true;
+  bool runFutures = true;
+  int blueScoreCounter = 0;
+  int redScoreCounter = 0;
+  int blueScore;
+  int redScore;
+  bool blueFirst; 
+  String winner = "";
+  bool displayWinner = false;
+  String currentTeam = "";
+  bool gameOver = false;
+  List<String> wordsPicturesRandomOrder = new List<String>();
+  //Timer _timer;
+  int _minuteLimitBlue;
+  int _secondLimitBlue;
+  int _minuteLimitRed;
+  int _secondLimitRed;
+  int _currentTime;
+  int _currentMinutesRemaining;
+  int _currentSecondsRemaining;
+  bool timerSwitchBlue = false;
+  bool timerSwitchTempBlue = false;
+  bool timerSwitchRed = false;
+  bool timerSwitchTempRed = false;
+
+  //var minuteSettingInputBlue = TextEditingController()..text = '2';
+  //var secondSettingInputBlue = TextEditingController()..text = '0';
+  //var minuteSettingInputRed = TextEditingController()..text = '2';
+  //var secondSettingInputRed = TextEditingController()..text = '0';
+  String minuteSettingInputBlue = '2';
+  String secondSettingInputBlue = '0';
+  String minuteSettingInputRed = '2';
+  String secondSettingInputRed = '0';
+
+  bool errorMinuteSettingInputBlue = false;
+  bool errorSecondSettingInputBlue = false;
+  bool errorMinuteSettingInputRed = false;
+  bool errorSecondSettingInputRed = false;
+
+      
+    
   @override
   GlobalKey<NavigatorState> get navigatorKey => GlobalKey<NavigatorState>();
 
@@ -152,7 +227,51 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
     return rooms
       .doc(roomId)
       .set({
-        'success': true
+        'versionTemp': versionTemp,
+        'wordsListFull': wordsListFull, 
+        'wordsList': wordsList, 
+        'imageData': imageData,
+        'colorListInteractive': colorListInteractive,
+        'colorList': colorList,
+        'blendModeListInteractive': blendModeListInteractive,
+        'blendModeList': blendModeList,
+        'borderColorListWhiteforOperatives': borderColorListWhiteforOperatives,
+        'spymaster': spymaster,
+        'spymasterEnableSwitch': spymasterEnableSwitch,
+        'spymasterEnableSwitchTemp': spymasterEnableSwitchTemp,
+        'enforceTimersSwitch': enforceTimersSwitch,
+        'enforceTimersSwitchTemp': enforceTimersSwitchTemp,
+        'restart': restart,
+        'runFutures': runFutures,
+        'blueScoreCounter': blueScoreCounter,
+        'redScoreCounter': redScoreCounter,
+        'blueScore': blueScore,
+        'redScore': redScore,
+        'blueFirst': blueFirst,
+        'winner': winner,
+        'displayWinner': displayWinner,
+        'currentTeam': currentTeam,
+        'gameOver': gameOver,
+        'wordsPicturesRandomOrder': wordsPicturesRandomOrder,
+        '_minuteLimitBlue': _minuteLimitBlue,
+        '_secondLimitBlue': _secondLimitBlue,
+        '_minuteLimitRed': _minuteLimitRed,
+        '_secondLimitRed': _secondLimitRed,
+        '_currentTime': _currentTime,
+        '_currentMinutesRemaining': _currentMinutesRemaining,
+        '_currentSecondsRemaining': _currentSecondsRemaining,
+        'timerSwitchBlue': timerSwitchBlue,
+        'timerSwitchTempBlue': timerSwitchTempBlue,
+        'timerSwitchRed': timerSwitchRed,
+        'timerSwitchTempRed': timerSwitchTempRed,
+        'minuteSettingInputBlue': minuteSettingInputBlue,
+        'secondSettingInputBlue': secondSettingInputBlue,
+        'minuteSettingInputRed': minuteSettingInputRed,
+        'secondSettingInputRed': secondSettingInputRed,
+        'errorMinuteSettingInputBlue': errorMinuteSettingInputBlue,
+        'errorSecondSettingInputBlue': errorSecondSettingInputBlue,
+        'errorMinuteSettingInputRed': errorMinuteSettingInputRed,
+        'errorSecondSettingInputRed': errorSecondSettingInputRed
       })
       .then((value) => print("Room Added"))
       .catchError((error) => print("Failed to add room: $error"));
@@ -214,7 +333,6 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
   //This function takes user input for the URL and displays the appropriate page.
   @override
   Future<void> setNewRoutePath(GameRoutePath path) async {
-    
     if (path.isUnknown) {
       showGame = false;
       show404 = true;
@@ -224,7 +342,7 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
     if (path.isGamePage) {
       this.roomId = path.roomId;
       showGame = true;
-      print(this.roomId);
+      //print(this.roomId);
     } else {
       showGame = false;
     }
@@ -232,7 +350,7 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
   }
 }
 
-class UnknownPage extends StatelessWidget {
+/* class UnknownPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -242,7 +360,7 @@ class UnknownPage extends StatelessWidget {
       )
     );
   }
-}
+} */
 
 class HomeScreen extends StatefulWidget {
   
@@ -556,13 +674,16 @@ class _GameState extends State<GameScreen> {
   bool errorSecondSettingInputBlue = false;
   bool errorMinuteSettingInputRed = false;
   bool errorSecondSettingInputRed = false;
-  final _scrollController = ScrollController();
+  //final _scrollController = ScrollController();
+
+  bool roomExists = false;
 
    _GameState(roomId, version) {
     this.roomId = roomId;
     this.version = version;
     this.versionTemp = version;
   } 
+
 
   @override
   void initState() {
@@ -586,24 +707,51 @@ class _GameState extends State<GameScreen> {
     return 'Success';
   }
 
+  Future<void> getDoc() async {
+    final document = await FirebaseFirestore.instance
+      .collection("rooms")
+      .doc(this.roomId)
+      .get();
+
+    if (document.exists) {
+      roomExists = true;
+      print("Room exists!");
+    } else {
+      print("Room doesn't exist!");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (runFutures == true) {
-      return FutureBuilder(
-        future: fetchImages(),
-        builder: (context, data) {
-          //Needs more testing, but this new line appears to better than "if (data.hasData == false) {" which sometimes can cause "Index Out of Range" issues
-          //the Unsplash API image list calls
-          if (data.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else {         
-            return gameBuild();
+    return FutureBuilder(
+      future: getDoc(),
+      builder: (context, data) {
+        if (data.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else {
+          if (!roomExists) {
+            return UnknownPage();
+          } else { 
+            if (runFutures == true) {
+              return FutureBuilder(
+                future: fetchImages(),
+                builder: (context, data) {
+                  //Needs more testing, but this new line appears to better than "if (data.hasData == false) {" which sometimes can cause "Index Out of Range" issues
+                  //the Unsplash API image list calls
+                  if (data.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else {         
+                    return gameBuild();
+                  }
+                }
+              );
+            } else {
+              return gameBuild();
+            }
           }
         }
-      );
-    } else {
-        return gameBuild();
-    }
+      }
+    );
   }
 
   Widget gameBuild() {
@@ -1719,5 +1867,16 @@ class _GameState extends State<GameScreen> {
       return Container();
     }
   }
+}
 
+class UnknownPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Center(
+        child: Text('Not found - 404'),
+      )
+    );
+  }
 }
