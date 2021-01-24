@@ -760,9 +760,9 @@ class _GameState extends State<GameScreen> {
       return FutureBuilder(
         future: getDoc(),
         builder: (context, data) {
-          if (data.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else {
+          //if (data.connectionState == ConnectionState.waiting) {
+            //return Center(child: CircularProgressIndicator());
+          //} else {
             if (!roomExists) {
               return UnknownPage();
             } else { 
@@ -785,7 +785,7 @@ class _GameState extends State<GameScreen> {
               }
             }
           }
-        }
+        //}
       );
     } else {
       //if (!roomExists) {
