@@ -38,7 +38,7 @@ class _MyAppState extends State<MyApp> {
   CollectionReference rooms = FirebaseFirestore.instance.collection('rooms');
 
   @override
-  /* Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return FutureBuilder(
       // Initialize FlutterFire:
       future: _initialization,
@@ -63,9 +63,10 @@ class _MyAppState extends State<MyApp> {
           return Center(child: CircularProgressIndicator());
         }
       }
-    ); */
+    );
+  }
 
-  Widget build(BuildContext context) {
+/*   Widget build(BuildContext context) {
     return new MaterialApp.router(
       title:"Codenames - Words & Pictures",
       theme: ThemeData(
@@ -74,8 +75,7 @@ class _MyAppState extends State<MyApp> {
       routerDelegate: GameRouterDelegate(showGame, roomId, version),
       routeInformationParser: GameRouteInformationParser(),
     );
-  
-  }
+  } */
 
 /*   static Future<void> _getRoomList() async {
     final QuerySnapshot querySnapshot =
@@ -103,7 +103,7 @@ class _MyAppState extends State<MyApp> {
     if (auth.currentUser != null) {
       this.roomId = auth.currentUser.uid;
       print(this.roomId);
-      //addRoom(this.roomId);
+      addRoom(this.roomId);
     }
 
     setState(() {
