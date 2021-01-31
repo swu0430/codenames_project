@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+/* import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Database {
 
@@ -19,7 +19,7 @@ class Database {
   bool enforceTimersSwitch = false;
   bool enforceTimersSwitchTemp = false;
   bool restart = true;
-  bool runFutures = true;
+  //bool runFutures = true;
   int blueScoreCounter = 0;
   int redScoreCounter = 0;
   int blueScore;
@@ -69,7 +69,7 @@ class Database {
         enforceTimersSwitch = map['enforceTimersSwitch'],
         enforceTimersSwitchTemp = map['enforceTimersSwitchTemp'],
         restart = map['restart'],
-        runFutures = map['runFutures'],
+        //runFutures = map['runFutures'],
         blueScoreCounter = map['blueScoreCounter'],
         redScoreCounter = map['redScoreCounter'],
         blueScore = map['blueScore'],
@@ -104,4 +104,4 @@ class Database {
   Database.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data(), reference: snapshot.reference);
 
-}
+} */
