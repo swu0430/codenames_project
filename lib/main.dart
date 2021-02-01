@@ -85,6 +85,10 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
   bool showGame;
   bool show404 = false;
   String roomId;
+  String version;
+
+  bool runFutures = false;
+  bool restart = false;
 
   GameRouterDelegate(showGame, roomId) {
     this.showGame = showGame;
@@ -93,43 +97,37 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
 
   // Initilialize game variables
   String versionTemp;
-  List<String> wordsListFull = new List<String>();
   List<String> wordsList = new List<String>();
   List imageData;
+  List wordsPicturesRandomOrder = new List<String>(25);
   List colorListInteractiveString = new List<String>(25);
   List colorListString = new List<String>();
   List blendModeListInteractiveBool = new List<bool>(25);
-
-  bool spymasterEnableSwitch = false;
-  bool spymasterEnableSwitchTemp = false;
-  bool enforceTimersSwitch = false;
-  bool enforceTimersSwitchTemp = false;
-  bool restart = true;
-
-  int blueScoreCounter = 0;
-  int redScoreCounter = 0;
-  int blueScore;
-  int redScore;
-  bool blueFirst; 
-  String winner = "";
-  bool displayWinner = false;
-  String currentTeam = "";
-  bool gameOver = false;
-  List wordsPicturesRandomOrder = new List<String>(25);
-  int _minuteLimitBlue;
-  int _secondLimitBlue;
-  int _minuteLimitRed;
-  int _secondLimitRed;
-  int _currentTime;
   bool timerSwitchBlue = false;
   bool timerSwitchTempBlue = false;
   bool timerSwitchRed = false;
   bool timerSwitchTempRed = false;
-
+  bool spymasterEnableSwitch = false;
+  bool spymasterEnableSwitchTemp = false;
+  bool enforceTimersSwitch = false;
+  bool enforceTimersSwitchTemp = false;
   String minuteSettingInputBlue = '2';
   String secondSettingInputBlue = '0';
   String minuteSettingInputRed = '2';
   String secondSettingInputRed = '0';
+  int _minuteLimitBlue;
+  int _secondLimitBlue;
+  int _minuteLimitRed;
+  int _secondLimitRed;
+  String currentTeam = "";
+  int _currentTime;
+  int blueScoreCounter = 0;
+  int redScoreCounter = 0;
+  bool blueFirst; 
+  String winner = "";
+  bool displayWinner = false;
+  bool gameOver = false;
+  bool spymasterRestart = false;
 
   @override
   GlobalKey<NavigatorState> get navigatorKey => GlobalKey<NavigatorState>();
@@ -138,6 +136,12 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
 
   Future<void> addRoom(String roomId, String version) async {
     
+    this.version = version;
+    this.restart = true;
+    if ((version == "Pictures") || version == "Words + Pictures") {
+      this.runFutures = true;
+    }
+
     for (int i = 0; i < blendModeListInteractiveBool.length; i++) {
       blendModeListInteractiveBool[i] = false;
     }
@@ -147,40 +151,37 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
       .set({
         'version': version,
         'versionTemp': version,
-        'wordsListFull': wordsListFull, 
         'wordsList': wordsList, 
         'imageData': imageData,
+        'wordsPicturesRandomOrder': wordsPicturesRandomOrder,
         'colorListInteractiveString': colorListInteractiveString,
         'colorListString': colorListString,
         'blendModeListInteractiveBool': blendModeListInteractiveBool,
-        'spymasterEnableSwitch': spymasterEnableSwitch,
-        'spymasterEnableSwitchTemp': spymasterEnableSwitchTemp,
-        'enforceTimersSwitch': enforceTimersSwitch,
-        'enforceTimersSwitchTemp': enforceTimersSwitchTemp,
-        'restart': restart,
-        'blueScoreCounter': blueScoreCounter,
-        'redScoreCounter': redScoreCounter,
-        'blueScore': blueScore,
-        'redScore': redScore,
-        'blueFirst': blueFirst,
-        'winner': winner,
-        'displayWinner': displayWinner,
-        'currentTeam': currentTeam,
-        'gameOver': gameOver,
-        'wordsPicturesRandomOrder': wordsPicturesRandomOrder,
-        '_minuteLimitBlue': _minuteLimitBlue,
-        '_secondLimitBlue': _secondLimitBlue,
-        '_minuteLimitRed': _minuteLimitRed,
-        '_secondLimitRed': _secondLimitRed,
-        '_currentTime': _currentTime,
         'timerSwitchBlue': timerSwitchBlue,
         'timerSwitchTempBlue': timerSwitchTempBlue,
         'timerSwitchRed': timerSwitchRed,
         'timerSwitchTempRed': timerSwitchTempRed,
+        'spymasterEnableSwitch': spymasterEnableSwitch,
+        'spymasterEnableSwitchTemp': spymasterEnableSwitchTemp,
+        'enforceTimersSwitch': enforceTimersSwitch,
+        'enforceTimersSwitchTemp': enforceTimersSwitchTemp,
         'minuteSettingInputBlue': minuteSettingInputBlue,
         'secondSettingInputBlue': secondSettingInputBlue,
         'minuteSettingInputRed': minuteSettingInputRed,
         'secondSettingInputRed': secondSettingInputRed,
+        '_minuteLimitBlue': _minuteLimitBlue,
+        '_secondLimitBlue': _secondLimitBlue,
+        '_minuteLimitRed': _minuteLimitRed,
+        '_secondLimitRed': _secondLimitRed,
+        'currentTeam': currentTeam,
+        '_currentTime': _currentTime,
+        'blueScoreCounter': blueScoreCounter,
+        'redScoreCounter': redScoreCounter,
+        'blueFirst': blueFirst,
+        'winner': winner,
+        'displayWinner': displayWinner,
+        'gameOver': gameOver,
+        'spymasterRestart' : spymasterRestart,
       })
       .then((value) => print("Room Added"))
       .catchError((error) => print("Failed to add room: $error"));
@@ -200,6 +201,12 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
     notifyListeners();
   }
 
+  void _handleJoinButtonTapped(String room) async {
+    this.roomId = room;
+    showGame = true;
+    notifyListeners();
+  }
+
   @override
   GameRoutePath get currentConfiguration {
     if (show404) return GameRoutePath.unknown();
@@ -215,13 +222,14 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
         MaterialPage(
           child: new HomeScreen(
             onTapPlay: _handlePlayButtonTapped,
+            onTapJoin: _handleJoinButtonTapped,
           ),
         ),
         if (show404) 
           MaterialPage(key: ValueKey('UnknownKey'), child: UnknownPage())
         else if (showGame == true) 
           MaterialPage(
-            child: new GameScreen(roomId: this.roomId),
+            child: new GameScreen(roomId: this.roomId, runFutures: this.runFutures, restart: this.restart, version: this.version),
           ),
       ],
       onPopPage: (route, result) {
@@ -259,20 +267,23 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
 class HomeScreen extends StatefulWidget {
   
   ValueChanged<String> onTapPlay;
+  ValueChanged<String> onTapJoin;
 
-  HomeScreen({Key key, @required this.onTapPlay}) : super(key: key);
+  HomeScreen({Key key, @required this.onTapPlay, @required this.onTapJoin}) : super(key: key);
   
   @override
-  _HomeState createState() => _HomeState(this.onTapPlay);
+  _HomeState createState() => _HomeState(this.onTapPlay, this.onTapJoin);
 } 
 
 class _HomeState extends State<HomeScreen> {
   String version = "Words";
-  var roomID = TextEditingController()..text = "Some Room ID";
+  var roomId = TextEditingController();
   ValueChanged<String> onTapPlay;
+  ValueChanged<String> onTapJoin;
 
-  _HomeState(onTapPlay) {
+  _HomeState(onTapPlay, onTapJoin) {
     this.onTapPlay = onTapPlay;
+    this.onTapJoin = onTapJoin;
   }
 
   // Create the initialization Future outside of 'build':
@@ -451,10 +462,11 @@ class _HomeState extends State<HomeScreen> {
                                           expands: true,
                                           maxLines: null,
                                           minLines: null,
-                                          style: TextStyle(color: Colors.black, fontSize: 10.0.sp),
+                                          style: TextStyle(color: Colors.black, fontSize: 6.0.sp),
                                           textAlign: TextAlign.center,
-                                          controller: roomID, 
+                                          controller: roomId, 
                                           decoration: InputDecoration(
+                                            hintText: "Enter Room ID",
                                             contentPadding: EdgeInsets.all(0),
                                             enabledBorder: OutlineInputBorder(
                                               borderSide: BorderSide(color: Colors.black, width: 0.3.w)
@@ -482,9 +494,8 @@ class _HomeState extends State<HomeScreen> {
                                           fillColor: Colors.red,
                                           splashColor: Colors.redAccent,
                                           child: Text('Join', style: GoogleFonts.shojumaru(fontWeight: FontWeight.bold, fontSize: 10.0.sp)),
-                                          onPressed: () {
+                                          onPressed: () => onTapJoin(roomId.text),
                                             //Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen(version: this.version)));
-                                          }
                                         )
                                       )
                                     )
@@ -512,79 +523,71 @@ class _HomeState extends State<HomeScreen> {
 
 class GameScreen extends StatefulWidget {
   final String roomId;
-  GameScreen({Key key, @required this.roomId}) : super(key: key);
+  bool runFutures;
+  bool restart; 
+  String version;
+  
+  GameScreen({Key key, @required this.roomId, @required this.runFutures, @required this.restart, @required this.version}) : super(key: key);
 
   @override
-  _GameState createState() => _GameState(this.roomId);
+  _GameState createState() => _GameState(this.roomId, this.runFutures, this.restart, this.version);
  }
 
 class _GameState extends State<GameScreen> {
 
   String roomId;
+
   static final String DEVELOPER_KEY = ApiDevKey.DEV_KEY;
 
   // FIREBASE VARIABLES
   String version;
   String versionTemp;
-  List<String> wordsListFull = new List<String>();
-  List wordsList = new List();
+  List wordsList;
   List imageData;
   List wordsPicturesRandomOrder = new List<String>(25);
-  
   List colorListInteractiveString = new List<String>();
   List colorListString = new List<String>();
   List blendModeListInteractiveBool = new List<bool>();
-
   bool timerSwitchBlue;
   bool timerSwitchTempBlue;
   bool timerSwitchRed;
   bool timerSwitchTempRed;
-
   bool spymasterEnableSwitch;
   bool spymasterEnableSwitchTemp;
   bool enforceTimersSwitch;
   bool enforceTimersSwitchTemp;
-
   var minuteSettingInputBlue;
   var secondSettingInputBlue;
   var minuteSettingInputRed;
   var secondSettingInputRed;
-
   int _minuteLimitBlue;
   int _secondLimitBlue;
   int _minuteLimitRed;
   int _secondLimitRed;
-
   String currentTeam;
   int _currentTime;
-
   int blueScoreCounter;
   int redScoreCounter;
-
   bool blueFirst; 
   String winner = "";
   bool displayWinner = false;
   bool gameOver = false;
-
+  bool spymasterRestart = false;
 
   // NON-FIREBASE VARIABLES
+  bool runFutures = false;
+  bool restart = false;
+  List<String> wordsListFull;
   List colorListInteractive = new List<Color>(25);
   List colorList = new List<Color>(25);
   List blendModeListInteractive = new List<BlendMode>(25);
   List blendModeList = new List<BlendMode>();
   List borderColorListWhiteforOperatives = new List<Color>();
-  
   int _currentMinutesRemaining;
   int _currentSecondsRemaining;
-
   bool spymaster = false;
-
-  bool restart = true;
-  bool runFutures = true;
-
   int blueScore;
   int redScore;
-
   bool errorMinuteSettingInputBlue = false;
   bool errorSecondSettingInputBlue = false;
   bool errorMinuteSettingInputRed = false;
@@ -592,13 +595,15 @@ class _GameState extends State<GameScreen> {
 
   bool roomExists = true;
   bool runRoomExistsCheck = true;
-
   Timer _timer;
   Random random = new Random();
 
   // Constructor for _GameState
-   _GameState(roomId) {
+   _GameState(roomId, runFutures, restart, version) {
     this.roomId = roomId;
+    this.runFutures = runFutures;
+    this.restart = restart;
+    this.version = version;
   } 
 
   @override
@@ -631,18 +636,14 @@ class _GameState extends State<GameScreen> {
 
     currentTeam = document['currentTeam'];
     _currentTime = document['_currentTime'];
+    spymasterRestart = document['spymasterRestart'];
 
   }
 
-  void loadWords() async {
+  Future<void> loadWords() async {
+    wordsListFull = new List<String>();
     String wordString = await rootBundle.loadString('assets/wordlist.txt');
     LineSplitter.split(wordString).forEach((line) => wordsListFull.add(line));
-  }
-
-  Future<String> fetchImages() async {
-    var fetchdata = await http.get('https://api.unsplash.com/photos/random?client_id=${DEVELOPER_KEY}&count=25');
-    imageData = json.decode(fetchdata.body);
-    return 'Success';
   }
 
   Future<void> getDoc() async {
@@ -660,6 +661,63 @@ class _GameState extends State<GameScreen> {
     }
   }
 
+  Future<String> fetchImages() async {
+    var fetchdata = await http.get('https://api.unsplash.com/photos/random?client_id=${DEVELOPER_KEY}&count=25');
+    imageData = json.decode(fetchdata.body);
+    return 'Success';
+  }
+
+  Future<void> _restart() async {
+    
+    wordsList = new List<String>();
+    colorListString = new List<String>();
+    wordsPicturesRandomOrder = new List<String>(25);
+    colorListInteractiveString = new List<String>(25);
+    blendModeListInteractiveBool = new List<bool>(25);
+
+    for (int i = 0; i < blendModeListInteractiveBool.length; i++) {
+      blendModeListInteractiveBool[i] = false;
+    }
+
+    await loadWords();
+    _setFirstTeam();
+    _wordList();
+    _colorList();
+    _randomizeWordsPictures();
+
+    runFutures = false;
+    restart = false; 
+
+    if (currentTeam == "blue") {
+      if (timerSwitchBlue) {
+        _currentTime = _minuteLimitBlue * 60 + _secondLimitBlue;
+      }
+    } else if (currentTeam == "red") {
+      if (timerSwitchRed) {
+        _currentTime = _minuteLimitRed * 60 + _secondLimitRed;
+      }
+    }
+
+    await FirebaseFirestore.instance.collection('rooms').doc(this.roomId).update({
+      'version': version,
+      'wordsList': wordsList, 
+      'imageData': imageData,
+      'wordsPicturesRandomOrder': wordsPicturesRandomOrder,
+      'colorListInteractiveString': colorListInteractiveString,
+      'colorListString': colorListString,
+      'blendModeListInteractiveBool': blendModeListInteractiveBool,
+      'currentTeam': currentTeam,
+      '_currentTime': _currentTime,
+      'blueScoreCounter': 0,
+      'redScoreCounter': 0,
+      'blueFirst': blueFirst,
+      'winner': "",
+      'displayWinner': false,
+      'gameOver': false,
+      'spymasterRestart': true
+    });          
+  }
+
   @override
   Widget build(BuildContext context) {
     if (runRoomExistsCheck) {
@@ -670,39 +728,60 @@ class _GameState extends State<GameScreen> {
             return UnknownPage();
           } else { 
             runRoomExistsCheck = false;
-            if (runFutures == true) {
+            return runFuturesRestartBuild();
+          }
+        }
+      );
+    } else {
+      return runFuturesRestartBuild();
+    }
+  }
+
+  Widget runFuturesRestartBuild() {
+    if (runFutures) {
+      return FutureBuilder(
+        future: fetchImages(),
+        builder: (context, data) {
+          if (data.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else { 
+            if (restart) {
+              print("Restarting with pictures!");
               return FutureBuilder(
-                future: fetchImages(),
-                builder: (context, data) {
-                  if (data.connectionState == ConnectionState.waiting) {
+                future: _restart(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
-                  } else { 
-                    FirebaseFirestore.instance.collection('rooms').doc(this.roomId).update({'imageData': imageData});        
+                  } else {
+                    print("Stream reached with pictures!");
                     return streamGameBuild(); 
                   }
                 }
               );
             } else {
+              print("Not restarting!");
+              FirebaseFirestore.instance.collection('rooms').doc(this.roomId).update({'imageData': imageData});        
               return streamGameBuild(); 
             }
           }
         }
       );
     } else {
-      if (runFutures == true) {
+      if (restart) {
+        print("Restarting, and no pictures!");
         return FutureBuilder(
-          future: fetchImages(),
+          future: _restart(),
           builder: (context, data) {
             if (data.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
-            } else {         
-              FirebaseFirestore.instance.collection('rooms').doc(this.roomId).update({'imageData': imageData});  
-              return streamGameBuild();
+            } else {
+              return streamGameBuild(); 
             }
           }
         );
-      } else {
-        return streamGameBuild();
+      } else {    
+        print("Not restarting, and no pictures!");
+        return streamGameBuild(); 
       }
     }
   }
@@ -742,7 +821,9 @@ class _GameState extends State<GameScreen> {
         colorList[i] = Colors.grey[900];
       }
 
-      if (colorListInteractiveString[i] == "blue") {
+      if (colorListInteractiveString[i] == null) {
+        colorListInteractive[i] = null;
+      } else if (colorListInteractiveString[i] == "blue") {
         colorListInteractive[i] = Colors.blue;
       } else if (colorListInteractiveString[i] == "red") {
         colorListInteractive[i] = Colors.red;
@@ -812,32 +893,10 @@ class _GameState extends State<GameScreen> {
     displayWinner = data['displayWinner'];
     gameOver = data['gameOver'];
 
- 
-
-  
-
-
-
-    if (restart == true) {
-      _setFirstTeam(data);
-      wordsList = new List<String>();
-      _wordList(data);
-      colorList = new List<Color>(25);
-      _colorList(data);
-      wordsPicturesRandomOrder = new List<String>(25);
-      _randomizeWordsPictures(data);
-
-      colorListInteractive = new List<Color>(25);
-      blendModeListInteractive = new List<BlendMode>(25);
-      blueScoreCounter = 0;
-      redScoreCounter = 0;
+    spymasterRestart = data['spymasterRestart'];
+    if (spymasterRestart) {
       spymaster = false;
-      gameOver = false;
-      
-      restart = false;
-      runFutures = false;
     }
-
 
     // Display the game board
     return new LayoutBuilder(
@@ -975,6 +1034,7 @@ class _GameState extends State<GameScreen> {
                                       child: new RaisedButton(
                                         shape: spymaster == true ? RoundedRectangleBorder(side: BorderSide(color: Colors.black)) : null,
                                         onPressed: () {
+                                          data.reference.update({'spymasterRestart': false});
                                           setState(() {
                                             spymaster = true;
                                           });
@@ -1020,9 +1080,59 @@ class _GameState extends State<GameScreen> {
                                       padding: EdgeInsets.zero,
                                       child: new RaisedButton(
                                         onPressed: () {
-                                          data.reference.update({'version': versionTemp});
+                                          
+                                          //version = versionTemp;
+                                          //data.reference.update({'version': version});
+                                          //if ((version == 'Pictures') || (version == "Words + Pictures")) {
+                                            //fetchImages();
+                                          //} 
+
+                                          //_setFirstTeam(data);
+                                          //_wordList(data);
+                                          //_colorList(data);
+                                          //_randomizeWordsPictures(data);
+                                          
+                                          /* data.reference.update({
+                                            'version': version,
+                                            //'versionTemp': versionTemp,
+                                            //'wordsListFull': wordsListFull, 
+                                            'wordsList': wordsList, 
+                                            'imageData': imageData,
+                                            'wordsPicturesRandomOrder': wordsPicturesRandomOrder,
+                                            'colorListInteractiveString': colorListInteractiveString,
+                                            'colorListString': colorListString,
+                                            'blendModeListInteractiveBool': blendModeListInteractiveBool,
+                                            //'timerSwitchBlue': timerSwitchBlue,
+                                            //'timerSwitchTempBlue': timerSwitchTempBlue,
+                                            //'timerSwitchRed': timerSwitchRed,
+                                            //'timerSwitchTempRed': timerSwitchTempRed,
+                                            //'spymasterEnableSwitch': spymasterEnableSwitch,
+                                            //'spymasterEnableSwitchTemp': spymasterEnableSwitchTemp,
+                                            //'enforceTimersSwitch': enforceTimersSwitch,
+                                            //'enforceTimersSwitchTemp': enforceTimersSwitchTemp,
+                                            //'minuteSettingInputBlue': minuteSettingInputBlue,
+                                            //'secondSettingInputBlue': secondSettingInputBlue,
+                                            //'minuteSettingInputRed': minuteSettingInputRed,
+                                            //'secondSettingInputRed': secondSettingInputRed,
+                                            //'_minuteLimitBlue': _minuteLimitBlue,
+                                            //'_secondLimitBlue': _secondLimitBlue,
+                                            //'_minuteLimitRed': _minuteLimitRed,
+                                            //'_secondLimitRed': _secondLimitRed,
+                                            'currentTeam': currentTeam,
+                                            '_currentTime': blueFirst ? _minuteLimitBlue * 60 + _secondLimitBlue : _minuteLimitRed * 60 + _secondLimitRed,
+                                            'blueScoreCounter': 0,
+                                            'redScoreCounter': 0,
+                                            'blueFirst': blueFirst,
+                                            'winner': "red",
+                                            'displayWinner': false,
+                                            'gameOver': false,
+                                            //'spymaster' : spymaster
+
+                                          }); */
+                                          
 
                                           setState(() {
+                                            version = versionTemp;
                                             restart = true;
                                             if ((version == 'Pictures') || (version == "Words + Pictures")) {
                                               runFutures = true;
@@ -1030,6 +1140,7 @@ class _GameState extends State<GameScreen> {
                                               runFutures = false;
                                             }
                                           });
+
                                         },
                                         color: Colors.indigo[800],
                                         textColor: Colors.white,
@@ -1200,7 +1311,7 @@ class _GameState extends State<GameScreen> {
       colorBlendMode: blendModeListInteractive[index]);
   }
 
-  void _wordList(DocumentSnapshot data) {
+  void _wordList() {
     wordsList = new List<String>();
     int wordIndex;
     int wordCounter = 0;
@@ -1213,10 +1324,10 @@ class _GameState extends State<GameScreen> {
         }
       }
     }
-    data.reference.update({'wordsList': wordsList});
+    //data.reference.update({'wordsList': wordsList});
   }
 
-  void _setFirstTeam(DocumentSnapshot data) {
+  void _setFirstTeam() {
     int randomPick;
     randomPick = random.nextInt(2);
     if (randomPick == 0) {
@@ -1224,19 +1335,19 @@ class _GameState extends State<GameScreen> {
       currentTeam = "blue";
     } else if (randomPick == 1) {
       blueFirst = false;
-      currentTeam = "blue";
+      currentTeam = "red";
     }
 
-    data.reference.update({
-      'blueFirst': blueFirst, 
-      'currentTeam': currentTeam
-    });
+    //data.reference.update({
+      //'blueFirst': blueFirst, 
+      //'currentTeam': currentTeam
+    //});
   }
 
-  void _colorList(DocumentSnapshot data) {
+  void _colorList() {
 
-    int numBlue, numRed, numNeutral, numAssassin;
     colorListString = new List<String>();
+    int numBlue, numRed, numNeutral, numAssassin;
 
     if (blueFirst == true) {
       numBlue = 9; numRed = 8; numNeutral = 7; numAssassin = 1;
@@ -1259,7 +1370,7 @@ class _GameState extends State<GameScreen> {
 
     colorListString.shuffle();
 
-    for (int i = 0; i < colorListString.length; i++) {
+/*     for (int i = 0; i < colorListString.length; i++) {
       if (colorListString[i] == "blue") {
         colorList[i] = Colors.blue;
       } else if (colorListString[i] == "red") {
@@ -1269,12 +1380,12 @@ class _GameState extends State<GameScreen> {
       } else if (colorListString[i] == "grey") {
         colorList[i] = Colors.grey[900];
       }
-    }
+    } */
 
-    data.reference.update({'colorListString': colorListString});
+    //data.reference.update({'colorListString': colorListString});
   }
 
-  void _randomizeWordsPictures(DocumentSnapshot data) {
+  void _randomizeWordsPictures() {
     int randomPick;
     int counter = 0;
     while (counter < 25) {
@@ -1286,7 +1397,7 @@ class _GameState extends State<GameScreen> {
       } 
       counter++;
 
-      data.reference.update({'wordsPicturesRandomOrder': wordsPicturesRandomOrder});
+      //data.reference.update({'wordsPicturesRandomOrder': wordsPicturesRandomOrder});
     }
   }
 
