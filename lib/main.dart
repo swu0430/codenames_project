@@ -870,7 +870,7 @@ class _GameState extends State<GameScreen> {
     enforceTimersSwitch = data['enforceTimersSwitch'];
     enforceTimersSwitchTemp = data['enforceTimersSwitchTemp'];
 
-/*     if (currentTeam == "blue") {
+    if (currentTeam == "blue") {
       if(timerSwitchBlue == true) {
         startTimer(_currentTime, data);
       }
@@ -880,7 +880,7 @@ class _GameState extends State<GameScreen> {
       if(timerSwitchRed == true) {
         startTimer(_currentTime, data);
       }
-    } */
+    }
   
     blueFirst = data['blueFirst'];
     blueScoreCounter = data['blueScoreCounter'];
@@ -1468,9 +1468,6 @@ class _GameState extends State<GameScreen> {
             leading: Icon(Icons.link, color: Colors.grey[700]),
             title: Text('Room Link'),
             onTap: () {
-              if (_timer != null) {
-                _timer.cancel();
-              }
               showDialog(context: context,
                 builder: (context) => _dialogBuilderRoomLink(context)
               );              
@@ -1479,10 +1476,7 @@ class _GameState extends State<GameScreen> {
           ListTile(
             leading: Icon(Icons.menu_book, color: Colors.grey[700]),
             title: Text('How to Play'),
-            onTap: () {
-              if (_timer != null) {
-                _timer.cancel();
-              }              
+            onTap: () {           
               showDialog(context: context,
                 builder: (context) => _dialogBuilderRules(context)
               );
@@ -1493,6 +1487,16 @@ class _GameState extends State<GameScreen> {
             title: Text('Settings'),
             onTap: () {
               if (_timer != null) {
+                if (currentTeam == "blue") {
+                  if(timerSwitchBlue == true) {
+                    startTimer(_currentTime, data);
+                  }
+                } 
+                if (currentTeam == "red") {
+                  if(timerSwitchRed == true) {
+                    startTimer(_currentTime, data);
+                  }
+                } 
                 _timer.cancel();
               }
               showDialog(context: context,
@@ -1504,9 +1508,6 @@ class _GameState extends State<GameScreen> {
             leading: Icon(Icons.assignment_outlined, color: Colors.grey[700]),
             title: Text('Notes'),
             onTap: () {
-              if (_timer != null) {
-                _timer.cancel();
-              }
               showDialog(context: context,
                 builder: (context) => _dialogBuilderNotes(context)
               );
