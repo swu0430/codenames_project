@@ -860,6 +860,11 @@ class _GameState extends State<GameScreen> {
       _currentSecondsRemaining = _currentTime % 60;
     }
 
+    timerSwitchBlue = data['timerSwitchBlue'];
+    timerSwitchTempBlue = data['timerSwitchTempBlue'];
+    timerSwitchRed = data['timerSwitchRed'];
+    timerSwitchTempRed = data['timerSwitchTempRed'];
+
     spymasterEnableSwitch = data['spymasterEnableSwitch'];
     spymasterEnableSwitchTemp = data['spymasterEnableSwitchTemp'];
     enforceTimersSwitch = data['enforceTimersSwitch'];
