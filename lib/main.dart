@@ -821,7 +821,7 @@ class _GameState extends State<GameScreen> {
         colorList[i] = Colors.grey[900];
       }
 
-      if (colorListInteractiveString[i] == null) {
+      if (colorListInteractiveString[i] == "") {
         colorListInteractive[i] = null;
       } else if (colorListInteractiveString[i] == "blue") {
         colorListInteractive[i] = Colors.blue;
