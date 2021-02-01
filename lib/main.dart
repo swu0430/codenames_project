@@ -717,7 +717,8 @@ class _GameState extends State<GameScreen> {
       'winner': "",
       'displayWinner': false,
       'gameOver': false,
-      'spymasterRestart': true
+      'spymasterRestart': true,
+      'timerActivated': false
     });          
   }
 
@@ -988,8 +989,8 @@ class _GameState extends State<GameScreen> {
                                         padding: EdgeInsets.zero,
                                         child: new IconButton(
                                           icon: (timerActivated
-                                            ? Icon(Icons.stop, size: 10.0.sp, color: Colors.red) 
-                                            : Icon(Icons.play_arrow, size: 10.0.sp, color: Colors.green)
+                                            ? Icon(Icons.stop, size: 8.0.sp, color: Colors.red) 
+                                            : Icon(Icons.play_arrow, size: 8.0.sp, color: Colors.green)
                                           ),
                                           tooltip: (timerActivated ? 'Stop Timer' : 'Resume Timer'),
                                           onPressed: () {
