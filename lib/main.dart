@@ -128,6 +128,7 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
   bool displayWinner = false;
   bool gameOver = false;
   bool spymasterRestart = false;
+  bool timerActivated = false;
 
   @override
   GlobalKey<NavigatorState> get navigatorKey => GlobalKey<NavigatorState>();
@@ -182,6 +183,7 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
         'displayWinner': displayWinner,
         'gameOver': gameOver,
         'spymasterRestart': spymasterRestart,
+        'timerActivated': timerActivated
       })
       .then((value) => print("Room Added"))
       .catchError((error) => print("Failed to add room: $error"));
@@ -573,6 +575,7 @@ class _GameState extends State<GameScreen> {
   bool displayWinner = false;
   bool gameOver = false;
   bool spymasterRestart = false;
+  bool timerActivated;
 
   // NON-FIREBASE VARIABLES
   bool runFutures = false;
@@ -881,6 +884,13 @@ class _GameState extends State<GameScreen> {
         startTimer(_currentTime, data);
       }
     } */
+
+    timerActivated = data['timerActivated'];
+    if (!timerActivated) {
+      if (_timer != null) {
+        _timer.cancel();
+      }
+    }
   
     blueFirst = data['blueFirst'];
     blueScoreCounter = data['blueScoreCounter'];
@@ -936,7 +946,7 @@ class _GameState extends State<GameScreen> {
                             children: <Widget>[
                               Container(
                                 height: 5.0.w,
-                                width: 25.0.w,
+                                width: 22.5.w,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
@@ -956,7 +966,7 @@ class _GameState extends State<GameScreen> {
                               ),
                               Container(
                                 height: 5.0.w,
-                                width: 25.0.w,
+                                width: 30.0.w,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -969,13 +979,34 @@ class _GameState extends State<GameScreen> {
                                             style: TextStyle(color: _teamColor(), fontWeight: FontWeight.bold, fontSize: 8.0.sp))
                                         ]
                                       )
-                                    )
+                                    ),
+                                    //SizedBox(width: 0.1.w),
+                                    if (currentTimerSwitch())
+                                      ButtonTheme(
+                                        height: 4.0.w,
+                                        minWidth: 3.0.w,
+                                        padding: EdgeInsets.zero,
+                                        child: new IconButton(
+                                          icon: (timerActivated
+                                            ? Icon(Icons.stop, size: 10.0.sp, color: Colors.red) 
+                                            : Icon(Icons.play_arrow, size: 10.0.sp, color: Colors.green)
+                                          ),
+                                          tooltip: (timerActivated ? 'Stop Timer' : 'Resume Timer'),
+                                          onPressed: () {
+                                            if (timerActivated) {
+                                              data.reference.update({'timerActivated': false});
+                                            } else {
+                                              startTimer(_currentTime, data);
+                                            }
+                                          }                                        
+                                        )
+                                      ),
                                   ]
                                 )
                               ),
                               Container(
                                 height: 6.0.w,
-                                width: 25.0.w,
+                                width: 22.5.w,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
@@ -1486,22 +1517,11 @@ class _GameState extends State<GameScreen> {
             leading: Icon(Icons.settings, color: Colors.grey[700]),
             title: Text('Settings'),
             onTap: () {
-              if (_timer != null) {
-                if (currentTeam == "blue") {
-                  if(timerSwitchBlue == true) {
-                    startTimer(_currentTime, data);
-                  }
-                } 
-                if (currentTeam == "red") {
-                  if(timerSwitchRed == true) {
-                    startTimer(_currentTime, data);
-                  }
-                } 
-                _timer.cancel();
-              }
-              showDialog(context: context,
-                builder: (context) => _dialogBuilderSettings(context, data)
-              );
+              timerActivated
+              ? showDialog(context: context,
+                builder: (context) => _dialogBuilderSettingsError(context))
+              : showDialog(context: context,
+                builder: (context) => _dialogBuilderSettings(context, data));
             }              
           ),
           ListTile(
@@ -1621,6 +1641,28 @@ class _GameState extends State<GameScreen> {
     );
   }
 
+  Widget _dialogBuilderSettingsError(BuildContext context) {
+    return SimpleDialog(
+      children: [
+        Align(
+          alignment: Alignment.topRight,
+          child: GestureDetector(
+            onTap: (){
+              Navigator.of(context).pop();
+            },
+            child: Align(
+                alignment: Alignment(0.95, 1),
+                child: Icon(Icons.close, color: Colors.black)
+            ),
+          ),
+        ),
+        Center(child: SelectableText('Please stop the timer before adjusting settings.', style: TextStyle(color: Colors.black, fontSize: 8.0.sp))),
+        SizedBox(height: 3.0.w)
+      ]  
+    );
+  }
+
+
   Widget _dialogBuilderSettings(BuildContext context, DocumentSnapshot data) {
     return StatefulBuilder(builder: (context, setState) {
       return SimpleDialog(children: [
@@ -1726,6 +1768,7 @@ class _GameState extends State<GameScreen> {
             )
           )  
         ),
+        SizedBox (height: 1.0.w),
         SizedBox(height: 3.0.w),
         Center(child: new RawMaterialButton(
           fillColor: Colors.blue[800],
@@ -1779,37 +1822,39 @@ class _GameState extends State<GameScreen> {
             
             if (errorMinuteSettingInputBlue == false && errorSecondSettingInputBlue == false
             && errorMinuteSettingInputRed == false && errorSecondSettingInputRed == false) {
-              Navigator.of(context).pop();
-
-              timerSwitchBlue = timerSwitchTempBlue;
-              timerSwitchRed = timerSwitchTempRed;
-              enforceTimersSwitch = enforceTimersSwitchTemp;
-              spymasterEnableSwitch = spymasterEnableSwitchTemp;
-
-              if (currentTeam == "blue" && timerSwitchBlue == true) {
-                startTimer(_minuteLimitBlue * 60 + _secondLimitBlue, data);
-              } else if (currentTeam == "red" && timerSwitchRed == true) {
-                startTimer(_minuteLimitRed * 60 + _secondLimitRed, data);
-              }
               
-              data.reference.update({
-                'timerSwitchTempBlue': timerSwitchTempBlue,
-                'timerSwitchTempRed': timerSwitchTempRed,
-                'timerSwitchBlue': timerSwitchBlue,
-                'timerSwitchRed': timerSwitchRed,
-                '_minuteLimitBlue': _minuteLimitBlue,
-                '_minuteLimitRed': _minuteLimitRed,
-                '_secondLimitBlue': _secondLimitBlue,
-                '_secondLimitRed': _secondLimitRed,
-                'minuteSettingInputBlue': minuteSettingInputBlue.text,
-                'secondSettingInputBlue': secondSettingInputBlue.text,
-                'minuteSettingInputRed': minuteSettingInputRed.text,
-                'secondSettingInputRed': secondSettingInputRed.text,
-                'enforceTimersSwitchTemp': enforceTimersSwitchTemp,
-                'spymasterEnableSwitchTemp': spymasterEnableSwitchTemp,
-                'enforceTimersSwitch': enforceTimersSwitch,
-                'spymasterEnableSwitch': spymasterEnableSwitch
-              });
+              if (!timerActivated) {
+                Navigator.of(context).pop();
+                timerSwitchBlue = timerSwitchTempBlue;
+                timerSwitchRed = timerSwitchTempRed;
+                enforceTimersSwitch = enforceTimersSwitchTemp;
+                spymasterEnableSwitch = spymasterEnableSwitchTemp;
+
+                if (currentTeam == "blue" && timerSwitchBlue == true) {
+                  startTimer(_minuteLimitBlue * 60 + _secondLimitBlue, data);
+                } else if (currentTeam == "red" && timerSwitchRed == true) {
+                  startTimer(_minuteLimitRed * 60 + _secondLimitRed, data);
+                }
+                
+                data.reference.update({
+                  'timerSwitchTempBlue': timerSwitchTempBlue,
+                  'timerSwitchTempRed': timerSwitchTempRed,
+                  'timerSwitchBlue': timerSwitchBlue,
+                  'timerSwitchRed': timerSwitchRed,
+                  '_minuteLimitBlue': _minuteLimitBlue,
+                  '_minuteLimitRed': _minuteLimitRed,
+                  '_secondLimitBlue': _secondLimitBlue,
+                  '_secondLimitRed': _secondLimitRed,
+                  'minuteSettingInputBlue': minuteSettingInputBlue.text,
+                  'secondSettingInputBlue': secondSettingInputBlue.text,
+                  'minuteSettingInputRed': minuteSettingInputRed.text,
+                  'secondSettingInputRed': secondSettingInputRed.text,
+                  'enforceTimersSwitchTemp': enforceTimersSwitchTemp,
+                  'spymasterEnableSwitchTemp': spymasterEnableSwitchTemp,
+                  'enforceTimersSwitch': enforceTimersSwitch,
+                  'spymasterEnableSwitch': spymasterEnableSwitch
+                });
+              }
             }
           }
         )),
@@ -1914,7 +1959,7 @@ class _GameState extends State<GameScreen> {
     _currentMinutesRemaining = _currentTime ~/ 60;
     _currentSecondsRemaining = _currentTime % 60;
 
-    data.reference.update({'_currentTime': _currentTime});
+    data.reference.update({'_currentTime': _currentTime, 'timerActivated': true});
 
     _timer = new Timer.periodic(
       oneSec,
@@ -1940,7 +1985,7 @@ class _GameState extends State<GameScreen> {
           _currentTime--;
           _currentMinutesRemaining = _currentTime ~/ 60;
           _currentSecondsRemaining = _currentTime % 60;
-          data.reference.update({'_currentTime':  _currentTime});
+          data.reference.update({'_currentTime':  _currentTime, 'timerActivated': true});
 
         }
       }
