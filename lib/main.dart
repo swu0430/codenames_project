@@ -155,7 +155,7 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
         'imageData': imageData,
         'wordsPicturesRandomOrder': wordsPicturesRandomOrder,
         'colorListInteractiveString': colorListInteractiveString,
-        'colorListString': colorListString,
+        //'colorListString': colorListString,
         'blendModeListInteractiveBool': blendModeListInteractiveBool,
         'timerSwitchBlue': timerSwitchBlue,
         'timerSwitchTempBlue': timerSwitchTempBlue,
