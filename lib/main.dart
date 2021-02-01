@@ -1303,7 +1303,7 @@ class _GameState extends State<GameScreen> {
         child: Text(wordsList[index].toUpperCase(), style: TextStyle(
         color: (colorListInteractive[index] != null) ? Colors.white : Colors.black, 
         fontWeight: FontWeight.bold,
-        fontSize: 6.0.sp)
+        fontSize: 5.5.sp)
         )
       )
     );
