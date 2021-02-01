@@ -97,11 +97,11 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
 
   // Initilialize game variables
   String versionTemp;
-  List wordsList = new List<String>();
+  List wordsList;
   List imageData;
-  List wordsPicturesRandomOrder = new List<String>(25);
-  List colorListInteractiveString = new List<String>(25);
-  List colorListString = new List<String>();
+  List wordsPicturesRandomOrder;
+  List colorListInteractiveString;
+  List colorListString;
   List blendModeListInteractiveBool = new List<bool>(25);
   bool timerSwitchBlue = false;
   bool timerSwitchTempBlue = false;
@@ -151,11 +151,11 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
       .set({
         'version': version,
         'versionTemp': version,
-        //'wordsList': wordsList, 
+        'wordsList': wordsList, 
         'imageData': imageData,
-        //'wordsPicturesRandomOrder': wordsPicturesRandomOrder,
-        //'colorListInteractiveString': colorListInteractiveString,
-        //'colorListString': colorListString,
+        'wordsPicturesRandomOrder': wordsPicturesRandomOrder,
+        'colorListInteractiveString': colorListInteractiveString,
+        'colorListString': colorListString,
         'blendModeListInteractiveBool': blendModeListInteractiveBool,
         'timerSwitchBlue': timerSwitchBlue,
         'timerSwitchTempBlue': timerSwitchTempBlue,
