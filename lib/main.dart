@@ -97,7 +97,7 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
 
   // Initilialize game variables
   String versionTemp;
-  List<String> wordsList = new List<String>();
+  List wordsList = new List<String>();
   List imageData;
   List wordsPicturesRandomOrder = new List<String>(25);
   List colorListInteractiveString = new List<String>(25);
@@ -152,7 +152,7 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
         'version': version,
         'versionTemp': version,
         //'wordsList': wordsList, 
-        'imageData': imageData,
+        //'imageData': imageData,
         'wordsPicturesRandomOrder': wordsPicturesRandomOrder,
         'colorListInteractiveString': colorListInteractiveString,
         //'colorListString': colorListString,
@@ -577,7 +577,7 @@ class _GameState extends State<GameScreen> {
   // NON-FIREBASE VARIABLES
   bool runFutures = false;
   bool restart = false;
-  List<String> wordsListFull;
+  List wordsListFull;
   List colorListInteractive = new List<Color>(25);
   List colorList = new List<Color>(25);
   List blendModeListInteractive = new List<BlendMode>(25);
