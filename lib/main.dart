@@ -870,7 +870,7 @@ class _GameState extends State<GameScreen> {
     enforceTimersSwitch = data['enforceTimersSwitch'];
     enforceTimersSwitchTemp = data['enforceTimersSwitchTemp'];
 
-    if (currentTeam == "blue") {
+/*     if (currentTeam == "blue") {
       if(timerSwitchBlue == true) {
         startTimer(_currentTime, data);
       }
@@ -880,7 +880,7 @@ class _GameState extends State<GameScreen> {
       if(timerSwitchRed == true) {
         startTimer(_currentTime, data);
       }
-    }
+    } */
   
     blueFirst = data['blueFirst'];
     blueScoreCounter = data['blueScoreCounter'];
