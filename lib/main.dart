@@ -181,7 +181,7 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
         'winner': winner,
         'displayWinner': displayWinner,
         'gameOver': gameOver,
-        'spymasterRestart' : spymasterRestart,
+        'spymasterRestart': spymasterRestart,
       })
       .then((value) => print("Room Added"))
       .catchError((error) => print("Failed to add room: $error"));
