@@ -717,7 +717,8 @@ class _GameState extends State<GameScreen> {
       'winner': "",
       'displayWinner': false,
       'gameOver': false,
-      'spymasterRestart': true
+      'spymasterRestart': true,
+      'timerActivated': false
     });          
   }
 
