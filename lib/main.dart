@@ -97,12 +97,12 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
 
   // Initilialize game variables
   String versionTemp;
-  List wordsList;
-  List imageData;
-  List wordsPicturesRandomOrder;
-  List colorListInteractiveString;
-  List colorListString;
-  List blendModeListInteractiveBool = new List<bool>(25);
+  List wordsList = new List.filled(25, "");
+  List imageData = new List.filled(1, "", growable: true);
+  List wordsPicturesRandomOrder = new List.filled(25, "");
+  List colorListInteractiveString = new List.filled(25, "");
+  List colorListString = new List.filled(25, "");
+  List blendModeListInteractiveBool = new List.filled(25, false);
   bool timerSwitchBlue = false;
   bool timerSwitchTempBlue = false;
   bool timerSwitchRed = false;
@@ -142,9 +142,9 @@ class GameRouterDelegate extends RouterDelegate<GameRoutePath> with ChangeNotifi
       this.runFutures = true;
     }
 
-    for (int i = 0; i < blendModeListInteractiveBool.length; i++) {
+/*     for (int i = 0; i < blendModeListInteractiveBool.length; i++) {
       blendModeListInteractiveBool[i] = false;
-    }
+    } */
     
     return rooms
       .doc(roomId)
@@ -671,9 +671,9 @@ class _GameState extends State<GameScreen> {
     
     wordsList = new List<String>();
     colorListString = new List<String>();
-    wordsPicturesRandomOrder = new List<String>(25);
-    colorListInteractiveString = new List<String>(25);
-    blendModeListInteractiveBool = new List<bool>(25);
+    wordsPicturesRandomOrder = new List.filled(25, "");
+    colorListInteractiveString = new List.filled(25, "");
+    blendModeListInteractiveBool = new List.filled(25, false);
 
     for (int i = 0; i < blendModeListInteractiveBool.length; i++) {
       blendModeListInteractiveBool[i] = false;
