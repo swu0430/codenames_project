@@ -6,7 +6,9 @@ A work-in-progress version of the game can be found here: https://detective-ding
 
 ## Resources:
 
-* Official Codenames Website - https://codenamesgame.com/
+* Flutter (Front-End) - https://flutter.dev/
+* Firebase (Back-End) - https://firebase.google.com/
 * Word List - https://github.com/seanlyons/codenames/blob/master/wordlist.txt
 * Pictures (Unsplash API) - https://unsplash.com/
-* Flutter SDK - https://flutter.dev/
+* Official Codenames Website - https://codenamesgame.com/
+* Inspiration - https://www.horsepaste.com/
